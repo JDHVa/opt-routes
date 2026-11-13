@@ -16,8 +16,8 @@ from routeopt.algorithms.base import (
     SOLVERS,
     ProgressCallback,
     ProgressEvent,
-    SolveResult,
     Solver,
+    SolveResult,
     SolverParams,
 )
 from routeopt.api.main import create_app

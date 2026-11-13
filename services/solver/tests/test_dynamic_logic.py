@@ -96,9 +96,7 @@ def test_subproblem_drops_delivered_and_pins_committed_stop() -> None:
     delivered = set(sim.state.delivered)
     assert delivered
     heads = {
-        driver_id: track.visits[0]
-        for driver_id, track in sim.state.tracks.items()
-        if track.visits
+        driver_id: track.visits[0] for driver_id, track in sim.state.tracks.items() if track.visits
     }
     sub = build_subproblem(sim.state)
     assert sub is not None

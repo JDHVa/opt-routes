@@ -26,9 +26,7 @@ def haversine_problem(scenario: str = "mty-centro-depot-40") -> Problem:
 
 
 def solve_body(problem: Problem, algorithm: str = "ga", **params: Any) -> dict[str, Any]:
-    request = SolveRequest(
-        problem=problem, run=AlgorithmRun(algorithm=algorithm, params=params)
-    )
+    request = SolveRequest(problem=problem, run=AlgorithmRun(algorithm=algorithm, params=params))
     return request.model_dump(mode="json")
 
 
@@ -122,9 +120,7 @@ async def test_invalid_params_is_422(client: httpx.AsyncClient) -> None:
 
 @pytest.mark.asyncio
 async def test_excessive_time_limit_is_422(client: httpx.AsyncClient) -> None:
-    response = await client.post(
-        "/solve", json=solve_body(haversine_problem(), time_limit_s=500.0)
-    )
+    response = await client.post("/solve", json=solve_body(haversine_problem(), time_limit_s=500.0))
     assert response.status_code == 422
     assert response.json()["code"] == "time_limit_exceeded"
 
@@ -160,9 +156,7 @@ async def test_csv_roundtrip_and_errors(client: httpx.AsyncClient) -> None:
     solved = await client.post(
         "/solve", json=solve_body(problem, time_limit_s=1.0, seed=1, max_iterations=20), timeout=30
     )
-    exported = await client.post(
-        "/export/csv", json={"solution": solved.json()["solution"]}
-    )
+    exported = await client.post("/export/csv", json={"solution": solved.json()["solution"]})
     assert exported.status_code == 200
     assert exported.headers["content-type"].startswith("text/csv")
     assert exported.text.count("\n") > len(problem.stops)
