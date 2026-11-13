@@ -3,6 +3,11 @@ from __future__ import annotations
 import numpy as np
 
 from routeopt.algorithms.base import InitStrategy
+from routeopt.algorithms.clustering import (
+    kmeans_assignment,
+    route_clusters,
+    sweep_assignment,
+)
 from routeopt.core.construct import nearest_neighbor
 from routeopt.core.split import random_chromosome, routes_to_chromosome, split
 from routeopt.core.types import Chromosome, Instance, Penalties, RouteSet
@@ -43,4 +48,11 @@ def initial_routesets(
             for _ in range(count - 1)
         ]
         return [first, *rest]
+    if strategy in (InitStrategy.KMEANS, InitStrategy.SWEEP):
+        build = kmeans_assignment if strategy == InitStrategy.KMEANS else sweep_assignment
+        light = max(1, inst.n // 20)
+        return [
+            route_clusters(inst, build(inst, rng), rng, penalties, perturb=0 if i == 0 else light)
+            for i in range(count)
+        ]
     return [random_routeset(inst, rng, penalties) for _ in range(count)]
