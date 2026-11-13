@@ -20,6 +20,7 @@ from routeopt.api.schemas import (
     ParetoPoint,
     ProgressPayload,
     SolveResponse,
+    SolverStage,
 )
 from routeopt.api.settings import Settings
 from routeopt.core.instance import build_instance, instance_locations
@@ -141,7 +142,10 @@ def progress_payload(inst: Instance, event: ProgressEvent, algorithm: str) -> Pr
         for key, value in event.extra.items()
         if isinstance(value, int | float) and not isinstance(value, bool)
     }
+    raw_stage = event.extra.get("stage")
+    stage = SolverStage(raw_stage) if raw_stage in SolverStage._value2member_map_ else None
     return ProgressPayload(
+        stage=stage,
         iteration=event.iteration,
         elapsed_s=event.elapsed_s,
         best_fitness=event.best_fitness,

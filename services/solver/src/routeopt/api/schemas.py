@@ -58,7 +58,16 @@ class CompareResponse(_Model):
     best_known: float | None = None
 
 
+class SolverStage(StrEnum):
+    SEEDING = "seeding"
+    EVOLVING = "evolving"
+    CONSTRUCTING = "constructing"
+    COOPERATING = "cooperating"
+    FINISHED = "finished"
+
+
 class ProgressPayload(_Model):
+    stage: SolverStage | None = None
     iteration: int
     elapsed_s: float
     best_fitness: float

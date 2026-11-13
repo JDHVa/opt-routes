@@ -125,7 +125,7 @@ fitness = Σ_{j<3} weights[j] * f[j] / obj_scale[j]
 | GET | `/vehicles` | `VehicleCatalog` |
 | GET | `/scenarios`, `/scenarios/{id}` | `list[ScenarioInfo]`, `Problem` |
 | POST | `/solve` | `SolveRequest` → `SolveResponse` |
-| POST | `/solve/stream` | `SolveRequest` → SSE: `progress` (`ProgressPayload`), `result` (`SolveResponse`), `error` (`ErrorPayload`) |
+| POST | `/solve/stream` | `SolveRequest` → SSE: `progress` (`ProgressPayload`, con `stage`: seeding/evolving/constructing/cooperating/finished, que el solver pone en `ProgressEvent.extra["stage"]`), `result` (`SolveResponse`), `error` (`ErrorPayload`) |
 | POST | `/compare` | `CompareRequest` → `CompareResponse` |
 | POST | `/compare/stream` | SSE por corrida: `progress`/`result` con `{"run_index": i, ...}`; al final, un evento `complete` con `CompareResponse` (gap vs la mejor corrida) |
 | POST | `/matrix` | `MatrixRequest` → `MatrixResponse` |

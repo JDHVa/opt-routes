@@ -1936,6 +1936,16 @@
       },
       "ProgressPayload": {
         "properties": {
+          "stage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SolverStage"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "iteration": {
             "type": "integer",
             "title": "Iteration"
@@ -2255,6 +2265,17 @@
           "run"
         ],
         "title": "SimulationConfig"
+      },
+      "SolverStage": {
+        "type": "string",
+        "enum": [
+          "seeding",
+          "evolving",
+          "constructing",
+          "cooperating",
+          "finished"
+        ],
+        "title": "SolverStage"
       },
       "TriggerMode": {
         "type": "string",

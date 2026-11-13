@@ -827,6 +827,7 @@ export interface components {
         };
         /** ProgressPayload */
         ProgressPayload: {
+            stage?: components["schemas"]["SolverStage"] | null;
             /** Iteration */
             iteration: number;
             /** Elapsed S */
@@ -974,6 +975,11 @@ export interface components {
              */
             reopt_time_limit_s: number;
         };
+        /**
+         * SolverStage
+         * @enum {string}
+         */
+        SolverStage: "seeding" | "evolving" | "constructing" | "cooperating" | "finished";
         /**
          * TriggerMode
          * @enum {string}
