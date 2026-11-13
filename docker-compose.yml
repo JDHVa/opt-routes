@@ -14,8 +14,8 @@ services:
       - solver
 
   osrm:
-    image: ghcr.io/project-osrm/osrm-backend
-    command: osrm-routed --algorithm mld /data/nuevo-leon.osrm
+    image: ghcr.io/project-osrm/osrm-backend:v5.27.1
+    command: osrm-routed --algorithm mld --max-table-size 500 /data/nuevo-leon.osrm
     ports:
       - "5000:5000"
     volumes:
