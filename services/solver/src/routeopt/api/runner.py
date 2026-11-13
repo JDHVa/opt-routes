@@ -143,7 +143,8 @@ def progress_payload(inst: Instance, event: ProgressEvent, algorithm: str) -> Pr
         if isinstance(value, int | float) and not isinstance(value, bool)
     }
     raw_stage = event.extra.get("stage")
-    stage = SolverStage(raw_stage) if raw_stage in SolverStage._value2member_map_ else None
+    stages = {member.value for member in SolverStage}
+    stage = SolverStage(raw_stage) if isinstance(raw_stage, str) and raw_stage in stages else None
     return ProgressPayload(
         stage=stage,
         iteration=event.iteration,
