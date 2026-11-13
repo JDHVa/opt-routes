@@ -1,0 +1,353 @@
+{
+  "meta": {
+    "title": "RouteOpt NL",
+    "description": "Optimize last-mile delivery routes in Monterrey with genetic algorithms and ant colonies."
+  },
+  "nav": {
+    "skip": "Skip to content",
+    "planner": "Planner",
+    "compare": "Compare",
+    "pareto": "Pareto",
+    "simulate": "Simulation"
+  },
+  "topbar": {
+    "menu": "Navigation menu",
+    "primaryNav": "Primary navigation",
+    "openPalette": "Open command palette",
+    "search": "Search command",
+    "language": "Language",
+    "theme": "Theme",
+    "themes": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "locales": {
+      "es": "Español",
+      "en": "English"
+    }
+  },
+  "cmd": {
+    "title": "Command palette",
+    "description": "Search for an action and press Enter.",
+    "placeholder": "Type a command…",
+    "empty": "No results.",
+    "groups": {
+      "actions": "Actions",
+      "algorithm": "Algorithm",
+      "language": "Language",
+      "theme": "Theme",
+      "go": "Go to"
+    },
+    "loadDemo": "Load Monterrey demo",
+    "stop": "Stop optimization",
+    "optimize": "Optimize",
+    "algorithmPrefix": "algorithm",
+    "useAlgorithm": "Use {name}",
+    "languagePrefix": "language",
+    "themeLight": "Light theme",
+    "themeDark": "Dark theme",
+    "themeSystem": "System theme",
+    "goTo": "go to",
+    "goToPage": "Go to {page}"
+  },
+  "placeholders": {
+    "compare": {
+      "title": "Compare algorithms",
+      "body": "There are no runs to compare yet. Optimize a scenario in the Planner and come back to see cost, time and vehicles for each algorithm.",
+      "action": "Open the Planner"
+    },
+    "pareto": {
+      "title": "Pareto front",
+      "body": "There is no computed front yet. Run NSGA-II in the Planner to see the trade-off between time and cost.",
+      "action": "Open the Planner"
+    },
+    "simulate": {
+      "title": "Dynamic simulation",
+      "body": "No simulation is running. Load a scenario in the Planner to simulate new orders and real-time re-optimization.",
+      "action": "Open the Planner"
+    }
+  },
+  "map": {
+    "ariaLabel": "Route map",
+    "attribution": "© OpenMapTiles · © OpenStreetMap contributors",
+    "depot": "Depot",
+    "driverStart": "Start of driver {n}",
+    "tooltip": {
+      "visit": "Driver {driver}, visit {order}",
+      "unassigned": "Unassigned",
+      "eta": "Arrival",
+      "late": "Lateness",
+      "window": "Window",
+      "load": "Load",
+      "priority": "Priority",
+      "priorities": {
+        "low": "Low",
+        "normal": "Normal",
+        "high": "High"
+      }
+    }
+  },
+  "planner": {
+    "panelLabel": "Problem setup",
+    "optimize": "Optimize",
+    "optimizing": "Optimizing…",
+    "tabs": {
+      "stops": "Stops",
+      "fleet": "Fleet",
+      "constraints": "Constraints",
+      "algorithm": "Algorithm"
+    },
+    "mobile": {
+      "config": "Setup",
+      "results": "Results"
+    },
+    "stops": {
+      "loading": "Loading stops",
+      "emptyTitle": "No stops yet",
+      "emptyBody": "Load the demo scenario, import a CSV or generate random stops to get started.",
+      "loadDemo": "Load Monterrey demo",
+      "importCsv": "Import CSV",
+      "generate": "Generate random",
+      "generateSoon": "Random stop generation is not available on the server yet.",
+      "importFailed": "Could not import the CSV. Check the format and try again.",
+      "count": "{count, plural, one {stop} other {stops}}",
+      "highPriority": "high priority",
+      "noAddress": "No address",
+      "assignedTo": "Driver {driver}",
+      "priorities": {
+        "low": "Low",
+        "high": "High"
+      },
+      "showMore": "Show {count} more"
+    },
+    "fleet": {
+      "noProblem": "Load a scenario to view and edit the fleet.",
+      "count": "{count, plural, one {driver} other {drivers}}",
+      "driverName": "Driver {n}",
+      "remove": "Remove {name}",
+      "vehicle": "Vehicle",
+      "approx": "approx.",
+      "start": "Start",
+      "startDepot": "Depot",
+      "shift": "Shift",
+      "addDriver": "Add driver"
+    },
+    "constraints": {
+      "noProblem": "Load a scenario to edit constraints.",
+      "mode": "Mode",
+      "modes": {
+        "depot": "Single depot",
+        "multi_origin": "Multi-origin"
+      },
+      "modeHelp": {
+        "depot": "All drivers leave the depot and return to it.",
+        "multi_origin": "Each driver starts from their own point. With no end point, the route is open."
+      },
+      "title": "Constraints",
+      "toggles": {
+        "capacity_kg": {
+          "label": "Weight capacity",
+          "help": "Each route's load stays within the vehicle's kg."
+        },
+        "capacity_m3": {
+          "label": "Volume capacity",
+          "help": "Each route's load stays within the vehicle's m³."
+        },
+        "time_windows": {
+          "label": "Time windows",
+          "help": "Arriving late is penalized; arriving early means waiting."
+        },
+        "max_shift": {
+          "label": "Maximum shift",
+          "help": "Each route fits within the driver's shift."
+        },
+        "priorities": {
+          "label": "Priorities",
+          "help": "Lateness on high-priority stops weighs 3 times more."
+        }
+      }
+    },
+    "algorithm": {
+      "algorithm": "Algorithm",
+      "algorithmLabel": "Optimization method",
+      "objective": "Objective",
+      "parameters": "Parameters",
+      "advanced": "Advanced",
+      "weights": "Objective weights",
+      "weightLabels": {
+        "time": "Total time",
+        "cost": "Cost",
+        "vehicles": "Vehicles",
+        "makespan": "End of last route"
+      },
+      "auto": "Automatic",
+      "params": {
+        "time_limit_s": "Time limit",
+        "max_iterations": "Maximum iterations",
+        "seed": "Seed",
+        "init": "Initialization",
+        "local_search": "Local search",
+        "progress_every": "Report every (iter.)",
+        "pop_size": "Population",
+        "crossover_rate": "Crossover probability",
+        "mutation_rate": "Mutation probability",
+        "ls_rate": "Local search probability",
+        "elite_size": "Elite size",
+        "tournament_size": "Tournament size",
+        "crossover": "Crossover operator",
+        "stagnation_generations": "Generations without improvement",
+        "granular_k": "Granular neighbors",
+        "n_ants": "Ants",
+        "alpha": "Alpha (pheromone)",
+        "beta": "Beta (heuristic)",
+        "rho": "Evaporation (ρ)",
+        "q0": "q0 (exploitation)",
+        "cand_k": "Candidates per node",
+        "tw_weight": "Time window weight",
+        "ls_ants": "Ants with local search",
+        "stagnation_iterations": "Iterations without improvement",
+        "ls_every": "Local search every"
+      },
+      "paramHelp": {
+        "seed": "Same seed, same result."
+      },
+      "enumValues": {
+        "random": "Random",
+        "nearest_neighbor": "Nearest neighbor",
+        "kmeans": "K-means",
+        "sweep": "Sweep",
+        "ox": "OX",
+        "pmx": "PMX"
+      },
+      "errors": {
+        "required": "Enter a value.",
+        "integer": "Must be an integer.",
+        "min": "Must be greater than {bound}.",
+        "max": "Must be less than {bound}."
+      }
+    },
+    "presets": {
+      "fastest": "Fastest",
+      "cheapest": "Cheapest",
+      "fewest": "Fewest drivers",
+      "balanced": "Balanced",
+      "fastestHelp": "Prioritizes finishing the last route as early as possible.",
+      "cheapestHelp": "Prioritizes total cost in fuel, wages and fixed costs.",
+      "fewestHelp": "Prioritizes using as few drivers as possible.",
+      "balancedHelp": "Spreads the weight across time, cost and vehicles.",
+      "customHelp": "Custom weights. Adjust them under Advanced."
+    },
+    "live": {
+      "title": "Optimization in progress",
+      "preparing": "Preparing the instance",
+      "stage": {
+        "generation": "Generation {iteration}/{max}",
+        "iteration": "Iteration {iteration}/{max}"
+      },
+      "elapsed": "Time",
+      "bestFitness": "Best fitness",
+      "convergence": "Best fitness convergence",
+      "stop": "Stop"
+    },
+    "results": {
+      "panelLabel": "Results",
+      "title": "Result",
+      "show": "Show results",
+      "close": "Close results",
+      "stopped": "Stopped: best solution so far",
+      "partial": "Partial",
+      "feasible": "Feasible",
+      "infeasible": "Infeasible",
+      "metrics": {
+        "distance": "Distance",
+        "cost": "Cost",
+        "duration": "Total time",
+        "makespan": "Last delivery",
+        "vehicles": "Drivers",
+        "lateness": "Lateness"
+      },
+      "routes": "Routes",
+      "driverName": "Driver {n}",
+      "stops": "{count, plural, one {stop} other {stops}}",
+      "itineraryFor": "Itinerary for {name}",
+      "stop": "Stop",
+      "eta": "Arrival",
+      "late": "Late"
+    },
+    "wake": {
+      "title": "Waking up the server…",
+      "elapsed": "Elapsed time:"
+    },
+    "error": {
+      "title": "The operation could not be completed",
+      "details": "Technical details",
+      "retry": "Retry",
+      "causes": {
+        "solver_unreachable": "The optimization server is not responding. This usually happens while it wakes up after being idle.",
+        "network": "There is no connection to the server.",
+        "rate_limited": "You made too many requests in a row. Wait a moment.",
+        "invalid_request": "The problem has data the server does not accept.",
+        "stream_closed": "The server closed the connection before returning a result.",
+        "unknown": "An unexpected error occurred."
+      }
+    },
+    "infeasible": {
+      "title": "The solution does not meet every constraint",
+      "issues": {
+        "unassigned": "{amount} unassigned stops",
+        "overloadKg": "Excess load: {amount}",
+        "overloadM3": "Excess volume: {amount}",
+        "overtime": "Excess shift time: {amount}"
+      },
+      "hint": "Add drivers, use vehicles with more capacity or relax a constraint."
+    }
+  },
+  "landing": {
+    "title": "Optimize delivery routes with genetic algorithms and ant colonies",
+    "subtitle": "Plan last-mile delivery in the Monterrey metropolitan area with memetic GA, ACO, the ACO+GA hybrid and NSGA-II on real streets, with time windows, capacity and priorities.",
+    "ctaDemo": "Open Monterrey demo",
+    "ctaCode": "View code",
+    "map": {
+      "label": "Example solution on the map",
+      "caption": "Scenario {name}",
+      "stops": "stops",
+      "vehicles": "drivers",
+      "makespan": "until the last delivery"
+    },
+    "diagrams": {
+      "split": {
+        "title": "Split: from tour to routes",
+        "body": "The chromosome is a permutation of stops. Split walks the tour and cuts it into consecutive segments, one per driver, respecting capacity and shift.",
+        "note": "Cuts and vehicle order of the 40-stop demo solution.",
+        "aria": "Stop tour cut into one segment per driver",
+        "tour": "Tour (one cell per stop)",
+        "segment": "Driver {n}",
+        "segmentStops": "{count, plural, one {# stop} other {# stops}}",
+        "vorder": "Vehicle order"
+      },
+      "pheromone": {
+        "title": "Pheromone: reinforcing the best route",
+        "body": "In MMAS only the best ant deposits pheromone. The edges of its route are reinforced and the rest evaporate every iteration, with minimum and maximum bounds to avoid stagnation.",
+        "note": "First 9 stops of demo route 1. Faint edges: 3 nearest neighbors.",
+        "aria": "Stop graph with the edges of the best route reinforced",
+        "rule": "τ ← (1 − ρ) · τ + Δτ"
+      },
+      "pareto": {
+        "title": "Pareto front: time versus cost",
+        "body": "NSGA-II does not pick a single winner. It returns the solutions that cannot improve one objective without worsening another, and you choose the trade-off.",
+        "note": "Conceptual sketch, not to scale. Point size encodes the number of drivers.",
+        "aria": "Scatter of solutions with the non-dominated front joined by a step line",
+        "axisX": "Total time →",
+        "axisY": "Cost →"
+      }
+    },
+    "footer": {
+      "dataTitle": "Data and attributions",
+      "denue": "Businesses: INEGI, DENUE (open data).",
+      "osm": "Map and routes: © OpenStreetMap contributors (ODbL). OpenMapTiles tiles via OpenFreeMap.",
+      "amazon": "Reference deliveries: Amazon Last Mile Routing Challenge, Amazon and MIT CTL (CC BY-NC 4.0, non-commercial use only).",
+      "project": "RouteOpt NL is a school and portfolio project. Demo region: Monterrey metropolitan area, Nuevo León."
+    }
+  }
+}

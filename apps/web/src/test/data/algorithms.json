@@ -1,0 +1,469 @@
+[
+ {
+  "name": "aco",
+  "label": "Ant Colony (MAX-MIN)",
+  "multi_objective": false,
+  "params_schema": {
+   "$defs": {
+    "InitStrategy": {
+     "enum": [
+      "random",
+      "nearest_neighbor",
+      "kmeans",
+      "sweep"
+     ],
+     "title": "InitStrategy",
+     "type": "string"
+    }
+   },
+   "additionalProperties": false,
+   "properties": {
+    "time_limit_s": {
+     "default": 30.0,
+     "exclusiveMinimum": 0,
+     "maximum": 600,
+     "title": "Time Limit S",
+     "type": "number"
+    },
+    "max_iterations": {
+     "default": 500,
+     "exclusiveMinimum": 0,
+     "title": "Max Iterations",
+     "type": "integer"
+    },
+    "seed": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Seed"
+    },
+    "init": {
+     "$ref": "#/$defs/InitStrategy",
+     "default": "kmeans"
+    },
+    "local_search": {
+     "default": true,
+     "title": "Local Search",
+     "type": "boolean"
+    },
+    "progress_every": {
+     "default": 5,
+     "minimum": 1,
+     "title": "Progress Every",
+     "type": "integer"
+    },
+    "n_ants": {
+     "default": 20,
+     "minimum": 1,
+     "title": "N Ants",
+     "type": "integer"
+    },
+    "alpha": {
+     "default": 1.0,
+     "minimum": 0,
+     "title": "Alpha",
+     "type": "number"
+    },
+    "beta": {
+     "default": 3.0,
+     "minimum": 0,
+     "title": "Beta",
+     "type": "number"
+    },
+    "rho": {
+     "default": 0.1,
+     "exclusiveMaximum": 1,
+     "exclusiveMinimum": 0,
+     "title": "Rho",
+     "type": "number"
+    },
+    "q0": {
+     "default": 0.9,
+     "maximum": 1,
+     "minimum": 0,
+     "title": "Q0",
+     "type": "number"
+    },
+    "cand_k": {
+     "default": 15,
+     "minimum": 1,
+     "title": "Cand K",
+     "type": "integer"
+    },
+    "tw_weight": {
+     "default": 1.0,
+     "minimum": 0,
+     "title": "Tw Weight",
+     "type": "number"
+    },
+    "ls_ants": {
+     "default": 2,
+     "minimum": 0,
+     "title": "Ls Ants",
+     "type": "integer"
+    },
+    "stagnation_iterations": {
+     "default": 40,
+     "minimum": 1,
+     "title": "Stagnation Iterations",
+     "type": "integer"
+    }
+   },
+   "title": "AcoParams",
+   "type": "object"
+  }
+ },
+ {
+  "name": "ga",
+  "label": "Genetic Algorithm (memetic)",
+  "multi_objective": false,
+  "params_schema": {
+   "$defs": {
+    "InitStrategy": {
+     "enum": [
+      "random",
+      "nearest_neighbor",
+      "kmeans",
+      "sweep"
+     ],
+     "title": "InitStrategy",
+     "type": "string"
+    }
+   },
+   "additionalProperties": false,
+   "properties": {
+    "time_limit_s": {
+     "default": 30.0,
+     "exclusiveMinimum": 0,
+     "maximum": 600,
+     "title": "Time Limit S",
+     "type": "number"
+    },
+    "max_iterations": {
+     "default": 500,
+     "exclusiveMinimum": 0,
+     "title": "Max Iterations",
+     "type": "integer"
+    },
+    "seed": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Seed"
+    },
+    "init": {
+     "$ref": "#/$defs/InitStrategy",
+     "default": "kmeans"
+    },
+    "local_search": {
+     "default": true,
+     "title": "Local Search",
+     "type": "boolean"
+    },
+    "progress_every": {
+     "default": 5,
+     "minimum": 1,
+     "title": "Progress Every",
+     "type": "integer"
+    },
+    "pop_size": {
+     "default": 40,
+     "maximum": 1000,
+     "minimum": 4,
+     "title": "Pop Size",
+     "type": "integer"
+    },
+    "crossover_rate": {
+     "default": 0.9,
+     "maximum": 1.0,
+     "minimum": 0.0,
+     "title": "Crossover Rate",
+     "type": "number"
+    },
+    "mutation_rate": {
+     "default": 0.2,
+     "maximum": 1.0,
+     "minimum": 0.0,
+     "title": "Mutation Rate",
+     "type": "number"
+    },
+    "ls_rate": {
+     "default": 0.25,
+     "maximum": 1.0,
+     "minimum": 0.0,
+     "title": "Ls Rate",
+     "type": "number"
+    },
+    "elite_size": {
+     "default": 2,
+     "maximum": 100,
+     "minimum": 1,
+     "title": "Elite Size",
+     "type": "integer"
+    },
+    "tournament_size": {
+     "default": 2,
+     "maximum": 20,
+     "minimum": 1,
+     "title": "Tournament Size",
+     "type": "integer"
+    },
+    "crossover": {
+     "default": "ox",
+     "enum": [
+      "ox",
+      "pmx"
+     ],
+     "title": "Crossover",
+     "type": "string"
+    },
+    "stagnation_generations": {
+     "default": 60,
+     "minimum": 1,
+     "title": "Stagnation Generations",
+     "type": "integer"
+    },
+    "granular_k": {
+     "default": 20,
+     "maximum": 200,
+     "minimum": 1,
+     "title": "Granular K",
+     "type": "integer"
+    }
+   },
+   "title": "GaParams",
+   "type": "object"
+  }
+ },
+ {
+  "name": "nsga2",
+  "label": "NSGA-II (multi-objective)",
+  "multi_objective": true,
+  "params_schema": {
+   "$defs": {
+    "InitStrategy": {
+     "enum": [
+      "random",
+      "nearest_neighbor",
+      "kmeans",
+      "sweep"
+     ],
+     "title": "InitStrategy",
+     "type": "string"
+    }
+   },
+   "additionalProperties": false,
+   "properties": {
+    "time_limit_s": {
+     "default": 30.0,
+     "exclusiveMinimum": 0,
+     "maximum": 600,
+     "title": "Time Limit S",
+     "type": "number"
+    },
+    "max_iterations": {
+     "default": 500,
+     "exclusiveMinimum": 0,
+     "title": "Max Iterations",
+     "type": "integer"
+    },
+    "seed": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Seed"
+    },
+    "init": {
+     "$ref": "#/$defs/InitStrategy",
+     "default": "kmeans"
+    },
+    "local_search": {
+     "default": true,
+     "title": "Local Search",
+     "type": "boolean"
+    },
+    "progress_every": {
+     "default": 5,
+     "minimum": 1,
+     "title": "Progress Every",
+     "type": "integer"
+    },
+    "pop_size": {
+     "default": 60,
+     "maximum": 1000,
+     "minimum": 4,
+     "title": "Pop Size",
+     "type": "integer"
+    },
+    "crossover_rate": {
+     "default": 0.9,
+     "maximum": 1.0,
+     "minimum": 0.0,
+     "title": "Crossover Rate",
+     "type": "number"
+    },
+    "mutation_rate": {
+     "default": 0.2,
+     "maximum": 1.0,
+     "minimum": 0.0,
+     "title": "Mutation Rate",
+     "type": "number"
+    },
+    "ls_every": {
+     "default": 0,
+     "minimum": 0,
+     "title": "Ls Every",
+     "type": "integer"
+    }
+   },
+   "title": "Nsga2Params",
+   "type": "object"
+  }
+ },
+ {
+  "name": "ortools",
+  "label": "OR-Tools (GLS baseline)",
+  "multi_objective": false,
+  "params_schema": {
+   "$defs": {
+    "InitStrategy": {
+     "enum": [
+      "random",
+      "nearest_neighbor",
+      "kmeans",
+      "sweep"
+     ],
+     "title": "InitStrategy",
+     "type": "string"
+    }
+   },
+   "additionalProperties": false,
+   "properties": {
+    "time_limit_s": {
+     "default": 30.0,
+     "exclusiveMinimum": 0,
+     "maximum": 600,
+     "title": "Time Limit S",
+     "type": "number"
+    },
+    "max_iterations": {
+     "default": 500,
+     "exclusiveMinimum": 0,
+     "title": "Max Iterations",
+     "type": "integer"
+    },
+    "seed": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Seed"
+    },
+    "init": {
+     "$ref": "#/$defs/InitStrategy",
+     "default": "kmeans"
+    },
+    "local_search": {
+     "default": true,
+     "title": "Local Search",
+     "type": "boolean"
+    },
+    "progress_every": {
+     "default": 5,
+     "minimum": 1,
+     "title": "Progress Every",
+     "type": "integer"
+    }
+   },
+   "title": "SolverParams",
+   "type": "object"
+  }
+ },
+ {
+  "name": "pyvrp",
+  "label": "PyVRP (HGS baseline)",
+  "multi_objective": false,
+  "params_schema": {
+   "$defs": {
+    "InitStrategy": {
+     "enum": [
+      "random",
+      "nearest_neighbor",
+      "kmeans",
+      "sweep"
+     ],
+     "title": "InitStrategy",
+     "type": "string"
+    }
+   },
+   "additionalProperties": false,
+   "properties": {
+    "time_limit_s": {
+     "default": 30.0,
+     "exclusiveMinimum": 0,
+     "maximum": 600,
+     "title": "Time Limit S",
+     "type": "number"
+    },
+    "max_iterations": {
+     "default": 500,
+     "exclusiveMinimum": 0,
+     "title": "Max Iterations",
+     "type": "integer"
+    },
+    "seed": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Seed"
+    },
+    "init": {
+     "$ref": "#/$defs/InitStrategy",
+     "default": "kmeans"
+    },
+    "local_search": {
+     "default": true,
+     "title": "Local Search",
+     "type": "boolean"
+    },
+    "progress_every": {
+     "default": 5,
+     "minimum": 1,
+     "title": "Progress Every",
+     "type": "integer"
+    }
+   },
+   "title": "SolverParams",
+   "type": "object"
+  }
+ }
+]

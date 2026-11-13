@@ -1,0 +1,353 @@
+{
+  "meta": {
+    "title": "RouteOpt NL",
+    "description": "Optimiza rutas de reparto de última milla en Monterrey con algoritmos genéticos y colonias de hormigas."
+  },
+  "nav": {
+    "skip": "Saltar al contenido",
+    "planner": "Planner",
+    "compare": "Comparar",
+    "pareto": "Pareto",
+    "simulate": "Simulación"
+  },
+  "topbar": {
+    "menu": "Menú de navegación",
+    "primaryNav": "Navegación principal",
+    "openPalette": "Abrir paleta de comandos",
+    "search": "Buscar comando",
+    "language": "Idioma",
+    "theme": "Tema",
+    "themes": {
+      "light": "Claro",
+      "dark": "Oscuro",
+      "system": "Sistema"
+    },
+    "locales": {
+      "es": "Español",
+      "en": "English"
+    }
+  },
+  "cmd": {
+    "title": "Paleta de comandos",
+    "description": "Busca una acción y presiona Enter.",
+    "placeholder": "Escribe un comando…",
+    "empty": "Sin resultados.",
+    "groups": {
+      "actions": "Acciones",
+      "algorithm": "Algoritmo",
+      "language": "Idioma",
+      "theme": "Tema",
+      "go": "Ir a"
+    },
+    "loadDemo": "Cargar demo Monterrey",
+    "stop": "Detener optimización",
+    "optimize": "Optimizar",
+    "algorithmPrefix": "algoritmo",
+    "useAlgorithm": "Usar {name}",
+    "languagePrefix": "idioma",
+    "themeLight": "Tema claro",
+    "themeDark": "Tema oscuro",
+    "themeSystem": "Tema del sistema",
+    "goTo": "ir a",
+    "goToPage": "Ir a {page}"
+  },
+  "placeholders": {
+    "compare": {
+      "title": "Comparar algoritmos",
+      "body": "Aún no hay corridas para comparar. Optimiza un escenario en el Planner y vuelve para ver la tabla de costo, tiempo y vehículos de cada algoritmo.",
+      "action": "Abrir el Planner"
+    },
+    "pareto": {
+      "title": "Frente de Pareto",
+      "body": "Aún no hay un frente calculado. Corre NSGA-II en el Planner para ver el compromiso entre tiempo y costo.",
+      "action": "Abrir el Planner"
+    },
+    "simulate": {
+      "title": "Simulación dinámica",
+      "body": "Aún no hay una simulación en marcha. Carga un escenario en el Planner para simular pedidos nuevos y re-optimización en tiempo real.",
+      "action": "Abrir el Planner"
+    }
+  },
+  "map": {
+    "ariaLabel": "Mapa de rutas",
+    "attribution": "© OpenMapTiles · © OpenStreetMap contributors",
+    "depot": "Depósito",
+    "driverStart": "Inicio del repartidor {n}",
+    "tooltip": {
+      "visit": "Repartidor {driver}, visita {order}",
+      "unassigned": "Sin asignar",
+      "eta": "Llegada",
+      "late": "Retraso",
+      "window": "Ventana",
+      "load": "Carga",
+      "priority": "Prioridad",
+      "priorities": {
+        "low": "Baja",
+        "normal": "Normal",
+        "high": "Alta"
+      }
+    }
+  },
+  "planner": {
+    "panelLabel": "Configuración del problema",
+    "optimize": "Optimizar",
+    "optimizing": "Optimizando…",
+    "tabs": {
+      "stops": "Paradas",
+      "fleet": "Flota",
+      "constraints": "Restricciones",
+      "algorithm": "Algoritmo"
+    },
+    "mobile": {
+      "config": "Configurar",
+      "results": "Resultados"
+    },
+    "stops": {
+      "loading": "Cargando paradas",
+      "emptyTitle": "Aún no hay paradas",
+      "emptyBody": "Carga el escenario demo, importa un CSV o genera paradas aleatorias para empezar.",
+      "loadDemo": "Cargar demo Monterrey",
+      "importCsv": "Importar CSV",
+      "generate": "Generar aleatorias",
+      "generateSoon": "La generación de paradas aleatorias aún no está disponible en el servidor.",
+      "importFailed": "No se pudo importar el CSV. Revisa el formato e inténtalo de nuevo.",
+      "count": "{count, plural, one {parada} other {paradas}}",
+      "highPriority": "de prioridad alta",
+      "noAddress": "Sin dirección",
+      "assignedTo": "Repartidor {driver}",
+      "priorities": {
+        "low": "Baja",
+        "high": "Alta"
+      },
+      "showMore": "Mostrar {count} más"
+    },
+    "fleet": {
+      "noProblem": "Carga un escenario para ver y editar la flota.",
+      "count": "{count, plural, one {repartidor} other {repartidores}}",
+      "driverName": "Repartidor {n}",
+      "remove": "Quitar a {name}",
+      "vehicle": "Vehículo",
+      "approx": "aprox.",
+      "start": "Inicio",
+      "startDepot": "Depósito",
+      "shift": "Jornada",
+      "addDriver": "Añadir repartidor"
+    },
+    "constraints": {
+      "noProblem": "Carga un escenario para editar las restricciones.",
+      "mode": "Modo",
+      "modes": {
+        "depot": "Depósito único",
+        "multi_origin": "Multi-origen"
+      },
+      "modeHelp": {
+        "depot": "Todos los repartidores salen del depósito y regresan a él.",
+        "multi_origin": "Cada repartidor parte de su propio punto. Sin punto final, la ruta es abierta."
+      },
+      "title": "Restricciones",
+      "toggles": {
+        "capacity_kg": {
+          "label": "Capacidad en peso",
+          "help": "La carga de cada ruta no pasa de los kg del vehículo."
+        },
+        "capacity_m3": {
+          "label": "Capacidad en volumen",
+          "help": "La carga de cada ruta no pasa de los m³ del vehículo."
+        },
+        "time_windows": {
+          "label": "Ventanas de tiempo",
+          "help": "Llegar tarde se penaliza; llegar antes obliga a esperar."
+        },
+        "max_shift": {
+          "label": "Jornada máxima",
+          "help": "Cada ruta cabe en la jornada del repartidor."
+        },
+        "priorities": {
+          "label": "Prioridades",
+          "help": "El retraso en paradas de prioridad alta pesa 3 veces más."
+        }
+      }
+    },
+    "algorithm": {
+      "algorithm": "Algoritmo",
+      "algorithmLabel": "Método de optimización",
+      "objective": "Objetivo",
+      "parameters": "Parámetros",
+      "advanced": "Avanzado",
+      "weights": "Pesos del objetivo",
+      "weightLabels": {
+        "time": "Tiempo total",
+        "cost": "Costo",
+        "vehicles": "Vehículos",
+        "makespan": "Fin de la última ruta"
+      },
+      "auto": "Automática",
+      "params": {
+        "time_limit_s": "Tiempo límite",
+        "max_iterations": "Iteraciones máximas",
+        "seed": "Semilla",
+        "init": "Inicialización",
+        "local_search": "Búsqueda local",
+        "progress_every": "Reportar cada (iter.)",
+        "pop_size": "Población",
+        "crossover_rate": "Probabilidad de cruce",
+        "mutation_rate": "Probabilidad de mutación",
+        "ls_rate": "Probabilidad de búsqueda local",
+        "elite_size": "Élite",
+        "tournament_size": "Tamaño del torneo",
+        "crossover": "Operador de cruce",
+        "stagnation_generations": "Generaciones sin mejora",
+        "granular_k": "Vecinos granulares",
+        "n_ants": "Hormigas",
+        "alpha": "Alfa (feromona)",
+        "beta": "Beta (heurística)",
+        "rho": "Evaporación (ρ)",
+        "q0": "q0 (explotación)",
+        "cand_k": "Candidatos por nodo",
+        "tw_weight": "Peso de ventanas",
+        "ls_ants": "Hormigas con búsqueda local",
+        "stagnation_iterations": "Iteraciones sin mejora",
+        "ls_every": "Búsqueda local cada"
+      },
+      "paramHelp": {
+        "seed": "Misma semilla, mismo resultado."
+      },
+      "enumValues": {
+        "random": "Aleatoria",
+        "nearest_neighbor": "Vecino más cercano",
+        "kmeans": "K-means",
+        "sweep": "Barrido",
+        "ox": "OX",
+        "pmx": "PMX"
+      },
+      "errors": {
+        "required": "Ingresa un valor.",
+        "integer": "Debe ser un entero.",
+        "min": "Debe ser mayor que {bound}.",
+        "max": "Debe ser menor que {bound}."
+      }
+    },
+    "presets": {
+      "fastest": "Más rápido",
+      "cheapest": "Más barato",
+      "fewest": "Menos repartidores",
+      "balanced": "Balanceado",
+      "fastestHelp": "Prioriza que la última ruta termine lo antes posible.",
+      "cheapestHelp": "Prioriza el costo total en combustible, sueldo y costos fijos.",
+      "fewestHelp": "Prioriza usar la menor cantidad de repartidores.",
+      "balancedHelp": "Reparte el peso entre tiempo, costo y vehículos.",
+      "customHelp": "Pesos personalizados. Ajústalos en Avanzado."
+    },
+    "live": {
+      "title": "Optimización en curso",
+      "preparing": "Preparando la instancia",
+      "stage": {
+        "generation": "Generación {iteration}/{max}",
+        "iteration": "Iteración {iteration}/{max}"
+      },
+      "elapsed": "Tiempo",
+      "bestFitness": "Mejor fitness",
+      "convergence": "Convergencia del mejor fitness",
+      "stop": "Detener"
+    },
+    "results": {
+      "panelLabel": "Resultados",
+      "title": "Resultado",
+      "show": "Mostrar resultados",
+      "close": "Cerrar resultados",
+      "stopped": "Detenida: mejor solución hasta ahora",
+      "partial": "Parcial",
+      "feasible": "Factible",
+      "infeasible": "Infactible",
+      "metrics": {
+        "distance": "Distancia",
+        "cost": "Costo",
+        "duration": "Tiempo total",
+        "makespan": "Última entrega",
+        "vehicles": "Repartidores",
+        "lateness": "Retraso"
+      },
+      "routes": "Rutas",
+      "driverName": "Repartidor {n}",
+      "stops": "{count, plural, one {parada} other {paradas}}",
+      "itineraryFor": "Itinerario de {name}",
+      "stop": "Parada",
+      "eta": "Llegada",
+      "late": "Retraso"
+    },
+    "wake": {
+      "title": "Despertando el servidor…",
+      "elapsed": "Tiempo transcurrido:"
+    },
+    "error": {
+      "title": "No se pudo completar la operación",
+      "details": "Detalle técnico",
+      "retry": "Reintentar",
+      "causes": {
+        "solver_unreachable": "El servidor de optimización no responde. Suele pasar al despertar tras un rato inactivo.",
+        "network": "No hay conexión con el servidor.",
+        "rate_limited": "Hiciste demasiadas solicitudes seguidas. Espera un momento.",
+        "invalid_request": "El problema tiene datos que el servidor no acepta.",
+        "stream_closed": "El servidor cerró la conexión antes de entregar un resultado.",
+        "unknown": "Ocurrió un error inesperado."
+      }
+    },
+    "infeasible": {
+      "title": "La solución no cumple todas las restricciones",
+      "issues": {
+        "unassigned": "{amount} paradas sin asignar",
+        "overloadKg": "Exceso de carga: {amount}",
+        "overloadM3": "Exceso de volumen: {amount}",
+        "overtime": "Exceso de jornada: {amount}"
+      },
+      "hint": "Añade repartidores, usa vehículos con más capacidad o relaja una restricción."
+    }
+  },
+  "landing": {
+    "title": "Optimiza rutas de reparto con algoritmos genéticos y colonias de hormigas",
+    "subtitle": "Planifica la última milla en el área metropolitana de Monterrey con GA memético, ACO, el híbrido ACO+GA y NSGA-II sobre calles reales, con ventanas de tiempo, capacidad y prioridades.",
+    "ctaDemo": "Abrir demo Monterrey",
+    "ctaCode": "Ver código",
+    "map": {
+      "label": "Solución de ejemplo en el mapa",
+      "caption": "Escenario {name}",
+      "stops": "paradas",
+      "vehicles": "repartidores",
+      "makespan": "hasta la última entrega"
+    },
+    "diagrams": {
+      "split": {
+        "title": "Split: del tour a las rutas",
+        "body": "El cromosoma es una permutación de paradas. Split recorre el tour y lo corta en tramos consecutivos, uno por repartidor, respetando capacidad y jornada.",
+        "note": "Cortes y orden de vehículos de la solución demo de 40 paradas.",
+        "aria": "Tour de paradas cortado en un tramo por repartidor",
+        "tour": "Tour (una casilla por parada)",
+        "segment": "Repartidor {n}",
+        "segmentStops": "{count, plural, one {# parada} other {# paradas}}",
+        "vorder": "Orden de vehículos"
+      },
+      "pheromone": {
+        "title": "Feromona: refuerzo de la mejor ruta",
+        "body": "En MMAS solo la mejor hormiga deposita feromona. Las aristas de su ruta se refuerzan y el resto se evapora en cada iteración, con límites mínimo y máximo para no estancarse.",
+        "note": "Primeras 9 paradas de la ruta 1 de la demo. Aristas tenues: 3 vecinos más cercanos.",
+        "aria": "Grafo de paradas con las aristas de la mejor ruta reforzadas",
+        "rule": "τ ← (1 − ρ) · τ + Δτ"
+      },
+      "pareto": {
+        "title": "Frente de Pareto: tiempo contra costo",
+        "body": "NSGA-II no elige un único ganador. Devuelve las soluciones que no se pueden mejorar en un objetivo sin empeorar otro, y tú eliges el compromiso.",
+        "note": "Esquema conceptual sin escala. El tamaño del punto codifica el número de repartidores.",
+        "aria": "Dispersión de soluciones con el frente no dominado unido por una línea escalonada",
+        "axisX": "Tiempo total →",
+        "axisY": "Costo →"
+      }
+    },
+    "footer": {
+      "dataTitle": "Datos y atribuciones",
+      "denue": "Establecimientos: INEGI, DENUE (datos abiertos).",
+      "osm": "Mapa y rutas: © OpenStreetMap contributors (ODbL). Teselas de OpenMapTiles vía OpenFreeMap.",
+      "amazon": "Entregas de referencia: Amazon Last Mile Routing Challenge, Amazon y MIT CTL (CC BY-NC 4.0, solo uso no comercial).",
+      "project": "RouteOpt NL es un proyecto escolar y de portafolio. Región demo: área metropolitana de Monterrey, Nuevo León."
+    }
+  }
+}
