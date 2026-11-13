@@ -101,8 +101,9 @@ def test_depot_case() -> None:
     assert ev.makespan_min == pytest.approx(max(dur_a, dur_b), abs=TOL)
     assert ev.feasible
     w = np.array([1.0, 1.0, 0.5, 0.5]) / 3.0
-    f = np.array([dur_a + dur_b, cost_a + cost_b, 2.0, max(dur_a, dur_b)])
-    expected = float(np.sum(w * f / inst.obj_scale))
+    f = np.array([dur_a + dur_b, cost_a + cost_b, 2.0])
+    balance = (dur_a**2 + dur_b**2) / inst.obj_scale[3] ** 2
+    expected = float(np.sum(w[:3] * f / inst.obj_scale[:3]) + w[3] * balance)
     assert ev.fitness == pytest.approx(expected, abs=TOL)
 
 
@@ -134,7 +135,7 @@ def test_multi_origin_open_route() -> None:
     assert ev.total_cost_mxn == pytest.approx(3.0 * KM_COST + 12.0 + 50.0, abs=TOL)
     assert ev.makespan_min == pytest.approx(30.0 + 12.0, abs=TOL)
     assert ev.vehicles_used == 1
-    assert ev.fitness == pytest.approx(42.0 / inst.obj_scale[3], abs=TOL)
+    assert ev.fitness == pytest.approx(12.0**2 / inst.obj_scale[3] ** 2, abs=TOL)
 
 
 def test_time_window_wait_and_priority_lateness() -> None:

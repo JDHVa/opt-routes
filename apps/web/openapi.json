@@ -1,0 +1,2101 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "RouteOpt NL Solver",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/algorithms": {
+      "get": {
+        "summary": "Algorithms",
+        "operationId": "algorithms_algorithms_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AlgorithmInfo"
+                  },
+                  "type": "array",
+                  "title": "Response Algorithms Algorithms Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vehicles": {
+      "get": {
+        "summary": "Vehicles",
+        "operationId": "vehicles_vehicles_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleCatalog"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scenarios": {
+      "get": {
+        "summary": "Scenarios",
+        "operationId": "scenarios_scenarios_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ScenarioInfo"
+                  },
+                  "type": "array",
+                  "title": "Response Scenarios Scenarios Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scenarios/{scenario_id}": {
+      "get": {
+        "summary": "Scenario",
+        "operationId": "scenario_scenarios__scenario_id__get",
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scenario Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/solve": {
+      "post": {
+        "summary": "Solve",
+        "operationId": "solve_solve_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SolveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SolveResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/compare": {
+      "post": {
+        "summary": "Compare",
+        "operationId": "compare_compare_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompareRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompareResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matrix": {
+      "post": {
+        "summary": "Matrix",
+        "operationId": "matrix_matrix_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatrixRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatrixResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/geometry": {
+      "post": {
+        "summary": "Geometry",
+        "operationId": "geometry_geometry_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeometryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeometryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/_types/progress": {
+      "post": {
+        "summary": "Progress Type",
+        "operationId": "progress_type__types_progress_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgressPayload"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/_types/error": {
+      "post": {
+        "summary": "Error Type",
+        "operationId": "error_type__types_error_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorPayload"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/_types/sim-client": {
+      "post": {
+        "summary": "Sim Client Type",
+        "operationId": "sim_client_type__types_sim_client_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SimClientStart"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SimClientAddOrder"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SimClientControl"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SimClientSpeed"
+                    }
+                  ],
+                  "title": "Response Sim Client Type  Types Sim Client Post",
+                  "discriminator": {
+                    "propertyName": "type",
+                    "mapping": {
+                      "start": "#/components/schemas/SimClientStart",
+                      "add_order": "#/components/schemas/SimClientAddOrder",
+                      "pause": "#/components/schemas/SimClientControl",
+                      "resume": "#/components/schemas/SimClientControl",
+                      "stop": "#/components/schemas/SimClientControl",
+                      "speed": "#/components/schemas/SimClientSpeed"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/_types/sim-server": {
+      "post": {
+        "summary": "Sim Server Type",
+        "operationId": "sim_server_type__types_sim_server_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SimServerTick"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SimServerOrder"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SimServerReoptimized"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SimServerDone"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SimServerError"
+                    }
+                  ],
+                  "title": "Response Sim Server Type  Types Sim Server Post",
+                  "discriminator": {
+                    "propertyName": "type",
+                    "mapping": {
+                      "tick": "#/components/schemas/SimServerTick",
+                      "order": "#/components/schemas/SimServerOrder",
+                      "reoptimized": "#/components/schemas/SimServerReoptimized",
+                      "done": "#/components/schemas/SimServerDone",
+                      "error": "#/components/schemas/SimServerError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/_types/solution": {
+      "post": {
+        "summary": "Solution Type",
+        "operationId": "solution_type__types_solution_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Solution"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AlgorithmInfo": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "multi_objective": {
+            "type": "boolean",
+            "title": "Multi Objective"
+          },
+          "params_schema": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Params Schema"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "label",
+          "multi_objective",
+          "params_schema"
+        ],
+        "title": "AlgorithmInfo"
+      },
+      "AlgorithmRun": {
+        "properties": {
+          "algorithm": {
+            "type": "string",
+            "title": "Algorithm"
+          },
+          "params": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Params",
+            "default": {}
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "algorithm"
+        ],
+        "title": "AlgorithmRun"
+      },
+      "CompareEntry": {
+        "properties": {
+          "run": {
+            "$ref": "#/components/schemas/AlgorithmRun"
+          },
+          "solution": {
+            "$ref": "#/components/schemas/Solution"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryPoint"
+            },
+            "type": "array",
+            "title": "History"
+          },
+          "gap_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gap Pct"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "run",
+          "solution",
+          "history"
+        ],
+        "title": "CompareEntry"
+      },
+      "CompareRequest": {
+        "properties": {
+          "problem": {
+            "$ref": "#/components/schemas/Problem"
+          },
+          "runs": {
+            "items": {
+              "$ref": "#/components/schemas/AlgorithmRun"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "minItems": 1,
+            "title": "Runs"
+          },
+          "include_geometry": {
+            "type": "boolean",
+            "title": "Include Geometry",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "problem",
+          "runs"
+        ],
+        "title": "CompareRequest"
+      },
+      "CompareResponse": {
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/CompareEntry"
+            },
+            "type": "array",
+            "title": "Entries"
+          },
+          "best_known": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Known"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "entries"
+        ],
+        "title": "CompareResponse"
+      },
+      "ConstraintToggles": {
+        "properties": {
+          "capacity_kg": {
+            "type": "boolean",
+            "title": "Capacity Kg",
+            "default": true
+          },
+          "capacity_m3": {
+            "type": "boolean",
+            "title": "Capacity M3",
+            "default": true
+          },
+          "time_windows": {
+            "type": "boolean",
+            "title": "Time Windows",
+            "default": true
+          },
+          "max_shift": {
+            "type": "boolean",
+            "title": "Max Shift",
+            "default": true
+          },
+          "priorities": {
+            "type": "boolean",
+            "title": "Priorities",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ConstraintToggles"
+      },
+      "CostParams": {
+        "properties": {
+          "gasoline_mxn_per_l": {
+            "type": "number",
+            "title": "Gasoline Mxn Per L",
+            "default": 24.5
+          },
+          "diesel_mxn_per_l": {
+            "type": "number",
+            "title": "Diesel Mxn Per L",
+            "default": 26.0
+          },
+          "electricity_mxn_per_kwh": {
+            "type": "number",
+            "title": "Electricity Mxn Per Kwh",
+            "default": 3.0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "CostParams"
+      },
+      "DistanceSource": {
+        "type": "string",
+        "enum": [
+          "osrm",
+          "haversine",
+          "provided"
+        ],
+        "title": "DistanceSource"
+      },
+      "Driver": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "vehicle_type_id": {
+            "type": "string",
+            "title": "Vehicle Type Id"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Location"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "end": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Location"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "shift_start_min": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Shift Start Min",
+            "default": 0.0
+          },
+          "max_shift_min": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Max Shift Min",
+            "default": 480.0
+          },
+          "hourly_wage_mxn": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Hourly Wage Mxn",
+            "default": 80.0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "vehicle_type_id"
+        ],
+        "title": "Driver"
+      },
+      "DriverPosition": {
+        "properties": {
+          "driver_id": {
+            "type": "string",
+            "title": "Driver Id"
+          },
+          "location": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "next_stop_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Stop Id"
+          },
+          "completed": {
+            "type": "integer",
+            "title": "Completed"
+          },
+          "remaining": {
+            "type": "integer",
+            "title": "Remaining"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "driver_id",
+          "location",
+          "next_stop_id",
+          "completed",
+          "remaining"
+        ],
+        "title": "DriverPosition"
+      },
+      "ErrorPayload": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorPayload"
+      },
+      "FuelType": {
+        "type": "string",
+        "enum": [
+          "gasoline",
+          "diesel",
+          "electric"
+        ],
+        "title": "FuelType"
+      },
+      "GeometryRequest": {
+        "properties": {
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/Location"
+            },
+            "type": "array",
+            "maxItems": 400,
+            "minItems": 2,
+            "title": "Points"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "points"
+        ],
+        "title": "GeometryRequest"
+      },
+      "GeometryResponse": {
+        "properties": {
+          "geometry": {
+            "items": {
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array",
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "type": "array",
+            "title": "Geometry"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "osrm",
+              "straight"
+            ],
+            "title": "Source"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "geometry",
+          "source"
+        ],
+        "title": "GeometryResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HistoryPoint": {
+        "properties": {
+          "iteration": {
+            "type": "integer",
+            "title": "Iteration"
+          },
+          "elapsed_s": {
+            "type": "number",
+            "title": "Elapsed S"
+          },
+          "best_fitness": {
+            "type": "number",
+            "title": "Best Fitness"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "iteration",
+          "elapsed_s",
+          "best_fitness"
+        ],
+        "title": "HistoryPoint"
+      },
+      "Location": {
+        "properties": {
+          "lat": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Lat"
+          },
+          "lon": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Lon"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "Location"
+      },
+      "MatrixRequest": {
+        "properties": {
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/Location"
+            },
+            "type": "array",
+            "maxItems": 400,
+            "minItems": 2,
+            "title": "Points"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "points"
+        ],
+        "title": "MatrixRequest"
+      },
+      "MatrixResponse": {
+        "properties": {
+          "distance_km": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Distance Km"
+          },
+          "duration_min": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Duration Min"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "osrm",
+              "haversine"
+            ],
+            "title": "Source"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "distance_km",
+          "duration_min",
+          "source"
+        ],
+        "title": "MatrixResponse"
+      },
+      "Objective": {
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/ObjectiveKind",
+            "default": "weighted"
+          },
+          "weights": {
+            "$ref": "#/components/schemas/ObjectiveWeights",
+            "default": {
+              "time": 1.0,
+              "cost": 1.0,
+              "vehicles": 0.5,
+              "makespan": 0.0
+            }
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Objective"
+      },
+      "ObjectiveKind": {
+        "type": "string",
+        "enum": [
+          "weighted",
+          "pareto"
+        ],
+        "title": "ObjectiveKind"
+      },
+      "ObjectiveWeights": {
+        "properties": {
+          "time": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Time",
+            "default": 1.0
+          },
+          "cost": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Cost",
+            "default": 1.0
+          },
+          "vehicles": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Vehicles",
+            "default": 0.5
+          },
+          "makespan": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Makespan",
+            "default": 0.0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ObjectiveWeights"
+      },
+      "ParetoPoint": {
+        "properties": {
+          "objectives": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Objectives"
+          },
+          "solution": {
+            "$ref": "#/components/schemas/Solution"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "objectives",
+          "solution"
+        ],
+        "title": "ParetoPoint"
+      },
+      "Priority": {
+        "type": "string",
+        "enum": [
+          "low",
+          "normal",
+          "high"
+        ],
+        "title": "Priority"
+      },
+      "Problem": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": "untitled"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/ProblemMode"
+          },
+          "depot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Location"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "depot_id": {
+            "type": "string",
+            "title": "Depot Id",
+            "default": "depot"
+          },
+          "drivers": {
+            "items": {
+              "$ref": "#/components/schemas/Driver"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Drivers"
+          },
+          "vehicle_types": {
+            "items": {
+              "$ref": "#/components/schemas/VehicleType"
+            },
+            "type": "array",
+            "title": "Vehicle Types"
+          },
+          "stops": {
+            "items": {
+              "$ref": "#/components/schemas/Stop"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Stops"
+          },
+          "objective": {
+            "$ref": "#/components/schemas/Objective",
+            "default": {
+              "kind": "weighted",
+              "weights": {
+                "cost": 1.0,
+                "makespan": 0.0,
+                "time": 1.0,
+                "vehicles": 0.5
+              }
+            }
+          },
+          "costs": {
+            "$ref": "#/components/schemas/CostParams",
+            "default": {
+              "gasoline_mxn_per_l": 24.5,
+              "diesel_mxn_per_l": 26.0,
+              "electricity_mxn_per_kwh": 3.0
+            }
+          },
+          "constraints": {
+            "$ref": "#/components/schemas/ConstraintToggles",
+            "default": {
+              "capacity_kg": true,
+              "capacity_m3": true,
+              "time_windows": true,
+              "max_shift": true,
+              "priorities": true
+            }
+          },
+          "distance_source": {
+            "$ref": "#/components/schemas/DistanceSource",
+            "default": "osrm"
+          },
+          "matrix": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProvidedMatrix"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "mode",
+          "drivers",
+          "vehicle_types",
+          "stops"
+        ],
+        "title": "Problem"
+      },
+      "ProblemMode": {
+        "type": "string",
+        "enum": [
+          "depot",
+          "multi_origin"
+        ],
+        "title": "ProblemMode"
+      },
+      "ProgressPayload": {
+        "properties": {
+          "iteration": {
+            "type": "integer",
+            "title": "Iteration"
+          },
+          "elapsed_s": {
+            "type": "number",
+            "title": "Elapsed S"
+          },
+          "best_fitness": {
+            "type": "number",
+            "title": "Best Fitness"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/SolutionMetrics"
+          },
+          "solution": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Solution"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "pareto": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ParetoPoint"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pareto"
+          },
+          "extra": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Extra",
+            "default": {}
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "iteration",
+          "elapsed_s",
+          "best_fitness",
+          "metrics"
+        ],
+        "title": "ProgressPayload"
+      },
+      "ProvidedMatrix": {
+        "properties": {
+          "node_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Node Ids"
+          },
+          "distance_km": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Distance Km"
+          },
+          "duration_min": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Duration Min"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "node_ids",
+          "distance_km",
+          "duration_min"
+        ],
+        "title": "ProvidedMatrix"
+      },
+      "Route": {
+        "properties": {
+          "driver_id": {
+            "type": "string",
+            "title": "Driver Id"
+          },
+          "vehicle_type_id": {
+            "type": "string",
+            "title": "Vehicle Type Id"
+          },
+          "visits": {
+            "items": {
+              "$ref": "#/components/schemas/Visit"
+            },
+            "type": "array",
+            "title": "Visits"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/RouteMetrics"
+          },
+          "geometry": {
+            "anyOf": [
+              {
+                "items": {
+                  "prefixItems": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "type": "array",
+                  "maxItems": 2,
+                  "minItems": 2
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geometry"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "driver_id",
+          "vehicle_type_id",
+          "visits",
+          "metrics"
+        ],
+        "title": "Route"
+      },
+      "RouteMetrics": {
+        "properties": {
+          "distance_km": {
+            "type": "number",
+            "title": "Distance Km"
+          },
+          "duration_min": {
+            "type": "number",
+            "title": "Duration Min"
+          },
+          "start_min": {
+            "type": "number",
+            "title": "Start Min"
+          },
+          "end_min": {
+            "type": "number",
+            "title": "End Min"
+          },
+          "load_kg": {
+            "type": "number",
+            "title": "Load Kg"
+          },
+          "load_m3": {
+            "type": "number",
+            "title": "Load M3"
+          },
+          "cost_mxn": {
+            "type": "number",
+            "title": "Cost Mxn"
+          },
+          "lateness_min": {
+            "type": "number",
+            "title": "Lateness Min"
+          },
+          "overtime_min": {
+            "type": "number",
+            "title": "Overtime Min"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "distance_km",
+          "duration_min",
+          "start_min",
+          "end_min",
+          "load_kg",
+          "load_m3",
+          "cost_mxn",
+          "lateness_min",
+          "overtime_min"
+        ],
+        "title": "RouteMetrics"
+      },
+      "ScenarioInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "n_stops": {
+            "type": "integer",
+            "title": "N Stops"
+          },
+          "n_drivers": {
+            "type": "integer",
+            "title": "N Drivers"
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode"
+          },
+          "region": {
+            "type": "string",
+            "title": "Region"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "n_stops",
+          "n_drivers",
+          "mode",
+          "region"
+        ],
+        "title": "ScenarioInfo"
+      },
+      "SimClientAddOrder": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "add_order",
+            "title": "Type",
+            "default": "add_order"
+          },
+          "stop": {
+            "$ref": "#/components/schemas/Stop"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "stop"
+        ],
+        "title": "SimClientAddOrder"
+      },
+      "SimClientControl": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "pause",
+              "resume",
+              "stop"
+            ],
+            "title": "Type"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "title": "SimClientControl"
+      },
+      "SimClientSpeed": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "speed",
+            "title": "Type",
+            "default": "speed"
+          },
+          "speed": {
+            "type": "number",
+            "maximum": 600.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Speed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "speed"
+        ],
+        "title": "SimClientSpeed"
+      },
+      "SimClientStart": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "start",
+            "title": "Type",
+            "default": "start"
+          },
+          "config": {
+            "$ref": "#/components/schemas/SimulationConfig"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "config"
+        ],
+        "title": "SimClientStart"
+      },
+      "SimServerDone": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "done",
+            "title": "Type",
+            "default": "done"
+          },
+          "clock_min": {
+            "type": "number",
+            "title": "Clock Min"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/SolutionMetrics"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "clock_min",
+          "metrics"
+        ],
+        "title": "SimServerDone"
+      },
+      "SimServerError": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "error",
+            "title": "Type",
+            "default": "error"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorPayload"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "SimServerError"
+      },
+      "SimServerOrder": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "order",
+            "title": "Type",
+            "default": "order"
+          },
+          "clock_min": {
+            "type": "number",
+            "title": "Clock Min"
+          },
+          "stop": {
+            "$ref": "#/components/schemas/Stop"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "clock_min",
+          "stop"
+        ],
+        "title": "SimServerOrder"
+      },
+      "SimServerReoptimized": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "reoptimized",
+            "title": "Type",
+            "default": "reoptimized"
+          },
+          "clock_min": {
+            "type": "number",
+            "title": "Clock Min"
+          },
+          "solution": {
+            "$ref": "#/components/schemas/Solution"
+          },
+          "runtime_s": {
+            "type": "number",
+            "title": "Runtime S"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "initial",
+              "event",
+              "batch"
+            ],
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "clock_min",
+          "solution",
+          "runtime_s",
+          "reason"
+        ],
+        "title": "SimServerReoptimized"
+      },
+      "SimServerTick": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "tick",
+            "title": "Type",
+            "default": "tick"
+          },
+          "clock_min": {
+            "type": "number",
+            "title": "Clock Min"
+          },
+          "positions": {
+            "items": {
+              "$ref": "#/components/schemas/DriverPosition"
+            },
+            "type": "array",
+            "title": "Positions"
+          },
+          "delivered_stop_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Delivered Stop Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "clock_min",
+          "positions",
+          "delivered_stop_ids"
+        ],
+        "title": "SimServerTick"
+      },
+      "SimulationConfig": {
+        "properties": {
+          "problem": {
+            "$ref": "#/components/schemas/Problem"
+          },
+          "run": {
+            "$ref": "#/components/schemas/AlgorithmRun"
+          },
+          "speed": {
+            "type": "number",
+            "maximum": 600.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Speed",
+            "default": 60.0
+          },
+          "trigger": {
+            "$ref": "#/components/schemas/TriggerMode",
+            "default": "event"
+          },
+          "batch_minutes": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Batch Minutes",
+            "default": 15.0
+          },
+          "reopt_time_limit_s": {
+            "type": "number",
+            "maximum": 60.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Reopt Time Limit S",
+            "default": 5.0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "problem",
+          "run"
+        ],
+        "title": "SimulationConfig"
+      },
+      "Solution": {
+        "properties": {
+          "algorithm": {
+            "type": "string",
+            "title": "Algorithm"
+          },
+          "routes": {
+            "items": {
+              "$ref": "#/components/schemas/Route"
+            },
+            "type": "array",
+            "title": "Routes"
+          },
+          "unassigned_stop_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unassigned Stop Ids",
+            "default": []
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/SolutionMetrics"
+          },
+          "runtime_s": {
+            "type": "number",
+            "title": "Runtime S"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "algorithm",
+          "routes",
+          "metrics",
+          "runtime_s"
+        ],
+        "title": "Solution"
+      },
+      "SolutionMetrics": {
+        "properties": {
+          "total_distance_km": {
+            "type": "number",
+            "title": "Total Distance Km"
+          },
+          "total_duration_min": {
+            "type": "number",
+            "title": "Total Duration Min"
+          },
+          "makespan_min": {
+            "type": "number",
+            "title": "Makespan Min"
+          },
+          "vehicles_used": {
+            "type": "integer",
+            "title": "Vehicles Used"
+          },
+          "total_cost_mxn": {
+            "type": "number",
+            "title": "Total Cost Mxn"
+          },
+          "lateness_min": {
+            "type": "number",
+            "title": "Lateness Min"
+          },
+          "overload_kg": {
+            "type": "number",
+            "title": "Overload Kg"
+          },
+          "overload_m3": {
+            "type": "number",
+            "title": "Overload M3"
+          },
+          "overtime_min": {
+            "type": "number",
+            "title": "Overtime Min"
+          },
+          "unassigned": {
+            "type": "integer",
+            "title": "Unassigned"
+          },
+          "feasible": {
+            "type": "boolean",
+            "title": "Feasible"
+          },
+          "fitness": {
+            "type": "number",
+            "title": "Fitness"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "total_distance_km",
+          "total_duration_min",
+          "makespan_min",
+          "vehicles_used",
+          "total_cost_mxn",
+          "lateness_min",
+          "overload_kg",
+          "overload_m3",
+          "overtime_min",
+          "unassigned",
+          "feasible",
+          "fitness"
+        ],
+        "title": "SolutionMetrics"
+      },
+      "SolveRequest": {
+        "properties": {
+          "problem": {
+            "$ref": "#/components/schemas/Problem"
+          },
+          "run": {
+            "$ref": "#/components/schemas/AlgorithmRun"
+          },
+          "include_geometry": {
+            "type": "boolean",
+            "title": "Include Geometry",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "problem",
+          "run"
+        ],
+        "title": "SolveRequest"
+      },
+      "SolveResponse": {
+        "properties": {
+          "solution": {
+            "$ref": "#/components/schemas/Solution"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryPoint"
+            },
+            "type": "array",
+            "title": "History"
+          },
+          "pareto": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ParetoPoint"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pareto"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "solution",
+          "history"
+        ],
+        "title": "SolveResponse"
+      },
+      "Stop": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "location": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "demand_kg": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Demand Kg",
+            "default": 1.0
+          },
+          "demand_m3": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Demand M3",
+            "default": 0.01
+          },
+          "service_min": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Service Min",
+            "default": 3.0
+          },
+          "tw_start_min": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tw Start Min"
+          },
+          "tw_end_min": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tw End Min"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/Priority",
+            "default": "normal"
+          },
+          "release_min": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Release Min",
+            "default": 0.0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "location"
+        ],
+        "title": "Stop"
+      },
+      "TriggerMode": {
+        "type": "string",
+        "enum": [
+          "event",
+          "batch"
+        ],
+        "title": "TriggerMode"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VehicleCatalog": {
+        "properties": {
+          "vehicles": {
+            "items": {
+              "$ref": "#/components/schemas/VehicleType"
+            },
+            "type": "array",
+            "title": "Vehicles"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "vehicles"
+        ],
+        "title": "VehicleCatalog"
+      },
+      "VehicleCategory": {
+        "type": "string",
+        "enum": [
+          "motorcycle",
+          "cargo_tricycle",
+          "compact_van",
+          "large_van",
+          "truck"
+        ],
+        "title": "VehicleCategory"
+      },
+      "VehicleType": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "brand": {
+            "type": "string",
+            "title": "Brand"
+          },
+          "category": {
+            "$ref": "#/components/schemas/VehicleCategory"
+          },
+          "payload_kg": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Payload Kg"
+          },
+          "volume_m3": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Volume M3"
+          },
+          "fuel_type": {
+            "$ref": "#/components/schemas/FuelType"
+          },
+          "km_per_l": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Km Per L"
+          },
+          "kwh_per_100km": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kwh Per 100Km"
+          },
+          "range_km": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Range Km"
+          },
+          "speed_factor": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Speed Factor",
+            "default": 1.0
+          },
+          "fixed_cost_mxn": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Fixed Cost Mxn",
+            "default": 0.0
+          },
+          "approx": {
+            "type": "boolean",
+            "title": "Approx",
+            "default": false
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "brand",
+          "category",
+          "payload_kg",
+          "volume_m3",
+          "fuel_type"
+        ],
+        "title": "VehicleType"
+      },
+      "Visit": {
+        "properties": {
+          "stop_id": {
+            "type": "string",
+            "title": "Stop Id"
+          },
+          "arrival_min": {
+            "type": "number",
+            "title": "Arrival Min"
+          },
+          "start_service_min": {
+            "type": "number",
+            "title": "Start Service Min"
+          },
+          "departure_min": {
+            "type": "number",
+            "title": "Departure Min"
+          },
+          "late_min": {
+            "type": "number",
+            "title": "Late Min",
+            "default": 0.0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "stop_id",
+          "arrival_min",
+          "start_service_min",
+          "departure_min"
+        ],
+        "title": "Visit"
+      }
+    }
+  }
+}

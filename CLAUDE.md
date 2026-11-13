@@ -5,7 +5,7 @@ Optimización de rutas de reparto de última milla con algoritmos bioinspirados:
 Plan aprobado: `/home/jdhva/.claude/plans/greedy-dreaming-kite.md`. La guía visual está en `DESIGN.md` (obligatoria para todo el frontend).
 
 ## Reglas de oro
-1. **Cero comentarios y cero docstrings en el código.** Aplica a Python, TS/TSX, CSS, Dockerfile, YAML y TOML. El código se explica con buenos nombres, tipos y funciones pequeñas. La documentación vive solo en `CLAUDE.md`, `DESIGN.md` y `README.md`. Al revisar, cualquier comentario es motivo de rechazo.
+1. **Cero comentarios y cero docstrings en el código.** Exentos: archivos generados (`apps/web/src/lib/api/schema.d.ts`, `openapi.json`), que nunca se editan a mano. Aplica a Python, TS/TSX, CSS, Dockerfile, YAML y TOML. El código se explica con buenos nombres, tipos y funciones pequeñas. La documentación vive solo en `CLAUDE.md`, `DESIGN.md` y `README.md`. Al revisar, cualquier comentario es motivo de rechazo.
 2. **Los contratos no se modifican sin el arquitecto (Opus).** Si un contrato no alcanza, el agente lo reporta en su entrega en vez de cambiarlo.
 3. **Un agente solo toca los archivos que su prompt le asigna.**
 4. **No se agregan dependencias** sin declararlas en la entrega.
@@ -86,8 +86,9 @@ Una ruta vacía vale 0 en todo y no cuenta como vehículo usado.
 
 ### Fitness (minimizar)
 ```
-f = (Σ duration_k, Σ cost_k, #rutas no vacías, max_k t_fin_k)
-fitness = Σ_j weights[j] * f[j] / obj_scale[j]
+f = (Σ duration_k, Σ cost_k, #rutas no vacías)
+fitness = Σ_{j<3} weights[j] * f[j] / obj_scale[j]
+        + weights[3] * Σ_k duration_k² / obj_scale[3]²
         + P.capacity  * (overload_kg/mean(cap_kg) + overload_m3/mean(cap_m3))
         + P.lateness  * lateness_min/60
         + P.overtime  * overtime_min/60
@@ -95,6 +96,7 @@ fitness = Σ_j weights[j] * f[j] / obj_scale[j]
 ```
 - `obj_scale` lo fija el builder con los objetivos de una solución de vecino más cercano, con un mínimo de 1.
 - `weights` se normalizan para que sumen 1.
+- **El makespan entra al fitness como proxy aditivo y convexo** (Σ duración², término de balance). El `max` real no es aditivo: el Split y la búsqueda local no podían optimizarlo y el peso no tenía efecto. Con el proxy todo es aditivo por ruta (`route_additive`), así que Split, LS, ACO y GA lo optimizan exactamente. `Evaluation.makespan_min` y el objetivo de NSGA-II siguen siendo el makespan real.
 - `feasible` significa que no hay overload, overtime ni paradas sin asignar. El retraso en ventanas de tiempo es blando y no rompe la factibilidad.
 
 ### `algorithms/base.py`: interfaz de los solvers
@@ -170,13 +172,14 @@ cd services/solver && uv run pytest -m slow    (benchmarks de calidad)
 cd services/solver && uv run ruff check . && uv run ruff format . && uv run mypy src
 cd services/solver && uv run uvicorn routeopt.api.main:app --reload --port 8000
 cd apps/web && npm run dev
-cd apps/web && npm run gen:api
+cd apps/web && npm run gen:api            (regenera openapi.json + tipos TS, sin servidor)
 docker compose up
 ```
 
 ## Rendimiento
 - Objetivo: 200 paradas y 20 vehículos en menos de 60 s con progreso fluido.
 - Los loops calientes (`evaluate`, `split`, deltas de búsqueda local, construcción ACO) se escriben con `numba.njit` sobre arrays de `Instance`. Nada de objetos Python dentro de los loops.
+- **Caché de numba (`cache=True`):** se invalida solo cuando cambia el archivo de la propia función, no el de las funciones que llama. Si se modifica un kernel de `core/evaluate.py`, los kernels de `split.py`, `local_search.py`, `aco.py`, etc. quedan compilados con la versión vieja. Después de tocar cualquier kernel, borra los cachés: `find services/solver/src -name '*.nbi' -delete -o -name '*.nbc' -delete`.
 
 ## Datos y licencias
 - Amazon Last Mile Routing Challenge: CC BY-NC 4.0. Solo uso no comercial, con atribución a Amazon y al MIT CTL en el README y en la UI.
