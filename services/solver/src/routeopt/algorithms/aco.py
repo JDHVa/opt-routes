@@ -28,8 +28,6 @@ BRANCHING_RESTART = 1.05
 CONVERGENCE_P_BEST = 0.05
 NEW_VEHICLE_PROBABILITY = 0.02
 SEED_RANGE = 2**31 - 1
-MAX_POLISH_ROUNDS = 100
-INTER_ROUTE_POLISH_MAX_N = 100
 
 
 class AcoParams(SolverParams):
@@ -40,7 +38,7 @@ class AcoParams(SolverParams):
     q0: float = Field(default=0.9, ge=0, le=1)
     cand_k: int = Field(default=15, ge=1)
     tw_weight: float = Field(default=1.0, ge=0)
-    ls_ants: int = Field(default=2, ge=0)
+    ls_ants: int = Field(default=5, ge=0)
     stagnation_iterations: int = Field(default=40, ge=1)
 
 
@@ -59,103 +57,6 @@ def _route_value(k: int, route: Any, ra: Any, cap_kg: Any, cap_m3: Any, coef: An
         overtime,
         coef,
     )
-
-
-@numba.njit(cache=True)
-def _two_opt_kernel(mat: Any, cnt: Any, ra: Any, cap_kg: Any, cap_m3: Any, coef: Any) -> None:
-    for k in range(mat.shape[0]):
-        c = cnt[k]
-        if c < 2:
-            continue
-        route = mat[k, :c].copy()
-        best = _route_value(k, route, ra, cap_kg, cap_m3, coef)
-        improved = True
-        while improved:
-            improved = False
-            for a in range(c - 1):
-                for b in range(a + 1, c):
-                    trial = route.copy()
-                    trial[a : b + 1] = route[a : b + 1][::-1]
-                    value = _route_value(k, trial, ra, cap_kg, cap_m3, coef)
-                    if value < best - TOLERANCE:
-                        route = trial
-                        best = value
-                        improved = True
-        mat[k, :c] = route
-
-
-@numba.njit(cache=True)
-def _inter_route_kernel(mat: Any, cnt: Any, ra: Any, cap_kg: Any, cap_m3: Any, coef: Any) -> None:
-    m = mat.shape[0]
-    values = np.zeros(m)
-    for k in range(m):
-        values[k] = _route_value(k, mat[k, : cnt[k]], ra, cap_kg, cap_m3, coef)
-    improved = True
-    rounds = 0
-    while improved and rounds < MAX_POLISH_ROUNDS:
-        improved = False
-        rounds += 1
-        for a in range(m):
-            for i in range(cnt[a]):
-                if i >= cnt[a]:
-                    break
-                stop = mat[a, i]
-                reduced = np.empty(cnt[a] - 1, dtype=np.int64)
-                reduced[:i] = mat[a, :i]
-                reduced[i:] = mat[a, i + 1 : cnt[a]]
-                value_a = _route_value(a, reduced, ra, cap_kg, cap_m3, coef)
-                moved = False
-                for b in range(m):
-                    if b == a:
-                        continue
-                    c = cnt[b]
-                    for p in range(c + 1):
-                        grown = np.empty(c + 1, dtype=np.int64)
-                        grown[:p] = mat[b, :p]
-                        grown[p] = stop
-                        grown[p + 1 :] = mat[b, p:c]
-                        value_b = _route_value(b, grown, ra, cap_kg, cap_m3, coef)
-                        if value_a + value_b < values[a] + values[b] - TOLERANCE:
-                            mat[a, : cnt[a] - 1] = reduced
-                            cnt[a] -= 1
-                            mat[b, : c + 1] = grown
-                            cnt[b] = c + 1
-                            values[a] = value_a
-                            values[b] = value_b
-                            moved = True
-                            break
-                    if moved:
-                        break
-                if moved:
-                    improved = True
-                    break
-            if improved:
-                break
-        if improved:
-            continue
-        for a in range(m):
-            for b in range(a + 1, m):
-                for i in range(cnt[a]):
-                    for j in range(cnt[b]):
-                        route_a = mat[a, : cnt[a]].copy()
-                        route_b = mat[b, : cnt[b]].copy()
-                        route_a[i] = mat[b, j]
-                        route_b[j] = mat[a, i]
-                        value_a = _route_value(a, route_a, ra, cap_kg, cap_m3, coef)
-                        value_b = _route_value(b, route_b, ra, cap_kg, cap_m3, coef)
-                        if value_a + value_b < values[a] + values[b] - TOLERANCE:
-                            mat[a, : cnt[a]] = route_a
-                            mat[b, : cnt[b]] = route_b
-                            values[a] = value_a
-                            values[b] = value_b
-                            improved = True
-                            break
-                    if improved:
-                        break
-                if improved:
-                    break
-            if improved:
-                break
 
 
 @numba.njit(cache=True)
@@ -416,32 +317,9 @@ def _construct_batch(
     return mats, cnts
 
 
-def _to_matrix(inst: Instance, rs: RouteSet) -> tuple[I64, I64]:
-    mat = np.zeros((inst.m, max(inst.n, 1)), dtype=np.int64)
-    cnt = np.zeros(inst.m, dtype=np.int64)
-    for k, route in enumerate(rs.routes):
-        cnt[k] = len(route)
-        mat[k, : len(route)] = route
-    return mat, cnt
-
-
 def _to_routeset(mat: I64, cnt: I64, unassigned: list[int] | None = None) -> RouteSet:
     routes = [mat[k, : int(cnt[k])].tolist() for k in range(mat.shape[0])]
     return RouteSet(routes, list(unassigned) if unassigned else [])
-
-
-def _polish_2opt(inst: Instance, rs: RouteSet, penalties: Penalties | None = None) -> RouteSet:
-    mat, cnt = _to_matrix(inst, rs)
-    args = route_args(inst)
-    coef = additive_coefs(inst, penalties)
-    for _ in range(MAX_POLISH_ROUNDS):
-        before = mat.copy()
-        _two_opt_kernel(mat, cnt, args, inst.cap_kg, inst.cap_m3, coef)
-        if inst.n <= INTER_ROUTE_POLISH_MAX_N:
-            _inter_route_kernel(mat, cnt, args, inst.cap_kg, inst.cap_m3, coef)
-        if np.array_equal(before, mat):
-            break
-    return _to_routeset(mat, cnt, rs.unassigned)
 
 
 def node_keys(inst: Instance) -> list[str]:
@@ -660,9 +538,7 @@ class AcoSolver(Solver):
             if params.local_search and params.ls_ants > 0:
                 order = np.argsort([ev.fitness for ev in evals], kind="stable")
                 for idx in order[: params.ls_ants]:
-                    polished = improve(
-                        inst, _polish_2opt(inst, ants[idx], penalties), penalties, rng
-                    )
+                    polished = improve(inst, ants[idx], penalties, rng)
                     ants[idx] = polished
                     evals[idx] = evaluate(inst, polished, penalties)
             colony.update(ants, evals)
