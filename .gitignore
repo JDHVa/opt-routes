@@ -25,3 +25,5 @@ infra/osrm/data/
 .DS_Store
 .idea/
 .vscode/
+
+.claude/

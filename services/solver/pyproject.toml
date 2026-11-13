@@ -39,3 +39,10 @@ markers = ["integration: requires live external services (OSRM)", "slow: perform
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+
+[tool.mypy]
+python_version = "3.12"
+
+[[tool.mypy.overrides]]
+module = ["numba", "numba.*", "vrplib", "vrplib.*", "sklearn", "sklearn.*", "pymoo", "pymoo.*", "ortools", "ortools.*", "pyvrp", "pyvrp.*"]
+ignore_missing_imports = true

@@ -22,7 +22,7 @@ COEF_SIZE = 9
 FEASIBILITY_TOL = 1e-9
 
 
-@numba.njit(cache=True)  # type: ignore[untyped-decorator]
+@numba.njit(cache=True)
 def route_eval(
     k: int,
     route: Any,
@@ -79,7 +79,7 @@ def route_eval(
     return distance, duration, t, load_kg, load_m3, lateness, overtime, cost
 
 
-@numba.njit(cache=True)  # type: ignore[untyped-decorator]
+@numba.njit(cache=True)
 def route_additive(
     duration: float,
     cost: float,
@@ -103,14 +103,14 @@ def route_additive(
     return value
 
 
-@numba.njit(cache=True)  # type: ignore[untyped-decorator]
+@numba.njit(cache=True)
 def fitness_parts_to_scalar(
     additive_sum: float, makespan: float, unassigned: int, coef: Any
 ) -> float:
     return additive_sum + coef[COEF_MAKESPAN] * makespan + coef[COEF_UNASSIGNED] * unassigned
 
 
-@numba.njit(cache=True)  # type: ignore[untyped-decorator]
+@numba.njit(cache=True)
 def evaluate_kernel(
     flat: Any,
     offsets: Any,

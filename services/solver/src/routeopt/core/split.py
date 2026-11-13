@@ -11,7 +11,7 @@ from routeopt.core.types import Chromosome, Instance, Penalties, RouteSet
 PRUNE_FACTOR = 1.5
 
 
-@numba.njit(cache=True)  # type: ignore[untyped-decorator]
+@numba.njit(cache=True)
 def split_kernel(
     tour: Any,
     vorder: Any,

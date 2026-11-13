@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 
 import numpy as np
-import vrplib  # type: ignore[import-untyped]
+import vrplib
 
 from routeopt.core.models import (
     ConstraintToggles,
