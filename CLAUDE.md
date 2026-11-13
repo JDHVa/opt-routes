@@ -124,6 +124,8 @@ fitness = Σ_{j<3} weights[j] * f[j] / obj_scale[j]
 | GET | `/algorithms` | `list[AlgorithmInfo]`, con el JSON schema de los params para generar formularios |
 | GET | `/vehicles` | `VehicleCatalog` |
 | GET | `/scenarios`, `/scenarios/{id}` | `list[ScenarioInfo]`, `Problem` |
+| POST | `/scenarios/generate` | `GenerateRequest` → `Problem` (sintético sobre puntos DENUE de Monterrey) |
+| POST | `/import/csv`, `/export/csv` | `{text}` → `{stops}` (422 con errores por fila); `{solution}` → `text/csv` |
 | POST | `/solve` | `SolveRequest` → `SolveResponse` |
 | POST | `/solve/stream` | `SolveRequest` → SSE: `progress` (`ProgressPayload`, con `stage`: seeding/evolving/constructing/cooperating/finished, que el solver pone en `ProgressEvent.extra["stage"]`), `result` (`SolveResponse`), `error` (`ErrorPayload`) |
 | POST | `/compare` | `CompareRequest` → `CompareResponse` |

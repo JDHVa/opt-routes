@@ -89,6 +89,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/scenarios/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate */
+        post: operations["generate_scenarios_generate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/solve": {
         parameters: {
             query?: never;
@@ -390,6 +407,45 @@ export interface components {
          * @enum {string}
          */
         FuelType: "gasoline" | "diesel" | "electric";
+        /** GenerateRequest */
+        GenerateRequest: {
+            /**
+             * N Stops
+             * @default 60
+             */
+            n_stops: number;
+            /**
+             * N Drivers
+             * @default 6
+             */
+            n_drivers: number;
+            /**
+             * Mode
+             * @default depot
+             * @enum {string}
+             */
+            mode: "depot" | "multi_origin";
+            /**
+             * Time Windows Pct
+             * @default 0.3
+             */
+            time_windows_pct: number;
+            /**
+             * High Priority Pct
+             * @default 0.1
+             */
+            high_priority_pct: number;
+            /**
+             * Dynamic Pct
+             * @default 0
+             */
+            dynamic_pct: number;
+            /**
+             * Seed
+             * @default 1
+             */
+            seed: number;
+        };
         /** GeometryRequest */
         GeometryRequest: {
             /** Points */
@@ -1101,6 +1157,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorPayload"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_scenarios_generate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
                 };
             };
             /** @description Validation Error */

@@ -134,6 +134,44 @@
         }
       }
     },
+    "/scenarios/generate": {
+      "post": {
+        "summary": "Generate",
+        "operationId": "generate_scenarios_generate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/solve": {
       "post": {
         "summary": "Solve",
@@ -823,6 +861,62 @@
           "electric"
         ],
         "title": "FuelType"
+      },
+      "GenerateRequest": {
+        "properties": {
+          "n_stops": {
+            "type": "integer",
+            "maximum": 250.0,
+            "minimum": 2.0,
+            "title": "N Stops",
+            "default": 60
+          },
+          "n_drivers": {
+            "type": "integer",
+            "maximum": 30.0,
+            "minimum": 1.0,
+            "title": "N Drivers",
+            "default": 6
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "depot",
+              "multi_origin"
+            ],
+            "title": "Mode",
+            "default": "depot"
+          },
+          "time_windows_pct": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Time Windows Pct",
+            "default": 0.3
+          },
+          "high_priority_pct": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "High Priority Pct",
+            "default": 0.1
+          },
+          "dynamic_pct": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Dynamic Pct",
+            "default": 0.0
+          },
+          "seed": {
+            "type": "integer",
+            "title": "Seed",
+            "default": 1
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "GenerateRequest"
       },
       "GeometryRequest": {
         "properties": {

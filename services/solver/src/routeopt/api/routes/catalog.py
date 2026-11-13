@@ -4,9 +4,16 @@ from fastapi import APIRouter
 
 from routeopt.algorithms import SOLVERS
 from routeopt.api.runner import ApiError
-from routeopt.api.schemas import AlgorithmInfo, ErrorPayload, ScenarioInfo, VehicleCatalog
+from routeopt.api.schemas import (
+    AlgorithmInfo,
+    ErrorPayload,
+    GenerateRequest,
+    ScenarioInfo,
+    VehicleCatalog,
+)
 from routeopt.core.models import Problem
 from routeopt.data.catalog import load_vehicles
+from routeopt.data.generators.synthetic import generate_problem
 from routeopt.data.scenarios import list_scenarios, load_scenario
 
 router = APIRouter()
@@ -45,3 +52,16 @@ def scenario(scenario_id: str) -> Problem:
         return load_scenario(scenario_id)
     except KeyError as error:
         raise ApiError(404, "not_found", f"unknown scenario: {scenario_id}") from error
+
+
+@router.post("/scenarios/generate", response_model=Problem)
+def generate(body: GenerateRequest) -> Problem:
+    return generate_problem(
+        n_stops=body.n_stops,
+        n_drivers=body.n_drivers,
+        mode=body.mode,
+        seed=body.seed,
+        time_windows_pct=body.time_windows_pct,
+        high_priority_pct=body.high_priority_pct,
+        dynamic_pct=body.dynamic_pct,
+    )

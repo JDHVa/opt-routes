@@ -212,3 +212,13 @@ SimServerMessage = Annotated[
 
 class VehicleCatalog(_Model):
     vehicles: list[VehicleType]
+
+
+class GenerateRequest(_Model):
+    n_stops: Annotated[int, Field(ge=2, le=250)] = 60
+    n_drivers: Annotated[int, Field(ge=1, le=30)] = 6
+    mode: Literal["depot", "multi_origin"] = "depot"
+    time_windows_pct: Annotated[float, Field(ge=0, le=1)] = 0.3
+    high_priority_pct: Annotated[float, Field(ge=0, le=1)] = 0.1
+    dynamic_pct: Annotated[float, Field(ge=0, le=1)] = 0.0
+    seed: int = 1

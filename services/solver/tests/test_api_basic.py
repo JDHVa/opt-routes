@@ -160,3 +160,18 @@ async def test_csv_roundtrip_and_errors(client: httpx.AsyncClient) -> None:
     assert exported.status_code == 200
     assert exported.headers["content-type"].startswith("text/csv")
     assert exported.text.count("\n") > len(problem.stops)
+
+
+def test_generate_scenario() -> None:
+    from fastapi.testclient import TestClient
+
+    from routeopt.api.main import create_app
+
+    with TestClient(create_app()) as client:
+        response = client.post(
+            "/scenarios/generate", json={"n_stops": 30, "n_drivers": 3, "seed": 7}
+        )
+    assert response.status_code == 200
+    body = response.json()
+    assert len(body["stops"]) == 30
+    assert len(body["drivers"]) == 3
