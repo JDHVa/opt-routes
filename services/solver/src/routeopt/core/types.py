@@ -37,6 +37,7 @@ class Instance:
     weights: F64
     obj_scale: F64
     tw_enabled: bool = True
+    coords: F64 = field(default_factory=lambda: np.zeros((0, 2), dtype=np.float64))
     stop_ids: list[str] = field(default_factory=list)
     driver_ids: list[str] = field(default_factory=list)
     vehicle_type_ids: list[str] = field(default_factory=list)

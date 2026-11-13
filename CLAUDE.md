@@ -57,6 +57,7 @@ Distancia en **km**, tiempo en **minutos** desde el inicio del día (t = 0), din
   - En modo depósito, todos los inicios y fines son el depósito (filas duplicadas).
   - Para rutas abiertas (`open_end[k]`), el builder pone en 0 la columna del nodo final.
   - El vehículo k es `Problem.drivers[k]`.
+  - `coords` (N×2, lat/lon) sigue el mismo orden de nodos. Lo usan K-means, sweep y la UI; los costos siempre salen de las matrices.
 - **Toggles de restricciones:** el builder los aplica así:
   - Capacidad apagada: `cap_* = inf`.
   - Jornada apagada: `max_shift = inf`.
@@ -105,7 +106,14 @@ fitness = Σ_j weights[j] * f[j] / obj_scale[j]
   - aceptar `warm_start` (lista de `RouteSet`) para la re-optimización dinámica;
   - devolver en `state` lo que convenga reusar (por ejemplo `{"pheromone": ndarray}` en ACO).
 - Nombres registrados: `ga`, `aco`, `aco_ga`, `nsga2`, `pyvrp`, `ortools`.
-- La inicialización `init` es `random` | `nearest_neighbor` | `kmeans` | `sweep` y vive en `algorithms/init.py` + `algorithms/clustering.py`.
+- La inicialización `init` es `random` | `nearest_neighbor` | `kmeans` | `sweep` y vive en `algorithms/init.py` + `algorithms/clustering.py`. Punto de entrada: `initial_routesets(inst, strategy, count, rng, penalties) -> list[RouteSet]`.
+- Búsqueda local: `algorithms/local_search.py::improve(inst, rs, penalties, rng, max_rounds) -> RouteSet`. Nunca empeora el costo aditivo (`core.evaluate.additive_cost`). Ignora el makespan.
+- API del núcleo que pueden usar los solvers:
+  - `core.evaluate`: `evaluate`, `additive_cost`, `validate_routeset`, `route_eval`/`route_args` (numba), `additive_coefs`/`route_additive` (numba).
+  - `core.split`: `split`, `routes_to_chromosome`, `random_chromosome`.
+  - `core.construct`: `nearest_neighbor`.
+- Tests: `tests.factories` provee `make_instance(...)` y `benchmark_instance(name) -> (Instance, bks)`.
+- `algorithms/__init__.py` importa todos los solvers para llenar el registro. Solo lo edita el arquitecto.
 
 ### `api/schemas.py`: transporte
 | Método | Ruta | Cuerpo / respuesta |

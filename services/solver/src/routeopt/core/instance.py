@@ -183,6 +183,9 @@ def build_instance(
         stop_ids=[s.id for s in stops],
         driver_ids=[d.id for d in problem.drivers],
         vehicle_type_ids=[d.vehicle_type_id for d in problem.drivers],
+        coords=np.array(
+            [(loc.lat, loc.lon) for loc in instance_locations(problem)], dtype=np.float64
+        ),
     )
     baseline = evaluate(inst, nearest_neighbor(inst))
     inst.obj_scale = np.maximum(baseline.objectives, 1.0)
