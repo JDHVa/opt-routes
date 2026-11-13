@@ -34,6 +34,7 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "-m 'not slow'"
 markers = ["integration: requires live external services (OSRM)", "slow: performance benchmarks"]
 
 [tool.ruff]

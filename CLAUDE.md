@@ -165,7 +165,8 @@ Así los solvers no saben nada de dinamismo; solo reciben `warm_start` y `state`
 
 ## Comandos
 ```
-cd services/solver && uv run pytest
+cd services/solver && uv run pytest            (rápidos)
+cd services/solver && uv run pytest -m slow    (benchmarks de calidad)
 cd services/solver && uv run ruff check . && uv run ruff format . && uv run mypy src
 cd services/solver && uv run uvicorn routeopt.api.main:app --reload --port 8000
 cd apps/web && npm run dev
