@@ -72,6 +72,7 @@ class SseEvent(StrEnum):
     PROGRESS = "progress"
     RESULT = "result"
     ERROR = "error"
+    COMPLETE = "complete"
 
 
 class ErrorPayload(_Model):

@@ -126,7 +126,7 @@ async def compare_stream(
                             SseEvent.PROGRESS,
                             CompareProgress(run_index=run_index, **dict(item)),
                         )
-            yield {"event": "complete", "data": with_gaps(entries).model_dump_json()}
+            yield {"event": SseEvent.COMPLETE.value, "data": with_gaps(entries).model_dump_json()}
         except Busy:
             yield error_event("busy", "the solver is busy, retry shortly")
         except ApiError as error:

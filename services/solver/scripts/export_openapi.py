@@ -57,19 +57,31 @@ def contract_app() -> FastAPI:
     return app
 
 
-def load_app() -> FastAPI:
+def load_app() -> FastAPI | None:
     try:
         module = importlib.import_module("routeopt.api.main")
     except ModuleNotFoundError:
-        return contract_app()
+        return None
     app = module.app
     assert isinstance(app, FastAPI)
     return app
 
 
+def build_spec() -> dict[str, Any]:
+    contract = contract_app().openapi()
+    app = load_app()
+    if app is None:
+        return contract
+    spec = app.openapi()
+    schemas_out = spec.setdefault("components", {}).setdefault("schemas", {})
+    for name, schema in contract.get("components", {}).get("schemas", {}).items():
+        schemas_out.setdefault(name, schema)
+    return spec
+
+
 def main() -> None:
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("openapi.json")
-    out.write_text(json.dumps(load_app().openapi(), indent=2))
+    out.write_text(json.dumps(build_spec(), indent=2))
     print(out)
 
 

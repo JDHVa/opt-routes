@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Health */
+        get: operations["health_health_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/algorithms": {
         parameters: {
             query?: never;
@@ -89,6 +106,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/solve/stream": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Solve Stream */
+        post: operations["solve_stream_solve_stream_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/compare": {
         parameters: {
             query?: never;
@@ -100,6 +134,23 @@ export interface paths {
         put?: never;
         /** Compare */
         post: operations["compare_compare_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/compare/stream": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Compare Stream */
+        post: operations["compare_stream_compare_stream_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -140,7 +191,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/_types/progress": {
+    "/import/csv": {
         parameters: {
             query?: never;
             header?: never;
@@ -149,15 +200,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Progress Type */
-        post: operations["progress_type__types_progress_post"];
+        /** Import Csv */
+        post: operations["import_csv_import_csv_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/_types/error": {
+    "/export/csv": {
         parameters: {
             query?: never;
             header?: never;
@@ -166,59 +217,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Error Type */
-        post: operations["error_type__types_error_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/_types/sim-client": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Sim Client Type */
-        post: operations["sim_client_type__types_sim_client_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/_types/sim-server": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Sim Server Type */
-        post: operations["sim_server_type__types_sim_server_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/_types/solution": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Solution Type */
-        post: operations["solution_type__types_solution_post"];
+        /** Export Csv */
+        post: operations["export_csv_export_csv_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -327,6 +327,22 @@ export interface components {
              */
             electricity_mxn_per_kwh: number;
         };
+        /** CsvErrorResponse */
+        CsvErrorResponse: {
+            /** Code */
+            code: string;
+            /** Message */
+            message: string;
+            /** Rows */
+            rows: components["schemas"]["CsvRowError"][];
+        };
+        /** CsvRowError */
+        CsvRowError: {
+            /** Row */
+            row: number;
+            /** Message */
+            message: string;
+        };
         /**
          * DistanceSource
          * @enum {string}
@@ -358,24 +374,16 @@ export interface components {
              */
             hourly_wage_mxn: number;
         };
-        /** DriverPosition */
-        DriverPosition: {
-            /** Driver Id */
-            driver_id: string;
-            location: components["schemas"]["Location"];
-            /** Next Stop Id */
-            next_stop_id: string | null;
-            /** Completed */
-            completed: number;
-            /** Remaining */
-            remaining: number;
-        };
         /** ErrorPayload */
         ErrorPayload: {
             /** Code */
             code: string;
             /** Message */
             message: string;
+        };
+        /** ExportCsvRequest */
+        ExportCsvRequest: {
+            solution: components["schemas"]["Solution"];
         };
         /**
          * FuelType
@@ -405,6 +413,16 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** HealthResponse */
+        HealthResponse: {
+            /**
+             * Status
+             * @constant
+             */
+            status: "ok";
+            /** Osrm */
+            osrm: boolean;
+        };
         /** HistoryPoint */
         HistoryPoint: {
             /** Iteration */
@@ -413,6 +431,16 @@ export interface components {
             elapsed_s: number;
             /** Best Fitness */
             best_fitness: number;
+        };
+        /** ImportCsvRequest */
+        ImportCsvRequest: {
+            /** Text */
+            text: string;
+        };
+        /** ImportCsvResponse */
+        ImportCsvResponse: {
+            /** Stops */
+            stops: components["schemas"]["Stop"][];
         };
         /** Location */
         Location: {
@@ -554,26 +582,6 @@ export interface components {
          * @enum {string}
          */
         ProblemMode: "depot" | "multi_origin";
-        /** ProgressPayload */
-        ProgressPayload: {
-            /** Iteration */
-            iteration: number;
-            /** Elapsed S */
-            elapsed_s: number;
-            /** Best Fitness */
-            best_fitness: number;
-            metrics: components["schemas"]["SolutionMetrics"];
-            solution?: components["schemas"]["Solution"] | null;
-            /** Pareto */
-            pareto?: components["schemas"]["ParetoPoint"][] | null;
-            /**
-             * Extra
-             * @default {}
-             */
-            extra: {
-                [key: string]: number;
-            };
-        };
         /** ProvidedMatrix */
         ProvidedMatrix: {
             /** Node Ids */
@@ -635,127 +643,6 @@ export interface components {
             mode: string;
             /** Region */
             region: string;
-        };
-        /** SimClientAddOrder */
-        SimClientAddOrder: {
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "add_order";
-            stop: components["schemas"]["Stop"];
-        };
-        /** SimClientControl */
-        SimClientControl: {
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "pause" | "resume" | "stop";
-        };
-        /** SimClientSpeed */
-        SimClientSpeed: {
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "speed";
-            /** Speed */
-            speed: number;
-        };
-        /** SimClientStart */
-        SimClientStart: {
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "start";
-            config: components["schemas"]["SimulationConfig"];
-        };
-        /** SimServerDone */
-        SimServerDone: {
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "done";
-            /** Clock Min */
-            clock_min: number;
-            metrics: components["schemas"]["SolutionMetrics"];
-        };
-        /** SimServerError */
-        SimServerError: {
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "error";
-            error: components["schemas"]["ErrorPayload"];
-        };
-        /** SimServerOrder */
-        SimServerOrder: {
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "order";
-            /** Clock Min */
-            clock_min: number;
-            stop: components["schemas"]["Stop"];
-        };
-        /** SimServerReoptimized */
-        SimServerReoptimized: {
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "reoptimized";
-            /** Clock Min */
-            clock_min: number;
-            solution: components["schemas"]["Solution"];
-            /** Runtime S */
-            runtime_s: number;
-            /**
-             * Reason
-             * @enum {string}
-             */
-            reason: "initial" | "event" | "batch";
-        };
-        /** SimServerTick */
-        SimServerTick: {
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "tick";
-            /** Clock Min */
-            clock_min: number;
-            /** Positions */
-            positions: components["schemas"]["DriverPosition"][];
-            /** Delivered Stop Ids */
-            delivered_stop_ids: string[];
-        };
-        /** SimulationConfig */
-        SimulationConfig: {
-            problem: components["schemas"]["Problem"];
-            run: components["schemas"]["AlgorithmRun"];
-            /**
-             * Speed
-             * @default 60
-             */
-            speed: number;
-            /** @default event */
-            trigger: components["schemas"]["TriggerMode"];
-            /**
-             * Batch Minutes
-             * @default 15
-             */
-            batch_minutes: number;
-            /**
-             * Reopt Time Limit S
-             * @default 5
-             */
-            reopt_time_limit_s: number;
         };
         /** Solution */
         Solution: {
@@ -849,11 +736,6 @@ export interface components {
              */
             release_min: number;
         };
-        /**
-         * TriggerMode
-         * @enum {string}
-         */
-        TriggerMode: "event" | "batch";
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -931,6 +813,172 @@ export interface components {
              */
             late_min: number;
         };
+        /** DriverPosition */
+        DriverPosition: {
+            /** Driver Id */
+            driver_id: string;
+            location: components["schemas"]["Location"];
+            /** Next Stop Id */
+            next_stop_id: string | null;
+            /** Completed */
+            completed: number;
+            /** Remaining */
+            remaining: number;
+        };
+        /** ProgressPayload */
+        ProgressPayload: {
+            /** Iteration */
+            iteration: number;
+            /** Elapsed S */
+            elapsed_s: number;
+            /** Best Fitness */
+            best_fitness: number;
+            metrics: components["schemas"]["SolutionMetrics"];
+            solution?: components["schemas"]["Solution"] | null;
+            /** Pareto */
+            pareto?: components["schemas"]["ParetoPoint"][] | null;
+            /**
+             * Extra
+             * @default {}
+             */
+            extra: {
+                [key: string]: number;
+            };
+        };
+        /** SimClientAddOrder */
+        SimClientAddOrder: {
+            /**
+             * Type
+             * @default add_order
+             * @constant
+             */
+            type: "add_order";
+            stop: components["schemas"]["Stop"];
+        };
+        /** SimClientControl */
+        SimClientControl: {
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "pause" | "resume" | "stop";
+        };
+        /** SimClientSpeed */
+        SimClientSpeed: {
+            /**
+             * Type
+             * @default speed
+             * @constant
+             */
+            type: "speed";
+            /** Speed */
+            speed: number;
+        };
+        /** SimClientStart */
+        SimClientStart: {
+            /**
+             * Type
+             * @default start
+             * @constant
+             */
+            type: "start";
+            config: components["schemas"]["SimulationConfig"];
+        };
+        /** SimServerDone */
+        SimServerDone: {
+            /**
+             * Type
+             * @default done
+             * @constant
+             */
+            type: "done";
+            /** Clock Min */
+            clock_min: number;
+            metrics: components["schemas"]["SolutionMetrics"];
+        };
+        /** SimServerError */
+        SimServerError: {
+            /**
+             * Type
+             * @default error
+             * @constant
+             */
+            type: "error";
+            error: components["schemas"]["ErrorPayload"];
+        };
+        /** SimServerOrder */
+        SimServerOrder: {
+            /**
+             * Type
+             * @default order
+             * @constant
+             */
+            type: "order";
+            /** Clock Min */
+            clock_min: number;
+            stop: components["schemas"]["Stop"];
+        };
+        /** SimServerReoptimized */
+        SimServerReoptimized: {
+            /**
+             * Type
+             * @default reoptimized
+             * @constant
+             */
+            type: "reoptimized";
+            /** Clock Min */
+            clock_min: number;
+            solution: components["schemas"]["Solution"];
+            /** Runtime S */
+            runtime_s: number;
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "initial" | "event" | "batch";
+        };
+        /** SimServerTick */
+        SimServerTick: {
+            /**
+             * Type
+             * @default tick
+             * @constant
+             */
+            type: "tick";
+            /** Clock Min */
+            clock_min: number;
+            /** Positions */
+            positions: components["schemas"]["DriverPosition"][];
+            /** Delivered Stop Ids */
+            delivered_stop_ids: string[];
+        };
+        /** SimulationConfig */
+        SimulationConfig: {
+            problem: components["schemas"]["Problem"];
+            run: components["schemas"]["AlgorithmRun"];
+            /**
+             * Speed
+             * @default 60
+             */
+            speed: number;
+            /** @default event */
+            trigger: components["schemas"]["TriggerMode"];
+            /**
+             * Batch Minutes
+             * @default 15
+             */
+            batch_minutes: number;
+            /**
+             * Reopt Time Limit S
+             * @default 5
+             */
+            reopt_time_limit_s: number;
+        };
+        /**
+         * TriggerMode
+         * @enum {string}
+         */
+        TriggerMode: "event" | "batch";
     };
     responses: never;
     parameters: never;
@@ -940,6 +988,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    health_health_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
     algorithms_algorithms_get: {
         parameters: {
             query?: never;
@@ -1020,6 +1088,15 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorPayload"];
+                };
+            };
             /** @description Validation Error */
             422: {
                 headers: {
@@ -1053,13 +1130,56 @@ export interface operations {
                     "application/json": components["schemas"]["SolveResponse"];
                 };
             };
-            /** @description Validation Error */
+            /** @description Unprocessable Entity */
             422: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
+                    "application/json": components["schemas"]["ErrorPayload"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorPayload"];
+                };
+            };
+        };
+    };
+    solve_stream_solve_stream_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SolveRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                    "text/event-stream": string;
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorPayload"];
                 };
             };
         };
@@ -1086,13 +1206,56 @@ export interface operations {
                     "application/json": components["schemas"]["CompareResponse"];
                 };
             };
-            /** @description Validation Error */
+            /** @description Unprocessable Entity */
             422: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
+                    "application/json": components["schemas"]["ErrorPayload"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorPayload"];
+                };
+            };
+        };
+    };
+    compare_stream_compare_stream_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompareRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                    "text/event-stream": string;
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorPayload"];
                 };
             };
         };
@@ -1119,13 +1282,13 @@ export interface operations {
                     "application/json": components["schemas"]["MatrixResponse"];
                 };
             };
-            /** @description Validation Error */
+            /** @description Unprocessable Entity */
             422: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
+                    "application/json": components["schemas"]["ErrorPayload"];
                 };
             };
         };
@@ -1152,48 +1315,8 @@ export interface operations {
                     "application/json": components["schemas"]["GeometryResponse"];
                 };
             };
-            /** @description Validation Error */
+            /** @description Unprocessable Entity */
             422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    progress_type__types_progress_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProgressPayload"];
-                };
-            };
-        };
-    };
-    error_type__types_error_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1203,14 +1326,18 @@ export interface operations {
             };
         };
     };
-    sim_client_type__types_sim_client_post: {
+    import_csv_import_csv_post: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImportCsvRequest"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -1218,39 +1345,32 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SimClientStart"] | components["schemas"]["SimClientAddOrder"] | components["schemas"]["SimClientControl"] | components["schemas"]["SimClientSpeed"];
+                    "application/json": components["schemas"]["ImportCsvResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CsvErrorResponse"];
                 };
             };
         };
     };
-    sim_server_type__types_sim_server_post: {
+    export_csv_export_csv_post: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SimServerTick"] | components["schemas"]["SimServerOrder"] | components["schemas"]["SimServerReoptimized"] | components["schemas"]["SimServerDone"] | components["schemas"]["SimServerError"];
-                };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExportCsvRequest"];
             };
         };
-    };
-    solution_type__types_solution_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
@@ -1258,7 +1378,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Solution"];
+                    "text/csv": string;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

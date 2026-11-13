@@ -127,7 +127,7 @@ fitness = Σ_{j<3} weights[j] * f[j] / obj_scale[j]
 | POST | `/solve` | `SolveRequest` → `SolveResponse` |
 | POST | `/solve/stream` | `SolveRequest` → SSE: `progress` (`ProgressPayload`), `result` (`SolveResponse`), `error` (`ErrorPayload`) |
 | POST | `/compare` | `CompareRequest` → `CompareResponse` |
-| POST | `/compare/stream` | SSE por corrida: `progress`/`result` con `{"run_index": i, ...}` |
+| POST | `/compare/stream` | SSE por corrida: `progress`/`result` con `{"run_index": i, ...}`; al final, un evento `complete` con `CompareResponse` (gap vs la mejor corrida) |
 | POST | `/matrix` | `MatrixRequest` → `MatrixResponse` |
 | POST | `/geometry` | `GeometryRequest` → `GeometryResponse` |
 | WS | `/simulate` | cliente → `SimClientMessage`; servidor → `SimServerMessage` |
