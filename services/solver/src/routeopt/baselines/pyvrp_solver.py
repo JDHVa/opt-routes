@@ -224,7 +224,7 @@ class PyVrpSolver(Solver):
         watch = Stopwatch(self.params.time_limit_s)
         baseline = warm_start[0] if warm_start else nearest_neighbor(inst)
         current = evaluate(inst, baseline, penalties)
-        history = [(0, current.fitness, 0.0)]
+        history = [(0, 0.0, current.fitness)]
         if callback is not None and not callback(
             ProgressEvent(0, watch.elapsed, current.fitness, current, best=baseline)
         ):
@@ -235,7 +235,7 @@ class PyVrpSolver(Solver):
         result = solve(translation.data, stop=MaxRuntime(remaining), seed=seed, display=False)
         routes = routes_from_solution(inst, translation, result.best)
         evaluation = evaluate(inst, routes, penalties)
-        history.append((int(result.num_iterations), evaluation.fitness, watch.elapsed))
+        history.append((int(result.num_iterations), watch.elapsed, evaluation.fitness))
         if callback is not None:
             callback(
                 ProgressEvent(

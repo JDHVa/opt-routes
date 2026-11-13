@@ -1,0 +1,167 @@
+[
+  {
+    "solver": "ga",
+    "instance": "C101",
+    "seed": 1,
+    "bks": 827.3,
+    "distance_km": 827.3,
+    "gap_pct": 0.0,
+    "time_to_best_s": 4.5015763929995956,
+    "runtime_s": 30.106296914000268,
+    "feasible": true
+  },
+  {
+    "solver": "ga",
+    "instance": "C101",
+    "seed": 2,
+    "bks": 827.3,
+    "distance_km": 827.3000000000001,
+    "gap_pct": 1.3741911969251304e-14,
+    "time_to_best_s": 4.513219697999375,
+    "runtime_s": 30.09428641699924,
+    "feasible": true
+  },
+  {
+    "solver": "ga",
+    "instance": "C101",
+    "seed": 3,
+    "bks": 827.3,
+    "distance_km": 827.3,
+    "gap_pct": 0.0,
+    "time_to_best_s": 4.277624950000245,
+    "runtime_s": 30.01979080000001,
+    "feasible": true
+  },
+  {
+    "solver": "aco",
+    "instance": "C101",
+    "seed": 1,
+    "bks": 827.3,
+    "distance_km": 827.3000000000001,
+    "gap_pct": 1.3741911969251304e-14,
+    "time_to_best_s": 1.5666259520003223,
+    "runtime_s": 30.296580907000134,
+    "feasible": true
+  },
+  {
+    "solver": "aco",
+    "instance": "C101",
+    "seed": 2,
+    "bks": 827.3,
+    "distance_km": 827.3000000000001,
+    "gap_pct": 1.3741911969251304e-14,
+    "time_to_best_s": 1.8179526699996131,
+    "runtime_s": 30.027069452999967,
+    "feasible": true
+  },
+  {
+    "solver": "aco",
+    "instance": "C101",
+    "seed": 3,
+    "bks": 827.3,
+    "distance_km": 827.3000000000001,
+    "gap_pct": 1.3741911969251304e-14,
+    "time_to_best_s": 1.5123775649999516,
+    "runtime_s": 30.062221258000136,
+    "feasible": true
+  },
+  {
+    "solver": "aco_ga",
+    "instance": "C101",
+    "seed": 1,
+    "bks": 827.3,
+    "distance_km": 827.3000000000001,
+    "gap_pct": 1.3741911969251304e-14,
+    "time_to_best_s": 4.503435144999457,
+    "runtime_s": 30.08279028600009,
+    "feasible": true
+  },
+  {
+    "solver": "aco_ga",
+    "instance": "C101",
+    "seed": 2,
+    "bks": 827.3,
+    "distance_km": 827.3000000000001,
+    "gap_pct": 1.3741911969251304e-14,
+    "time_to_best_s": 4.089900022999245,
+    "runtime_s": 30.042381149999528,
+    "feasible": true
+  },
+  {
+    "solver": "aco_ga",
+    "instance": "C101",
+    "seed": 3,
+    "bks": 827.3,
+    "distance_km": 827.3,
+    "gap_pct": 0.0,
+    "time_to_best_s": 4.254396774999805,
+    "runtime_s": 30.006366939000145,
+    "feasible": true
+  },
+  {
+    "solver": "pyvrp",
+    "instance": "C101",
+    "seed": 1,
+    "bks": 827.3,
+    "distance_km": 827.3,
+    "gap_pct": 0.0,
+    "time_to_best_s": 30.00955244599936,
+    "runtime_s": 30.00955244599936,
+    "feasible": true
+  },
+  {
+    "solver": "pyvrp",
+    "instance": "C101",
+    "seed": 2,
+    "bks": 827.3,
+    "distance_km": 827.3,
+    "gap_pct": 0.0,
+    "time_to_best_s": 30.006113319999713,
+    "runtime_s": 30.006113319999713,
+    "feasible": true
+  },
+  {
+    "solver": "pyvrp",
+    "instance": "C101",
+    "seed": 3,
+    "bks": 827.3,
+    "distance_km": 827.3000000000001,
+    "gap_pct": 1.3741911969251304e-14,
+    "time_to_best_s": 30.006295438000052,
+    "runtime_s": 30.006295438000052,
+    "feasible": true
+  },
+  {
+    "solver": "ortools",
+    "instance": "C101",
+    "seed": 1,
+    "bks": 827.3,
+    "distance_km": 827.3,
+    "gap_pct": 0.0,
+    "time_to_best_s": 30.00144906300011,
+    "runtime_s": 30.00144906300011,
+    "feasible": true
+  },
+  {
+    "solver": "ortools",
+    "instance": "C101",
+    "seed": 2,
+    "bks": 827.3,
+    "distance_km": 827.3,
+    "gap_pct": 0.0,
+    "time_to_best_s": 30.000272912000582,
+    "runtime_s": 30.000272912000582,
+    "feasible": true
+  },
+  {
+    "solver": "ortools",
+    "instance": "C101",
+    "seed": 3,
+    "bks": 827.3,
+    "distance_km": 827.3,
+    "gap_pct": 0.0,
+    "time_to_best_s": 30.006765398000425,
+    "runtime_s": 30.006765398000425,
+    "feasible": true
+  }
+]

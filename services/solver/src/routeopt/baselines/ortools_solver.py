@@ -193,7 +193,7 @@ class OrToolsSolver(Solver):
         watch = Stopwatch(self.params.time_limit_s)
         baseline = warm_start[0] if warm_start else nearest_neighbor(inst)
         current = evaluate(inst, baseline, penalties)
-        history = [(0, current.fitness, 0.0)]
+        history = [(0, 0.0, current.fitness)]
         if callback is not None and not callback(
             ProgressEvent(0, watch.elapsed, current.fitness, current, best=baseline)
         ):
@@ -203,7 +203,7 @@ class OrToolsSolver(Solver):
         assignment = builder.routing.SolveWithParameters(search_parameters(remaining))
         routes = baseline if assignment is None else builder.extract(assignment)
         evaluation = evaluate(inst, routes, penalties)
-        history.append((1, evaluation.fitness, watch.elapsed))
+        history.append((1, watch.elapsed, evaluation.fitness))
         if callback is not None:
             callback(ProgressEvent(1, watch.elapsed, evaluation.fitness, evaluation, best=routes))
         return SolveResult(self.name, routes, evaluation, watch.elapsed, 1, history)
