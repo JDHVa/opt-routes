@@ -97,6 +97,7 @@ def route_additive(
         + coef[COEF_OVERLOAD_M3] * over_m3
         + coef[COEF_LATENESS] * lateness
         + coef[COEF_OVERTIME] * overtime
+        + coef[COEF_MAKESPAN] * duration * duration
     )
     if used:
         value += coef[COEF_VEHICLES]
@@ -104,10 +105,8 @@ def route_additive(
 
 
 @numba.njit(cache=True)
-def fitness_parts_to_scalar(
-    additive_sum: float, makespan: float, unassigned: int, coef: Any
-) -> float:
-    return additive_sum + coef[COEF_MAKESPAN] * makespan + coef[COEF_UNASSIGNED] * unassigned
+def fitness_parts_to_scalar(additive_sum: float, unassigned: int, coef: Any) -> float:
+    return additive_sum + coef[COEF_UNASSIGNED] * unassigned
 
 
 @numba.njit(cache=True)
@@ -218,7 +217,7 @@ def additive_coefs(inst: Instance, penalties: Penalties | None = None) -> F64:
     coef[COEF_TIME] = scaled[0]
     coef[COEF_COST] = scaled[1]
     coef[COEF_VEHICLES] = scaled[2]
-    coef[COEF_MAKESPAN] = scaled[3]
+    coef[COEF_MAKESPAN] = inst.weights[3] / (inst.obj_scale[3] * inst.obj_scale[3])
     coef[COEF_OVERLOAD_KG] = pen.capacity / float(np.mean(inst.cap_kg))
     coef[COEF_OVERLOAD_M3] = pen.capacity / float(np.mean(inst.cap_m3))
     coef[COEF_LATENESS] = pen.lateness / 60.0
@@ -280,7 +279,7 @@ def evaluate(inst: Instance, rs: RouteSet, penalties: Penalties | None = None) -
     coef = additive_coefs(inst, penalties)
     out = _raw(inst, rs, coef)
     unassigned = int(out[10])
-    fitness = float(fitness_parts_to_scalar(float(out[9]), float(out[4]), unassigned, coef))
+    fitness = float(fitness_parts_to_scalar(float(out[9]), unassigned, coef))
     feasible = (
         out[5] <= FEASIBILITY_TOL
         and out[6] <= FEASIBILITY_TOL

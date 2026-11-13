@@ -86,8 +86,9 @@ Una ruta vacía vale 0 en todo y no cuenta como vehículo usado.
 
 ### Fitness (minimizar)
 ```
-f = (Σ duration_k, Σ cost_k, #rutas no vacías, max_k t_fin_k)
-fitness = Σ_j weights[j] * f[j] / obj_scale[j]
+f = (Σ duration_k, Σ cost_k, #rutas no vacías)
+fitness = Σ_{j<3} weights[j] * f[j] / obj_scale[j]
+        + weights[3] * Σ_k duration_k² / obj_scale[3]²
         + P.capacity  * (overload_kg/mean(cap_kg) + overload_m3/mean(cap_m3))
         + P.lateness  * lateness_min/60
         + P.overtime  * overtime_min/60
@@ -95,6 +96,7 @@ fitness = Σ_j weights[j] * f[j] / obj_scale[j]
 ```
 - `obj_scale` lo fija el builder con los objetivos de una solución de vecino más cercano, con un mínimo de 1.
 - `weights` se normalizan para que sumen 1.
+- **El makespan entra al fitness como proxy aditivo y convexo** (Σ duración², término de balance). El `max` real no es aditivo: el Split y la búsqueda local no podían optimizarlo y el peso no tenía efecto. Con el proxy todo es aditivo por ruta (`route_additive`), así que Split, LS, ACO y GA lo optimizan exactamente. `Evaluation.makespan_min` y el objetivo de NSGA-II siguen siendo el makespan real.
 - `feasible` significa que no hay overload, overtime ni paradas sin asignar. El retraso en ventanas de tiempo es blando y no rompe la factibilidad.
 
 ### `algorithms/base.py`: interfaz de los solvers
@@ -177,6 +179,7 @@ docker compose up
 ## Rendimiento
 - Objetivo: 200 paradas y 20 vehículos en menos de 60 s con progreso fluido.
 - Los loops calientes (`evaluate`, `split`, deltas de búsqueda local, construcción ACO) se escriben con `numba.njit` sobre arrays de `Instance`. Nada de objetos Python dentro de los loops.
+- **Caché de numba (`cache=True`):** se invalida solo cuando cambia el archivo de la propia función, no el de las funciones que llama. Si se modifica un kernel de `core/evaluate.py`, los kernels de `split.py`, `local_search.py`, `aco.py`, etc. quedan compilados con la versión vieja. Después de tocar cualquier kernel, borra los cachés: `find services/solver/src -name '*.nbi' -delete -o -name '*.nbc' -delete`.
 
 ## Datos y licencias
 - Amazon Last Mile Routing Challenge: CC BY-NC 4.0. Solo uso no comercial, con atribución a Amazon y al MIT CTL en el README y en la UI.
