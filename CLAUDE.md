@@ -5,7 +5,7 @@ Optimización de rutas de reparto de última milla con algoritmos bioinspirados:
 Plan aprobado: `/home/jdhva/.claude/plans/greedy-dreaming-kite.md`. La guía visual está en `DESIGN.md` (obligatoria para todo el frontend).
 
 ## Reglas de oro
-1. **Cero comentarios y cero docstrings en el código.** Aplica a Python, TS/TSX, CSS, Dockerfile, YAML y TOML. El código se explica con buenos nombres, tipos y funciones pequeñas. La documentación vive solo en `CLAUDE.md`, `DESIGN.md` y `README.md`. Al revisar, cualquier comentario es motivo de rechazo.
+1. **Cero comentarios y cero docstrings en el código.** Exentos: archivos generados (`apps/web/src/lib/api/schema.d.ts`, `openapi.json`), que nunca se editan a mano. Aplica a Python, TS/TSX, CSS, Dockerfile, YAML y TOML. El código se explica con buenos nombres, tipos y funciones pequeñas. La documentación vive solo en `CLAUDE.md`, `DESIGN.md` y `README.md`. Al revisar, cualquier comentario es motivo de rechazo.
 2. **Los contratos no se modifican sin el arquitecto (Opus).** Si un contrato no alcanza, el agente lo reporta en su entrega en vez de cambiarlo.
 3. **Un agente solo toca los archivos que su prompt le asigna.**
 4. **No se agregan dependencias** sin declararlas en la entrega.
@@ -170,7 +170,7 @@ cd services/solver && uv run pytest -m slow    (benchmarks de calidad)
 cd services/solver && uv run ruff check . && uv run ruff format . && uv run mypy src
 cd services/solver && uv run uvicorn routeopt.api.main:app --reload --port 8000
 cd apps/web && npm run dev
-cd apps/web && npm run gen:api
+cd apps/web && npm run gen:api            (regenera openapi.json + tipos TS, sin servidor)
 docker compose up
 ```
 
