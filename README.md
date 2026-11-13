@@ -50,3 +50,10 @@ curl "http://localhost:5000/route/v1/driving/-100.3161,25.6866;-100.4022,25.6573
 ```
 
 El solver lee `OSRM_URL` (por defecto `http://localhost:5000`), `OSRM_TIMEOUT_S` y `OSRM_MAX_TABLE`. Para Cloud Run, `infra/osrm/Dockerfile` empaqueta los datos preprocesados (contexto de build `infra/osrm`). Mapa © OpenStreetMap contributors (ODbL).
+
+## Datos y atribuciones
+
+- **DENUE (INEGI):** los puntos de entrega de Monterrey provienen de una muestra estratificada de ~15,000 establecimientos del Directorio Estadístico Nacional de Unidades Económicas (descarga masiva de Nuevo León, edición vigente), datos abiertos con atribución a INEGI.
+- **OpenStreetMap:** © OpenStreetMap contributors (ODbL), usado para el ruteo y el mapa.
+- **Amazon Last Mile Routing Research Challenge:** la muestra de 3 rutas en `services/solver/data/amazon_sample/` es material de Amazon.com, Inc. y el MIT Center for Transportation & Logistics (MIT CTL), bajo licencia CC BY-NC 4.0 (solo uso no comercial).
+- **Catálogo de vehículos:** las especificaciones no confirmadas con ficha oficial llevan `approx: true` y la URL de referencia en `source`.

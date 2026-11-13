@@ -1,0 +1,13 @@
+id,lat,lon,address,demand_kg,demand_m3,service_min,tw_start,tw_end,priority
+s001,25.797289,-100.247763,"Calle Estelaris 518, Valle De San Andrés Primer Sector",2.18,0.0063,3.0,,,normal
+s002,25.658915,-100.165057,"Avenida Vaquerias, Vaquerías",0.95,0.004,5.0,12:15,14:15,low
+s003,25.734589,-100.217779,"Avenida Fenix, Fresnos Del Lago Segundo Sector",1.95,0.008,3.0,,,normal
+s004,25.741929,-100.27602,"Avenida Lastima Puentes 816, Balcones De Las Puentes",3.49,0.0187,4.0,,,normal
+s005,25.67083,-100.34206,"Calle Miguel Hidalgo Y Costilla 1990, Centro",0.68,0.0031,2.0,,,normal
+s006,25.733572,-100.26728,"Avenida Roberto Espinoza Vazquez, Pedregal De Santo Domingo Segundo Se",1.39,0.0059,5.0,11:30,14:30,high
+s007,25.691184,-100.353064,"Calle Puerto Rico 170, Vista Hermosa",0.44,0.0018,6.0,,,normal
+s008,25.753495,-100.391592,"Calle Ejercito Nacional 7429, Plutarco Elías Calles 1-2",0.71,0.0025,5.0,14:45,17:15,normal
+s009,25.79759,-100.398444,"Avenida 4 De Octubre, 18 De Octubre",0.46,0.0013,2.0,,,normal
+s010,25.78374,-100.40707,"Calle Médicos, Trazo Marco",1.66,0.0055,4.0,,,normal
+s011,25.653036,-100.381449,"Calle Plutarco Elias Calles 125, Tampiquito",0.73,0.0034,3.0,10:30,13:30,normal
+s012,25.641907,-100.191377,"Calle Rancho California 227, Rancho Viejo Segundo Sector",2.48,0.0084,6.0,12:30,15:00,normal
