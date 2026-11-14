@@ -30,3 +30,19 @@ export const ALGORITHM_COLORS: Record<string, string> = {
   aco_ga: ROUTE_PALETTE[2],
   nsga2: ROUTE_PALETTE[3],
 };
+
+export type SeriesStyle = { color: string; dashed: boolean };
+
+const SERIES_FALLBACK: SeriesStyle[] = [
+  { color: ROUTE_PALETTE[4], dashed: false },
+  { color: ROUTE_PALETTE[5], dashed: false },
+  { color: ROUTE_PALETTE[6], dashed: false },
+];
+
+export function algorithmSeriesStyle(algorithm: string, fallbackIndex = 0): SeriesStyle {
+  if (algorithm === "pyvrp") return { color: "var(--text-muted)", dashed: true };
+  if (algorithm === "ortools") return { color: "var(--text-faint)", dashed: true };
+  const known = ALGORITHM_COLORS[algorithm];
+  if (known) return { color: known, dashed: false };
+  return SERIES_FALLBACK[fallbackIndex % SERIES_FALLBACK.length];
+}

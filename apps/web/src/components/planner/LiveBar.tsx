@@ -9,6 +9,7 @@ import type { Locale } from "@/i18n/routing";
 import { formatFitness, formatSeconds } from "@/lib/format";
 import { algorithmDisplayName, stageKind } from "@/lib/planner/algorithms";
 import { usePlanner } from "@/stores/planner";
+import { useStageLabel } from "./use-stage-label";
 
 export function LiveBar({ className }: { className?: string }) {
   const t = useTranslations("planner.live");
@@ -22,15 +23,17 @@ export function LiveBar({ className }: { className?: string }) {
     return typeof value === "number" ? value : null;
   });
   const stop = usePlanner((state) => state.stop);
+  const stageText = useStageLabel();
 
   if (status !== "loading" && status !== "running") return null;
 
-  const stage = progress
+  const counter = progress
     ? t(`stage.${stageKind(algorithm)}`, {
         iteration: progress.iteration,
         max: maxIterations ?? "—",
       })
-    : t("preparing");
+    : null;
+  const stage = stageText ?? counter ?? t("preparing");
 
   return (
     <section
@@ -44,6 +47,12 @@ export function LiveBar({ className }: { className?: string }) {
         </span>
       </div>
       <dl className="flex gap-6">
+        {stageText && counter ? (
+          <div className="flex flex-col">
+            <dt className="th-micro text-muted">{t("progress")}</dt>
+            <dd className="num text-sm">{counter}</dd>
+          </div>
+        ) : null}
         <div className="flex flex-col">
           <dt className="th-micro text-muted">{t("elapsed")}</dt>
           <dd className="num text-sm">

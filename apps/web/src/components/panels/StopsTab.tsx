@@ -2,31 +2,32 @@
 
 import { Dices, FileUp, Warehouse } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useMemo, useRef, useState } from "react";
-import { toast } from "sonner";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Num } from "@/components/ui/num";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Locale } from "@/i18n/routing";
-import { importCsv } from "@/lib/api/client";
 import { formatKg } from "@/lib/format";
 import { routeColor } from "@/lib/routes/palette";
 import { cn } from "@/lib/utils";
 import { usePlanner } from "@/stores/planner";
+import { CsvErrors } from "./CsvErrors";
+import { GenerateDialog } from "./GenerateDialog";
+import { useCsvImport } from "./use-csv-import";
 
 const PAGE_SIZE = 50;
 
 export function StopsTab() {
   const t = useTranslations("planner.stops");
   const locale = useLocale() as Locale;
-  const fileRef = useRef<HTMLInputElement>(null);
+  const { inputRef, openPicker, onFile, importing } = useCsvImport();
+  const [generateOpen, setGenerateOpen] = useState(false);
   const [limit, setLimit] = useState(PAGE_SIZE);
   const problem = usePlanner((state) => state.problem);
   const solution = usePlanner((state) => state.solution);
   const loading = usePlanner((state) => state.scenarioLoading);
   const selectedStopId = usePlanner((state) => state.selectedStopId);
   const loadScenario = usePlanner((state) => state.loadScenario);
-  const loadProblem = usePlanner((state) => state.loadProblem);
   const selectStop = usePlanner((state) => state.selectStop);
 
   const routeOfStop = useMemo(() => {
@@ -40,14 +41,16 @@ export function StopsTab() {
     return map;
   }, [problem, solution]);
 
-  const onFile = async (file: File | undefined) => {
-    if (!file) return;
-    try {
-      loadProblem(await importCsv(file));
-    } catch {
-      toast.error(t("importFailed"));
-    }
-  };
+  const fileInput = (
+    <input
+      ref={inputRef}
+      type="file"
+      accept=".csv,text/csv"
+      className="hidden"
+      aria-label={t("importCsv")}
+      onChange={(event) => void onFile(event.target.files?.[0])}
+    />
+  );
 
   if (loading) {
     return (
@@ -71,23 +74,18 @@ export function StopsTab() {
             <Warehouse size={16} strokeWidth={1.75} aria-hidden="true" />
             {t("loadDemo")}
           </Button>
-          <Button variant="outline" onClick={() => fileRef.current?.click()}>
+          <Button variant="outline" disabled={importing} onClick={openPicker}>
             <FileUp size={16} strokeWidth={1.75} aria-hidden="true" />
             {t("importCsv")}
           </Button>
-          <Button variant="outline" onClick={() => toast.info(t("generateSoon"))}>
+          <Button variant="outline" onClick={() => setGenerateOpen(true)}>
             <Dices size={16} strokeWidth={1.75} aria-hidden="true" />
             {t("generate")}
           </Button>
         </div>
-        <input
-          ref={fileRef}
-          type="file"
-          accept=".csv,text/csv"
-          className="hidden"
-          aria-label={t("importCsv")}
-          onChange={(event) => void onFile(event.target.files?.[0])}
-        />
+        <CsvErrors />
+        {fileInput}
+        <GenerateDialog open={generateOpen} onOpenChange={setGenerateOpen} />
       </div>
     );
   }
@@ -97,6 +95,19 @@ export function StopsTab() {
 
   return (
     <div className="flex flex-col gap-3">
+      <div className="flex gap-2">
+        <Button variant="outline" className="flex-1" disabled={importing} onClick={openPicker}>
+          <FileUp size={16} strokeWidth={1.75} aria-hidden="true" />
+          {t("importCsv")}
+        </Button>
+        <Button variant="outline" className="flex-1" onClick={() => setGenerateOpen(true)}>
+          <Dices size={16} strokeWidth={1.75} aria-hidden="true" />
+          {t("generate")}
+        </Button>
+      </div>
+      <CsvErrors />
+      {fileInput}
+      <GenerateDialog open={generateOpen} onOpenChange={setGenerateOpen} />
       <div className="flex items-baseline justify-between">
         <h3 className="text-sm font-semibold">
           <Num>{problem.stops.length}</Num> {t("count", { count: problem.stops.length })}

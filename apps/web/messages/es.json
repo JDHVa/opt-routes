@@ -70,7 +70,6 @@
   },
   "map": {
     "ariaLabel": "Mapa de rutas",
-    "attribution": "© OpenMapTiles · © OpenStreetMap contributors",
     "depot": "Depósito",
     "driverStart": "Inicio del repartidor {n}",
     "tooltip": {
@@ -109,7 +108,6 @@
       "loadDemo": "Cargar demo Monterrey",
       "importCsv": "Importar CSV",
       "generate": "Generar aleatorias",
-      "generateSoon": "La generación de paradas aleatorias aún no está disponible en el servidor.",
       "importFailed": "No se pudo importar el CSV. Revisa el formato e inténtalo de nuevo.",
       "count": "{count, plural, one {parada} other {paradas}}",
       "highPriority": "de prioridad alta",
@@ -119,7 +117,14 @@
         "low": "Baja",
         "high": "Alta"
       },
-      "showMore": "Mostrar {count} más"
+      "showMore": "Mostrar {count} más",
+      "importDone": "{count, plural, one {Se importó # parada.} other {Se importaron # paradas.}}",
+      "csvErrors": {
+        "title": "El CSV tiene errores",
+        "summary": "{count, plural, one {# fila no se pudo leer.} other {# filas no se pudieron leer.}} No se importó nada.",
+        "row": "Fila",
+        "dismiss": "Descartar errores"
+      }
     },
     "fleet": {
       "noProblem": "Carga un escenario para ver y editar la flota.",
@@ -248,7 +253,21 @@
       "elapsed": "Tiempo",
       "bestFitness": "Mejor fitness",
       "convergence": "Convergencia del mejor fitness",
-      "stop": "Detener"
+      "stop": "Detener",
+      "progress": "Avance",
+      "stages": {
+        "seeding": "Sembrando población",
+        "seedingInit": {
+          "random": "Sembrando población (aleatoria)",
+          "nearest_neighbor": "Sembrando población (vecino más cercano)",
+          "kmeans": "Sembrando población (K-means)",
+          "sweep": "Sembrando población (barrido)"
+        },
+        "evolving": "Evolucionando",
+        "constructing": "Construyendo hormigas",
+        "cooperating": "Cooperación GA ↔ ACO",
+        "finished": "Terminado"
+      }
     },
     "results": {
       "panelLabel": "Resultados",
@@ -273,7 +292,16 @@
       "itineraryFor": "Itinerario de {name}",
       "stop": "Parada",
       "eta": "Llegada",
-      "late": "Retraso"
+      "late": "Retraso",
+      "hybrid": {
+        "title": "Mejoras aportadas",
+        "aria": "Mejoras aportadas: GA {ga}, ACO {aco}"
+      },
+      "export": {
+        "csv": "Exportar CSV",
+        "json": "Exportar JSON",
+        "failed": "No se pudo exportar el itinerario. Inténtalo de nuevo."
+      }
     },
     "wake": {
       "title": "Despertando el servidor…",
@@ -301,6 +329,28 @@
         "overtime": "Exceso de jornada: {amount}"
       },
       "hint": "Añade repartidores, usa vehículos con más capacidad o relaja una restricción."
+    },
+    "generate": {
+      "title": "Generar paradas aleatorias",
+      "description": "Crea un escenario sintético sobre establecimientos reales de Monterrey. La misma semilla da el mismo escenario.",
+      "fields": {
+        "nStops": "Paradas",
+        "nDrivers": "Repartidores",
+        "mode": "Modo",
+        "timeWindowsPct": "Con ventana de tiempo",
+        "highPriorityPct": "Prioridad alta",
+        "dynamicPct": "Pedidos dinámicos",
+        "seed": "Semilla"
+      },
+      "errors": {
+        "required": "Ingresa un valor.",
+        "integer": "Debe ser un entero.",
+        "min": "Debe ser al menos {bound}.",
+        "max": "Debe ser como máximo {bound}."
+      },
+      "cancel": "Cancelar",
+      "submit": "Generar escenario",
+      "generating": "Generando…"
     }
   },
   "landing": {

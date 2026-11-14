@@ -70,7 +70,6 @@
   },
   "map": {
     "ariaLabel": "Route map",
-    "attribution": "© OpenMapTiles · © OpenStreetMap contributors",
     "depot": "Depot",
     "driverStart": "Start of driver {n}",
     "tooltip": {
@@ -109,7 +108,6 @@
       "loadDemo": "Load Monterrey demo",
       "importCsv": "Import CSV",
       "generate": "Generate random",
-      "generateSoon": "Random stop generation is not available on the server yet.",
       "importFailed": "Could not import the CSV. Check the format and try again.",
       "count": "{count, plural, one {stop} other {stops}}",
       "highPriority": "high priority",
@@ -119,7 +117,14 @@
         "low": "Low",
         "high": "High"
       },
-      "showMore": "Show {count} more"
+      "showMore": "Show {count} more",
+      "importDone": "{count, plural, one {Imported # stop.} other {Imported # stops.}}",
+      "csvErrors": {
+        "title": "The CSV has errors",
+        "summary": "{count, plural, one {# row could not be read.} other {# rows could not be read.}} Nothing was imported.",
+        "row": "Row",
+        "dismiss": "Dismiss errors"
+      }
     },
     "fleet": {
       "noProblem": "Load a scenario to view and edit the fleet.",
@@ -248,7 +253,21 @@
       "elapsed": "Time",
       "bestFitness": "Best fitness",
       "convergence": "Best fitness convergence",
-      "stop": "Stop"
+      "stop": "Stop",
+      "progress": "Progress",
+      "stages": {
+        "seeding": "Seeding population",
+        "seedingInit": {
+          "random": "Seeding population (random)",
+          "nearest_neighbor": "Seeding population (nearest neighbor)",
+          "kmeans": "Seeding population (K-means)",
+          "sweep": "Seeding population (sweep)"
+        },
+        "evolving": "Evolving",
+        "constructing": "Building ant tours",
+        "cooperating": "GA ↔ ACO cooperation",
+        "finished": "Finished"
+      }
     },
     "results": {
       "panelLabel": "Results",
@@ -273,7 +292,16 @@
       "itineraryFor": "Itinerary for {name}",
       "stop": "Stop",
       "eta": "Arrival",
-      "late": "Late"
+      "late": "Late",
+      "hybrid": {
+        "title": "Improvements contributed",
+        "aria": "Improvements contributed: GA {ga}, ACO {aco}"
+      },
+      "export": {
+        "csv": "Export CSV",
+        "json": "Export JSON",
+        "failed": "Could not export the itinerary. Try again."
+      }
     },
     "wake": {
       "title": "Waking up the server…",
@@ -301,6 +329,28 @@
         "overtime": "Excess shift time: {amount}"
       },
       "hint": "Add drivers, use vehicles with more capacity or relax a constraint."
+    },
+    "generate": {
+      "title": "Generate random stops",
+      "description": "Creates a synthetic scenario over real Monterrey businesses. The same seed gives the same scenario.",
+      "fields": {
+        "nStops": "Stops",
+        "nDrivers": "Drivers",
+        "mode": "Mode",
+        "timeWindowsPct": "With time window",
+        "highPriorityPct": "High priority",
+        "dynamicPct": "Dynamic orders",
+        "seed": "Seed"
+      },
+      "errors": {
+        "required": "Enter a value.",
+        "integer": "Must be an integer.",
+        "min": "Must be at least {bound}.",
+        "max": "Must be at most {bound}."
+      },
+      "cancel": "Cancel",
+      "submit": "Generate scenario",
+      "generating": "Generating…"
     }
   },
   "landing": {

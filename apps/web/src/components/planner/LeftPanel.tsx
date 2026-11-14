@@ -10,6 +10,7 @@ import { StopsTab } from "@/components/panels/StopsTab";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePlanner, type LeftTab } from "@/stores/planner";
+import { useStageLabel } from "./use-stage-label";
 
 const TABS: LeftTab[] = ["stops", "fleet", "constraints", "algorithm"];
 
@@ -21,6 +22,7 @@ export function LeftPanel() {
   const status = usePlanner((state) => state.status);
   const optimize = usePlanner((state) => state.optimize);
   const { ok: paramsOk } = useParamValidation();
+  const stageText = useStageLabel();
   const busy = status === "loading" || status === "running";
 
   return (
@@ -66,7 +68,7 @@ export function LeftPanel() {
           ) : (
             <Play size={16} strokeWidth={1.75} aria-hidden="true" />
           )}
-          {busy ? t("optimizing") : t("optimize")}
+          <span className="truncate">{busy ? (stageText ?? t("optimizing")) : t("optimize")}</span>
         </Button>
       </div>
     </div>

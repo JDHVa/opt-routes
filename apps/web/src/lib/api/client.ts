@@ -1,12 +1,21 @@
 import { readSse, SseHttpError } from "./sse";
 import type {
   AlgorithmInfo,
+  CompareEntry,
+  CompareRequest,
+  CompareResponse,
+  CsvErrorResponse,
+  CsvRowError,
   ErrorPayload,
+  GenerateRequest,
+  ImportCsvResponse,
   Problem,
   ProgressPayload,
   ScenarioInfo,
+  Solution,
   SolveRequest,
   SolveResponse,
+  Stop,
   VehicleCatalog,
 } from "./types";
 
@@ -86,10 +95,82 @@ export function postSolve(
   });
 }
 
-export function importCsv(file: File, signal?: AbortSignal): Promise<Problem> {
-  const form = new FormData();
-  form.append("file", file);
-  return request<Problem>("/import/csv", { method: "POST", body: form, signal });
+const JSON_HEADERS = { "content-type": "application/json" };
+
+export class CsvImportError extends Error {
+  readonly rows: CsvRowError[];
+
+  constructor(rows: CsvRowError[], message: string) {
+    super(message);
+    this.rows = rows;
+  }
+}
+
+function parseCsvErrors(raw: string): CsvErrorResponse | null {
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (parsed && typeof parsed === "object") {
+      const record = parsed as Partial<CsvErrorResponse>;
+      if (Array.isArray(record.rows)) {
+        return {
+          code: record.code ?? "invalid_csv",
+          message: record.message ?? "invalid_csv",
+          rows: record.rows,
+        };
+      }
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+export async function importCsv(text: string, signal?: AbortSignal): Promise<Stop[]> {
+  try {
+    const response = await request<ImportCsvResponse>("/import/csv", {
+      method: "POST",
+      headers: JSON_HEADERS,
+      body: JSON.stringify({ text }),
+      signal,
+    });
+    return response.stops;
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 422) {
+      const parsed = parseCsvErrors(error.detail);
+      if (parsed) throw new CsvImportError(parsed.rows, parsed.message);
+    }
+    throw error;
+  }
+}
+
+export async function exportCsv(solution: Solution, signal?: AbortSignal): Promise<string> {
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}/export/csv`, {
+      method: "POST",
+      headers: JSON_HEADERS,
+      body: JSON.stringify({ solution }),
+      signal,
+    });
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    throw new ApiError(0, { code: "network", message: "network" }, String(error));
+  }
+  const raw = await response.text();
+  if (!response.ok) throw new ApiError(response.status, toErrorPayload(response.status, raw), raw);
+  return raw;
+}
+
+export function generateScenario(
+  body: GenerateRequest,
+  signal?: AbortSignal,
+): Promise<Problem> {
+  return request<Problem>("/scenarios/generate", {
+    method: "POST",
+    headers: JSON_HEADERS,
+    body: JSON.stringify(body),
+    signal,
+  });
 }
 
 export type SolveStreamHandlers = {
@@ -127,5 +208,64 @@ export async function streamSolve(
       return;
     }
     handlers.onError({ code: "network", message: "network" });
+  }
+}
+
+export type CompareProgressPayload = ProgressPayload & { run_index: number };
+export type CompareResultPayload = CompareEntry & { run_index: number };
+
+export type CompareStreamEvent =
+  | { kind: "progress"; payload: CompareProgressPayload }
+  | { kind: "result"; payload: CompareResultPayload }
+  | { kind: "complete"; payload: CompareResponse }
+  | { kind: "error"; payload: ErrorPayload };
+
+export function parseCompareMessage(message: {
+  event: string;
+  data: string;
+}): CompareStreamEvent | null {
+  if (message.event === "progress") {
+    return { kind: "progress", payload: JSON.parse(message.data) as CompareProgressPayload };
+  }
+  if (message.event === "result") {
+    return { kind: "result", payload: JSON.parse(message.data) as CompareResultPayload };
+  }
+  if (message.event === "complete") {
+    return { kind: "complete", payload: JSON.parse(message.data) as CompareResponse };
+  }
+  if (message.event === "error") {
+    return { kind: "error", payload: JSON.parse(message.data) as ErrorPayload };
+  }
+  return null;
+}
+
+export type CompareStreamHandlers = {
+  onEvent: (event: CompareStreamEvent) => void;
+  onResponse?: () => void;
+};
+
+export async function streamCompare(
+  body: CompareRequest,
+  handlers: CompareStreamHandlers,
+  signal?: AbortSignal,
+): Promise<void> {
+  try {
+    await readSse({
+      url: `${API_BASE}/compare/stream`,
+      body,
+      signal,
+      onResponse: handlers.onResponse,
+      onMessage: (message) => {
+        const event = parseCompareMessage(message);
+        if (event) handlers.onEvent(event);
+      },
+    });
+  } catch (error) {
+    if (signal?.aborted) return;
+    if (error instanceof SseHttpError) {
+      handlers.onEvent({ kind: "error", payload: toErrorPayload(error.status, error.body) });
+      return;
+    }
+    handlers.onEvent({ kind: "error", payload: { code: "network", message: "network" } });
   }
 }

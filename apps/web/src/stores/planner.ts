@@ -5,18 +5,23 @@ import {
   fetchScenario,
   fetchScenarios,
   fetchVehicles,
+  generateScenario,
   streamSolve,
 } from "@/lib/api/client";
 import type {
   AlgorithmInfo,
   ConstraintToggles,
+  CsvRowError,
   Driver,
+  GenerateRequest,
   HistoryPoint,
   ObjectiveWeights,
   Problem,
   ProblemMode,
   ScenarioInfo,
   Solution,
+  SolverStage,
+  Stop,
   VehicleType,
 } from "@/lib/api/types";
 import {
@@ -47,6 +52,8 @@ export type Progress = {
   iteration: number;
   elapsedS: number;
   bestFitness: number;
+  stage: SolverStage | null;
+  extra: Record<string, unknown>;
 };
 
 type PlannerState = {
@@ -58,6 +65,8 @@ type PlannerState = {
   stopped: boolean;
   error: PlannerError | null;
   wakeSince: number | null;
+  csvErrors: CsvRowError[];
+  generating: boolean;
 
   algorithms: AlgorithmInfo[];
   vehicles: VehicleType[];
@@ -77,6 +86,10 @@ type PlannerState = {
   loadCatalog: () => Promise<void>;
   loadScenario: (id?: string) => Promise<void>;
   loadProblem: (problem: Problem) => void;
+  replaceStops: (stops: Stop[]) => Promise<void>;
+  setCsvErrors: (errors: CsvRowError[]) => void;
+  generate: (request: GenerateRequest) => Promise<boolean>;
+  adoptSolution: (solution: Solution) => void;
   setMode: (mode: ProblemMode) => void;
   toggleConstraint: (key: keyof ConstraintToggles, value: boolean) => void;
   applyPreset: (preset: PresetId) => void;
@@ -141,6 +154,8 @@ export const usePlanner = create<PlannerState>((set, get) => {
     stopped: false,
     error: null,
     wakeSince: null,
+    csvErrors: [],
+    generating: false,
 
     algorithms: [],
     vehicles: [],
@@ -205,12 +220,61 @@ export const usePlanner = create<PlannerState>((set, get) => {
         status: "idle",
         stopped: false,
         error: null,
+        csvErrors: [],
         selectedRoute: null,
         hoveredRoute: null,
         selectedStopId: null,
         fitNonce: get().fitNonce + 1,
       });
     },
+
+    replaceStops: async (stops) => {
+      if (get().problem === null) await get().loadScenario();
+      const problem = get().problem;
+      if (!problem) return;
+      controller?.abort();
+      set({
+        problem: { ...problem, stops },
+        solution: null,
+        history: [],
+        progress: null,
+        status: "idle",
+        stopped: false,
+        csvErrors: [],
+        selectedRoute: null,
+        selectedStopId: null,
+        fitNonce: get().fitNonce + 1,
+      });
+    },
+
+    setCsvErrors: (errors) => set({ csvErrors: errors }),
+
+    generate: async (request) => {
+      set({ generating: true, error: null });
+      try {
+        const problem = await withWake(() => generateScenario(request));
+        get().loadProblem(problem);
+        return true;
+      } catch (error) {
+        set({ error: toPlannerError(error, "scenario") });
+        return false;
+      } finally {
+        set({ generating: false });
+      }
+    },
+
+    adoptSolution: (solution) =>
+      set({
+        solution,
+        history: [],
+        progress: null,
+        status: "done",
+        stopped: false,
+        selectedRoute: null,
+        hoveredRoute: null,
+        selectedStopId: null,
+        fitNonce: get().fitNonce + 1,
+      }),
 
     setMode: (mode) => {
       const problem = get().problem;
@@ -354,6 +418,8 @@ export const usePlanner = create<PlannerState>((set, get) => {
                 iteration: payload.iteration,
                 elapsedS: payload.elapsed_s,
                 bestFitness: payload.best_fitness,
+                stage: payload.stage ?? null,
+                extra: payload.extra ?? {},
               },
               history: [
                 ...state.history,
