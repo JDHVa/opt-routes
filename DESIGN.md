@@ -21,7 +21,7 @@ Obligatoria para todo el código de `apps/web`. Una entrega de frontend que la i
 - Hero centrado con "Supercharge your…", "Unlock the power of…" o "Revolutionize…".
 - Grillas de tarjetas idénticas con icono, título y dos líneas, y sombras grandes (`shadow-xl`, `shadow-2xl`).
 - `rounded-2xl` o `rounded-3xl` por todas partes y botones en forma de píldora para todo.
-- Badges "Live" pulsando, contadores animados que suben y spinners eternos sin información.
+- Badges "Live" pulsando sin motivo, contadores animados con números inventados y spinners eternos sin información. (Animar **valores reales** sí está permitido; ver §12.)
 - Texto gris claro sobre fondo gris (contraste < 4.5:1) y dark mode de negro puro `#000` con texto blanco puro.
 - Magic UI, Aceternity y similares para componentes decorativos, y librerías de "efectos".
 - Copys vagos ("Seamless", "Effortless", "AI-powered" sin decir qué hace). Cada texto describe la acción concreta.
@@ -58,9 +58,10 @@ Todos los colores se definen en `src/app/globals.css` como variables OKLCH y se 
 | `--text` | `oklch(0.21 0.01 250)` | `oklch(0.95 0.004 250)` | texto principal |
 | `--text-muted` | `oklch(0.50 0.012 250)` | `oklch(0.70 0.01 250)` | secundario, labels (contraste ≥ 4.5:1 verificado) |
 | `--text-faint` | `oklch(0.54 0.01 250)` | `oklch(0.63 0.01 250)` | solo placeholders y metadatos no esenciales |
-| `--accent` | `oklch(0.53 0.15 255)` | `oklch(0.70 0.13 255)` | acción primaria, selección, foco |
+| `--accent` | `oklch(0.55 0.20 258)` | `oklch(0.72 0.17 258)` | acción primaria, selección, foco (azul eléctrico, más vivo) |
 | `--accent-fg` | `oklch(0.99 0 0)` | `oklch(0.16 0.01 255)` | texto sobre el acento |
-| `--accent-soft` | `oklch(0.95 0.03 255)` | `oklch(0.28 0.05 255)` | fondo de items seleccionados |
+| `--accent-soft` | `oklch(0.95 0.04 258)` | `oklch(0.30 0.07 258)` | fondo de items seleccionados |
+| `--signal` | `oklch(0.75 0.17 65)` | `oklch(0.80 0.16 70)` | acento secundario "feromona" (ámbar): hormigas, mejoras encontradas, highlights puntuales. Nunca para texto largo |
 | `--success` | `oklch(0.54 0.13 155)` | `oklch(0.72 0.14 155)` | factible, completado |
 | `--warning` | `oklch(0.56 0.13 75)` | `oklch(0.80 0.13 80)` | retraso, overtime |
 | `--danger` | `oklch(0.56 0.19 27)` | `oklch(0.70 0.17 25)` | infactible, error |
@@ -197,12 +198,26 @@ La base de la app es 14 px. No hay texto de más de 24 px fuera de la landing.
 - **Infactible:** banner `--warning` o `--danger` con la restricción violada y su magnitud ("3 paradas sin asignar: capacidad insuficiente"). Las paradas afectadas se resaltan en el mapa.
 
 ## 12. Motion
-- **Duraciones:**
-  - 120 ms: hover y foco;
-  - 160–200 ms: paneles, popovers y tabs, con `cubic-bezier(0.2, 0, 0, 1)`;
-  - transiciones de rutas en vivo: interpolación de opacidad de 150 ms, sin "dibujar" la línea.
-- Solo se animan `opacity` y `transform`, nunca layout.
-- **`prefers-reduced-motion: reduce`:** se desactivan desplazamientos y escalas (solo quedan fades de ≤ 100 ms), la cámara no vuela (`jumpTo` en vez de `flyTo`) y la simulación no interpola posiciones de forma suave.
+La UI debe sentirse **viva**: el usuario ve cómo trabaja el algoritmo. Cada animación comunica algo real (progreso, cambio, causa y efecto); nada es decoración en loop.
+
+- **Base:**
+  - hover y foco en 120 ms;
+  - paneles, popovers, tabs y diálogos en 180–240 ms con `cubic-bezier(0.2, 0, 0, 1)`;
+  - entradas con spring suave de `motion` (stiffness ~260, damping ~30).
+- **Entrada de pantallas y paneles:** fade + desplazamiento de 8–12 px, con *stagger* de 30–50 ms entre elementos de una lista o grilla (métricas, filas de comparación, tarjetas de presets).
+- **Rutas:**
+  - al llegar una solución nueva, cada ruta se **dibuja** del depósito al final en 500–700 ms, escalonada 60 ms por ruta (line-progress con `line-gradient` o `line-dasharray` animado);
+  - las actualizaciones en vivo hacen crossfade de 150 ms;
+  - partículas ("hormigas") opcionales que recorren las rutas mientras el solver corre, con el color `--signal`, poca densidad y 0 cuando termina.
+- **Números:** las métricas animan su valor real al cambiar (count-up de 400–600 ms, `tabular-nums` para que no bailen); un delta verde o rojo aparece 1.5 s junto a la métrica que mejoró.
+- **Mejoras:** cuando el best mejora, un pulso breve (≤ 600 ms, una vez) en el sparkline o la barra en vivo con `--signal`. En el híbrido se indica si la mejora vino del GA o del ACO.
+- **Charts:** las curvas se dibujan progresivamente al llegar puntos y los puntos del Pareto entran con escala de 0.6 a 1 escalonada.
+- **Botón Optimizar:** estado de carga con una barra de progreso real (tiempo transcurrido / time limit) dentro del botón.
+- Se animan principalmente `opacity` y `transform`. Las animaciones de capas del mapa usan las propiedades de MapLibre, nunca re-render de React por frame.
+- **`prefers-reduced-motion: reduce`:**
+  - sin desplazamientos, escalas, dibujo de rutas, partículas ni count-up; solo fades de ≤ 100 ms;
+  - la cámara usa `jumpTo`;
+  - la simulación no interpola.
 
 ## 13. Accesibilidad (WCAG 2.2 AA)
 - Contraste de texto ≥ 4.5:1 y de elementos UI ≥ 3:1, verificado en ambos temas con `npm run contrast` (48 pares).
@@ -230,3 +245,13 @@ La base de la app es 14 px. No hay texto de más de 24 px fuera de la landing.
 - [ ] Todo texto pasa por `next-intl`.
 - [ ] Atribuciones de OSM y datasets visibles.
 - [ ] Cero comentarios en el código.
+
+## 16. Ayuda contextual y onboarding
+- **`InfoTip`:** un icono ⓘ (Lucide `Info`, 14 px, `--text-muted`) junto a **cada** parámetro, métrica, objetivo, restricción, algoritmo y eje de gráfica. El tooltip (o popover en touch) tiene:
+  - título;
+  - 1–3 frases en lenguaje llano ("qué es" + "qué pasa si lo subes o bajas");
+  - opcionalmente, un mini-ejemplo con unidades.
+- Los textos viven en `messages/*.json` bajo `help.*`; nunca se hardcodean.
+- **Glosario** accesible desde ⌘K ("¿Qué es el Split?", "¿Qué es la feromona?", "¿Qué es un frente de Pareto?").
+- **Presets de inicio** (landing y estado vacío del planner): tarjetas que en 1 click cargan escenario + algoritmo + objetivo y **arrancan la optimización** automáticamente al abrir el planner. Ejemplos: "Entrega rápida en el centro (GA)", "Flota mixta en todo Monterrey (ACO+GA)", "Repartidores desde casa (multi-origen)", "Pedidos urgentes con ventanas", "Costo vs rapidez (Pareto)", "Día con pedidos en vivo (Simulación)". Cada tarjeta muestra un minimapa o sparkline real del escenario, no una ilustración.
+- **Primer uso:** un recorrido breve opcional de 3–4 pasos (coachmarks) en el planner, descartable y recordado en `localStorage`.
