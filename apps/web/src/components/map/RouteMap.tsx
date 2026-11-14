@@ -485,7 +485,7 @@ export default function RouteMap({
             id="ants-halo"
             type="circle"
             paint={{
-              "circle-radius": 8,
+              "circle-radius": 11,
               "circle-color": colors.signal,
               "circle-opacity": 0,
               "circle-opacity-transition": { duration: 300, delay: 0 },
@@ -496,7 +496,7 @@ export default function RouteMap({
             id="ants"
             type="circle"
             paint={{
-              "circle-radius": 3.5,
+              "circle-radius": 4.5,
               "circle-color": colors.signal,
               "circle-stroke-color": resolvedTheme === "dark" ? colors.bg : colors.text,
               "circle-stroke-width": 1.5,

@@ -26,10 +26,9 @@ export function DeliveryChecks({ stops, delivered }: { stops: Stop[]; delivered:
     });
     if (added.length === 0) return;
     setChecks((current) => [...current, ...added]);
-    const timer = setTimeout(() => {
+    setTimeout(() => {
       setChecks((current) => current.filter((check) => !added.some((a) => a.id === check.id)));
     }, CHECK_VISIBLE_MS);
-    return () => clearTimeout(timer);
   }, [delivered, stops, reducedMotion]);
 
   return (

@@ -13,7 +13,7 @@ const START_DELAY_MS = 900;
 const CARD_WIDTH = 288;
 const GAP = 12;
 
-type Rect = { top: number; left: number; width: number; height: number };
+type Rect = { top: number; left: number; width: number; height: number; edge: number };
 
 export function readCoachDone(): boolean {
   try {
@@ -35,7 +35,8 @@ function measure(step: (typeof STEPS)[number]): Rect | null {
   const element = document.querySelector<HTMLElement>(`[data-coach="${step}"]`);
   if (!element) return null;
   const box = element.getBoundingClientRect();
-  return { top: box.top, left: box.left, width: box.width, height: box.height };
+  const edge = element.closest("aside")?.getBoundingClientRect().right ?? box.left + box.width;
+  return { top: box.top, left: box.left, width: box.width, height: box.height, edge };
 }
 
 export function Coachmarks({ enabled }: { enabled: boolean }) {
@@ -82,7 +83,7 @@ export function Coachmarks({ enabled }: { enabled: boolean }) {
 
   const step = STEPS[index];
   const last = index === STEPS.length - 1;
-  const left = Math.min(rect.left + rect.width + GAP, window.innerWidth - CARD_WIDTH - GAP);
+  const left = Math.min(rect.edge + GAP, window.innerWidth - CARD_WIDTH - GAP);
   const top = Math.max(64, Math.min(rect.top - 8, window.innerHeight - 240));
 
   return (

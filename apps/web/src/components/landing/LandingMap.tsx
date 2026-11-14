@@ -32,7 +32,7 @@ export function LandingMap() {
           interactive={false}
           showNavigation={false}
         />
-        <p className="pointer-events-none absolute bottom-3 left-3 flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-micro text-muted shadow-xs">
+        <p className="pointer-events-none absolute top-3 left-3 flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-micro text-muted shadow-xs">
           <span aria-hidden="true" className="size-2 rounded-full bg-signal" />
           {th("legend")}
         </p>

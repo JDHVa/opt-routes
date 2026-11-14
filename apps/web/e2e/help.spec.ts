@@ -18,6 +18,7 @@ test.describe("ayuda contextual", () => {
     const popup = page.locator('[data-slot="info-tip-content"]');
     await expect(popup).toBeVisible();
     await expect(popup).toContainText("ruta más larga");
+    await page.waitForTimeout(400);
     await page.screenshot({ path: `${SHOTS}/planner-infotip-light.png` });
     await page.mouse.move(10, 400);
     await expect(popup).toHaveCount(0);
@@ -66,6 +67,7 @@ test.describe("ayuda contextual", () => {
     await expect(tour).toContainText("Paso 1 de 4");
     await tour.getByRole("button", { name: "Siguiente" }).click();
     await expect(tour).toContainText("Paso 2 de 4");
+    await page.waitForTimeout(600);
     await page.screenshot({ path: `${SHOTS}/planner-coach-light.png` });
     await tour.getByRole("button", { name: "Omitir recorrido" }).click();
     await expect(tour).toHaveCount(0);

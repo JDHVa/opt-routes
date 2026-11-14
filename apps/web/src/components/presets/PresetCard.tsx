@@ -73,7 +73,7 @@ export function PresetCard({
             <PresetMinimap scenarioId={preset.scenarioId} color={color} className="size-full" />
           </span>
           <span className="flex min-w-0 flex-1 flex-col gap-1">
-            <span className="truncate text-small font-semibold">{name}</span>
+            <span className="line-clamp-2 text-small font-semibold">{name}</span>
             {chips}
           </span>
           <ArrowRight
