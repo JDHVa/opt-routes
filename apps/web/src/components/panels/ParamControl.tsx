@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { InfoTip } from "@/components/ui/info-tip";
 import { Switch } from "@/components/ui/switch";
 import type {
   ParamErrorCode,
@@ -37,14 +38,23 @@ export function ParamControl({
   const id = useId();
   const label = t.has(`params.${field.key}`) ? t(`params.${field.key}`) : field.title;
   const help = t.has(`paramHelp.${field.key}`) ? t(`paramHelp.${field.key}`) : undefined;
+  const info = (
+    <InfoTip
+      topic={`params.${field.key}`}
+      fallback={{ title: label, body: field.description ?? field.title }}
+    />
+  );
   const errorText = error ? t(`errors.${error.code}`, { bound: error.bound ?? 0 }) : undefined;
 
   if (field.kind === "boolean") {
     return (
-      <label className="flex items-center justify-between gap-3 py-1">
-        <span className="text-small">{label}</span>
-        <Switch checked={value === true} onCheckedChange={(next) => onChange(next)} />
-      </label>
+      <div className="flex items-center justify-between gap-3 py-1">
+        <span className="flex items-center gap-0.5">
+          <span className="text-small">{label}</span>
+          {info}
+        </span>
+        <Switch aria-label={label} checked={value === true} onCheckedChange={(next) => onChange(next)} />
+      </div>
     );
   }
 
@@ -54,7 +64,7 @@ export function ParamControl({
       label: t.has(`enumValues.${option}`) ? t(`enumValues.${option}`) : option,
     }));
     return (
-      <Field label={label} htmlFor={id} help={help}>
+      <Field label={label} htmlFor={id} help={help} info={info}>
         <Select
           items={items}
           value={typeof value === "string" ? value : field.defaultValue}
@@ -79,7 +89,7 @@ export function ParamControl({
 
   const unit = UNITS[field.key];
   return (
-    <Field label={label} htmlFor={id} help={help} error={errorText}>
+    <Field label={label} htmlFor={id} help={help} error={errorText} info={info}>
       <div className="relative">
         <Input
           id={id}

@@ -6,6 +6,7 @@ import {
   readMapColors,
   type MapColors,
 } from "@/lib/map/css-colors";
+import { useReducedMotion } from "@/lib/motion/use-reduced-motion";
 
 export function useMapColors(): MapColors {
   const [colors, setColors] = useState<MapColors>(FALLBACK_MAP_COLORS);
@@ -23,15 +24,5 @@ export function useMapColors(): MapColors {
 }
 
 export function usePrefersReducedMotion(): boolean {
-  const [reduced, setReduced] = useState(false);
-
-  useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReduced(query.matches);
-    update();
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
-  }, []);
-
-  return reduced;
+  return useReducedMotion();
 }

@@ -15,7 +15,7 @@ import MapGL, {
   type MapRef,
   type ViewStateChangeEvent,
 } from "react-map-gl/maplibre";
-import { setWorkerUrl, type ExpressionSpecification } from "maplibre-gl";
+import { setWorkerUrl } from "maplibre-gl";
 import type { Problem, Solution } from "@/lib/api/types";
 import {
   buildRouteCollection,
@@ -28,8 +28,10 @@ import {
 } from "@/lib/map/geojson";
 import { routeColor } from "@/lib/routes/palette";
 import { CHEVRON_IMAGE_ID, createChevronImage } from "./chevron";
+import { CASING_OPACITY, DIM, SELECTED, routeOpacity } from "./route-style";
 import { StopTooltip } from "./StopTooltip";
 import { useMapColors, usePrefersReducedMotion } from "./use-map-colors";
+import { ANTS_SOURCE_ID, EMPTY_ANTS, useRouteMotion } from "./use-route-motion";
 
 setWorkerUrl("/maplibre-gl-worker.mjs");
 
@@ -65,6 +67,8 @@ export type RouteMapProps = {
   compactAttribution?: boolean;
   placing?: boolean;
   extras?: MapExtras;
+  ants?: boolean;
+  drawNonce?: number;
   view?: MapView | null;
   onViewChange?: (view: MapView) => void;
   onMapClick?: (point: { lng: number; lat: number }) => void;
@@ -74,9 +78,6 @@ export type RouteMapProps = {
   onSelectStop?: (id: string | null) => void;
   className?: string;
 };
-
-const DIM: ExpressionSpecification = ["==", ["get", "emphasis"], "dim"];
-const SELECTED: ExpressionSpecification = ["==", ["get", "emphasis"], "selected"];
 
 type HoverStop = { id: string; lng: number; lat: number };
 
@@ -92,6 +93,8 @@ export default function RouteMap({
   compactAttribution = false,
   placing = false,
   extras,
+  ants = false,
+  drawNonce,
   view = null,
   onViewChange,
   onMapClick,
@@ -121,6 +124,17 @@ export default function RouteMap({
     [problem, solution, focus, extras],
   );
   const bounds = useMemo(() => (problem ? computeBounds(problem) : null), [problem]);
+  useRouteMotion({
+    mapRef,
+    ready,
+    routes,
+    solution,
+    drawNonce,
+    ants,
+    reduced: reducedMotion,
+    background: colors.bg,
+  });
+
   const clusterLoose = (stops?.loose.features.length ?? 0) > CLUSTER_THRESHOLD;
 
   const ensureChevron = useCallback(() => {
@@ -278,7 +292,7 @@ export default function RouteMap({
         ) : null}
 
         {routes ? (
-          <Source id="routes" type="geojson" data={routes}>
+          <Source id="routes" type="geojson" data={routes} lineMetrics>
             <Layer
               id="route-hit"
               type="line"
@@ -292,7 +306,7 @@ export default function RouteMap({
               paint={{
                 "line-color": colors.bg,
                 "line-width": ["case", SELECTED, 9, 7],
-                "line-opacity": ["case", DIM, 0.25, 0.9],
+                "line-opacity": routeOpacity(CASING_OPACITY),
                 "line-opacity-transition": { duration: 150, delay: 0 },
               }}
             />
@@ -304,7 +318,7 @@ export default function RouteMap({
               paint={{
                 "line-color": ["get", "color"],
                 "line-width": ["case", SELECTED, 6, 4],
-                "line-opacity": ["case", DIM, 0.25, 1],
+                "line-opacity": routeOpacity(1),
                 "line-opacity-transition": { duration: 150, delay: 0 },
               }}
             />
@@ -316,7 +330,8 @@ export default function RouteMap({
               paint={{
                 "line-color": ["get", "color"],
                 "line-width": ["case", SELECTED, 6, 4],
-                "line-opacity": ["case", DIM, 0.25, 1],
+                "line-opacity": routeOpacity(1),
+                "line-opacity-transition": { duration: 150, delay: 0 },
                 "line-dasharray": [2, 1],
               }}
             />
@@ -336,7 +351,8 @@ export default function RouteMap({
                 "icon-color": ["get", "color"],
                 "icon-halo-color": colors.bg,
                 "icon-halo-width": 1,
-                "icon-opacity": ["case", DIM, 0.25, 1],
+                "icon-opacity": routeOpacity(1),
+                "icon-opacity-transition": { duration: 150, delay: 0 },
               }}
             />
           </Source>
@@ -463,6 +479,34 @@ export default function RouteMap({
             />
           </Source>
         ) : null}
+
+        <Source id={ANTS_SOURCE_ID} type="geojson" data={EMPTY_ANTS}>
+          <Layer
+            id="ants-halo"
+            type="circle"
+            paint={{
+              "circle-radius": 8,
+              "circle-color": colors.signal,
+              "circle-opacity": 0,
+              "circle-opacity-transition": { duration: 300, delay: 0 },
+              "circle-blur": 0.8,
+            }}
+          />
+          <Layer
+            id="ants"
+            type="circle"
+            paint={{
+              "circle-radius": 3.5,
+              "circle-color": colors.signal,
+              "circle-stroke-color": resolvedTheme === "dark" ? colors.bg : colors.text,
+              "circle-stroke-width": 1.5,
+              "circle-opacity": 0,
+              "circle-opacity-transition": { duration: 300, delay: 0 },
+              "circle-stroke-opacity": 0,
+              "circle-stroke-opacity-transition": { duration: 300, delay: 0 },
+            }}
+          />
+        </Source>
 
         {problem?.depot ? (
           <Marker longitude={problem.depot.lon} latitude={problem.depot.lat} anchor="center">

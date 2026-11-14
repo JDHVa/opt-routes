@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { RouteMapLoader } from "@/components/map/RouteMapLoader";
 import { fetchScenario } from "@/lib/api/client";
 import type { Problem } from "@/lib/api/types";
@@ -15,7 +15,9 @@ import {
 import { buildPlanView, makeOrder, nextOrderId } from "@/lib/sim/plan";
 import { knownStops } from "@/lib/sim/reducer";
 import { cn } from "@/lib/utils";
+import { clearPresetParam, usePresetParam } from "@/lib/use-preset-param";
 import { usePlanner } from "@/stores/planner";
+import { DeliveryChecks } from "./DeliveryChecks";
 import { DriversLayer } from "./DriversLayer";
 import { EventLog } from "./EventLog";
 import { OrderPulses } from "./OrderPulses";
@@ -127,6 +129,32 @@ export function SimulateView() {
     if (config) sim.start(config);
   }, [problem, form, sim]);
 
+  const preset = usePresetParam("simulate");
+  const handledPreset = useRef<string | null>(null);
+  const autoStart = useRef(false);
+  useEffect(() => {
+    if (!preset) {
+      handledPreset.current = null;
+      return;
+    }
+    if (handledPreset.current === preset.id) return;
+    handledPreset.current = preset.id;
+    clearPresetParam();
+    setForm((current) => ({
+      ...current,
+      scenarioId: preset.scenarioId,
+      algorithm: preset.algorithm,
+      reoptTimeLimitS: preset.timeLimitS,
+    }));
+    autoStart.current = true;
+  }, [preset]);
+
+  useEffect(() => {
+    if (!autoStart.current || !problem || !configurable || !catalogReady) return;
+    autoStart.current = false;
+    start();
+  }, [problem, configurable, catalogReady, start]);
+
   const placeOrder = useCallback(
     (point: { lng: number; lat: number }) => {
       if (!problem) return;
@@ -210,6 +238,7 @@ export function SimulateView() {
           <DriversLayer problem={problem} positions={state.positions} tickSeq={state.tickSeq} />
         ) : null}
         <OrderPulses orders={state.orders} />
+        <DeliveryChecks stops={stops} delivered={state.delivered} />
       </RouteMapLoader>
 
       {placing ? (

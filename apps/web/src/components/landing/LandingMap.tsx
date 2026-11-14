@@ -1,66 +1,43 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
 import { RouteMapLoader } from "@/components/map/RouteMapLoader";
-import { usePrefersReducedMotion } from "@/components/map/use-map-colors";
 import { Num } from "@/components/ui/num";
 import type { Locale } from "@/i18n/routing";
 import { formatKm, formatMinutes, formatMXN } from "@/lib/format";
 import { demoProblem, demoSolution } from "@/lib/landing-data";
 import type { MapFocus } from "@/lib/map/geojson";
 
-const REVEAL_INTERVAL_MS = 1100;
 const PADDING = { top: 32, right: 32, bottom: 32, left: 32 };
 const NO_FOCUS: MapFocus = { selectedRoute: null, hoveredRoute: null, selectedStopId: null };
 
 export function LandingMap() {
   const t = useTranslations("landing.map");
+  const th = useTranslations("landing.heroMap");
   const locale = useLocale() as Locale;
-  const reduced = usePrefersReducedMotion();
-  const total = demoSolution.routes.length;
-  const [progress, setProgress] = useState(0);
-  const revealed = reduced ? total : progress;
-
-  useEffect(() => {
-    if (reduced) return;
-    const timer = setInterval(() => {
-      setProgress((count) => {
-        if (count >= total) {
-          clearInterval(timer);
-          return count;
-        }
-        return count + 1;
-      });
-    }, REVEAL_INTERVAL_MS);
-    return () => clearInterval(timer);
-  }, [reduced, total]);
-
-  const solution = useMemo(
-    () => ({
-      ...demoSolution,
-      routes: demoSolution.routes.slice(0, Math.max(revealed, 0)),
-    }),
-    [revealed],
-  );
-
   const metrics = demoSolution.metrics;
 
   return (
     <figure className="flex flex-col gap-3">
-      <div className="h-105 overflow-hidden rounded-lg border border-border">
+      <div className="relative h-80 overflow-hidden rounded-lg border border-border md:h-[26rem]">
         <RouteMapLoader
           className="size-full"
           problem={demoProblem}
-          solution={solution}
+          solution={demoSolution}
           focus={NO_FOCUS}
           padding={PADDING}
           fitNonce={0}
+          drawNonce={0}
+          ants
           interactive={false}
           showNavigation={false}
         />
+        <p className="pointer-events-none absolute bottom-3 left-3 flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-micro text-muted shadow-xs">
+          <span aria-hidden="true" className="size-2 rounded-full bg-signal" />
+          {th("legend")}
+        </p>
       </div>
-      <figcaption className="flex flex-wrap items-baseline gap-x-6 gap-y-1 text-small text-muted">
+      <figcaption className="flex flex-wrap items-baseline gap-x-5 gap-y-1 text-small text-muted">
         <span>{t("caption", { name: demoProblem.name })}</span>
         <span>
           <Num className="text-foreground">{demoProblem.stops.length}</Num> {t("stops")}

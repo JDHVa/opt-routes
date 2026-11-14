@@ -1,4 +1,5 @@
 import { setRequestLocale } from "next-intl/server";
+import { Suspense } from "react";
 import { SimulateView } from "@/components/simulate/SimulateView";
 
 export default async function SimulatePage({
@@ -8,5 +9,9 @@ export default async function SimulatePage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <SimulateView />;
+  return (
+    <Suspense fallback={null}>
+      <SimulateView />
+    </Suspense>
+  );
 }

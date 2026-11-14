@@ -13,7 +13,9 @@ import {
   type TooltipContentProps,
 } from "recharts";
 import { ChartTooltip } from "@/components/charts/ChartTooltip";
+import { InfoTip } from "@/components/ui/info-tip";
 import { Switch } from "@/components/ui/switch";
+import { useReducedMotion } from "@/lib/motion/use-reduced-motion";
 import type { Locale } from "@/i18n/routing";
 import { buildConvergence, suggestsLogScale } from "@/lib/compare/convergence";
 import type { RunState } from "@/lib/compare/table";
@@ -30,6 +32,7 @@ const AXIS_TICK = {
 export function ConvergenceChart({ runs }: { runs: RunState[] }) {
   const t = useTranslations("compare.chart");
   const locale = useLocale() as Locale;
+  const reduced = useReducedMotion();
   const [logScale, setLogScale] = useState(false);
   const convergence = useMemo(() => buildConvergence(runs), [runs]);
   const logSuggested = suggestsLogScale(convergence);
@@ -55,16 +58,20 @@ export function ConvergenceChart({ runs }: { runs: RunState[] }) {
   return (
     <section className="flex flex-col gap-3" aria-labelledby="convergence-title">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="convergence-title" className="text-h2 font-semibold">
+        <h2 id="convergence-title" className="flex items-center gap-0.5 text-h2 font-semibold">
           {t("title")}
+          <InfoTip topic="axes.fitness" />
         </h2>
-        <label className="flex items-center gap-2 text-small">
-          <Switch checked={logScale} onCheckedChange={setLogScale} />
-          {t("logScale")}
-          {logSuggested && !logScale ? (
-            <span className="text-micro text-muted">{t("logHint")}</span>
-          ) : null}
-        </label>
+        <div className="flex items-center gap-0.5">
+          <label className="flex items-center gap-2 text-small">
+            <Switch checked={logScale} onCheckedChange={setLogScale} />
+            {t("logScale")}
+            {logSuggested && !logScale ? (
+              <span className="text-micro text-muted">{t("logHint")}</span>
+            ) : null}
+          </label>
+          <InfoTip topic="axes.logScale" />
+        </div>
       </div>
       <ul className="flex flex-wrap gap-x-4 gap-y-1 text-small">
         {convergence.series.map((series) => {
@@ -149,7 +156,9 @@ export function ConvergenceChart({ runs }: { runs: RunState[] }) {
                     strokeDasharray={style.dashed ? "6 4" : undefined}
                     dot={false}
                     connectNulls
-                    isAnimationActive={false}
+                    isAnimationActive={!reduced}
+                    animationDuration={300}
+                    animationEasing="ease-out"
                   />
                 );
               })}

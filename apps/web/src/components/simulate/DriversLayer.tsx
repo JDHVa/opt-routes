@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
-import { Marker } from "react-map-gl/maplibre";
+import { Layer, Marker, Source } from "react-map-gl/maplibre";
+import type { Feature, FeatureCollection, LineString } from "geojson";
 import { usePrefersReducedMotion } from "@/components/map/use-map-colors";
 import type { DriverPosition, Problem } from "@/lib/api/types";
 import {
@@ -73,6 +74,57 @@ function useAnimatedPositions(
   return shown;
 }
 
+const TRAIL_POINTS = 10;
+const TRAIL_MIN_STEP_DEG = 0.00005;
+
+type TrailProps = { color: string };
+type Trails = Record<string, [number, number][]>;
+
+function useTrails(shown: Positions, reducedMotion: boolean): Trails {
+  const [trails, setTrails] = useState<Trails>({});
+
+  useEffect(() => {
+    if (reducedMotion) return;
+    const frame = requestAnimationFrame(() => {
+      setTrails((current) => {
+        const next: Trails = {};
+        for (const [id, point] of Object.entries(shown)) {
+          const history = current[id] ?? [];
+          const last = history[history.length - 1];
+          const moved =
+            !last ||
+            Math.abs(last[0] - point.lon) > TRAIL_MIN_STEP_DEG ||
+            Math.abs(last[1] - point.lat) > TRAIL_MIN_STEP_DEG;
+          next[id] = moved
+            ? [...history, [point.lon, point.lat] as [number, number]].slice(-TRAIL_POINTS)
+            : history;
+        }
+        return next;
+      });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [shown, reducedMotion]);
+
+  return reducedMotion ? {} : trails;
+}
+
+function trailCollection(
+  problem: Problem,
+  trails: Trails,
+): FeatureCollection<LineString, TrailProps> {
+  const features: Feature<LineString, TrailProps>[] = [];
+  problem.drivers.forEach((driver, index) => {
+    const points = trails[driver.id];
+    if (!points || points.length < 2) return;
+    features.push({
+      type: "Feature",
+      geometry: { type: "LineString", coordinates: points },
+      properties: { color: routeColor(index) },
+    });
+  });
+  return { type: "FeatureCollection", features };
+}
+
 export function DriversLayer({
   problem,
   positions,
@@ -85,9 +137,19 @@ export function DriversLayer({
   const t = useTranslations("simulate.map");
   const reducedMotion = usePrefersReducedMotion();
   const shown = useAnimatedPositions(positions, tickSeq, reducedMotion);
+  const trails = useTrails(shown, reducedMotion);
+  const trailData = trailCollection(problem, trails);
 
   return (
     <>
+      <Source id="sim-trails" type="geojson" data={trailData}>
+        <Layer
+          id="sim-trails-line"
+          type="line"
+          layout={{ "line-cap": "round", "line-join": "round" }}
+          paint={{ "line-color": ["get", "color"], "line-width": 5, "line-opacity": 0.45, "line-blur": 1 }}
+        />
+      </Source>
       {problem.drivers.map((driver, index) => {
         const point = shown[driver.id];
         if (!point) return null;

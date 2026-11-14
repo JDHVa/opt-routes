@@ -141,8 +141,17 @@ function compareEvents(runs: CompareRunBody[]) {
 
 export async function mockSolver(
   page: Page,
-  options: { failSolve?: boolean } = {},
+  options: { failSolve?: boolean; coach?: boolean } = {},
 ): Promise<SolverMock> {
+  if (!options.coach) {
+    await page.addInitScript(() => {
+      try {
+        window.localStorage.setItem("routeopt:coach:v1", "done");
+      } catch {
+        return;
+      }
+    });
+  }
   const state: SolverMock = {
     solveRequests: [],
     compareRequests: [],

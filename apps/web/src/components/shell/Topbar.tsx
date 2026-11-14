@@ -1,6 +1,7 @@
 "use client";
 
 import { Menu, Search } from "lucide-react";
+import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -10,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Link, usePathname } from "@/i18n/navigation";
+import { useReducedMotion } from "@/lib/motion/use-reduced-motion";
 import { cn } from "@/lib/utils";
 import { useUi } from "@/stores/ui";
 import { LocaleSwitch } from "./LocaleSwitch";
@@ -27,6 +29,7 @@ export function Topbar() {
   const t = useTranslations("nav");
   const tb = useTranslations("topbar");
   const pathname = usePathname();
+  const reduced = useReducedMotion();
   const togglePalette = useUi((state) => state.togglePalette);
 
   return (
@@ -64,13 +67,21 @@ export function Topbar() {
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex h-8 items-center rounded-md px-3 text-sm transition-colors duration-[120ms]",
-                active
-                  ? "bg-accent-soft font-medium text-foreground"
-                  : "text-muted hover:bg-surface-2 hover:text-foreground",
+                "relative flex h-8 items-center rounded-md px-3 text-sm transition-colors duration-[120ms]",
+                active ? "font-medium text-accent" : "text-muted hover:bg-surface-2 hover:text-foreground",
               )}
             >
-              {t(item.id)}
+              {active ? (
+                <motion.span
+                  layoutId="nav-active"
+                  aria-hidden="true"
+                  transition={
+                    reduced ? { duration: 0.1 } : { type: "spring", stiffness: 260, damping: 30 }
+                  }
+                  className="absolute inset-0 rounded-md bg-accent-soft"
+                />
+              ) : null}
+              <span className="relative">{t(item.id)}</span>
             </Link>
           );
         })}

@@ -11,6 +11,7 @@ import { formatKg } from "@/lib/format";
 import { routeColor } from "@/lib/routes/palette";
 import { cn } from "@/lib/utils";
 import { usePlanner } from "@/stores/planner";
+import { StartPresets } from "@/components/presets/StartPresets";
 import { CsvErrors } from "./CsvErrors";
 import { GenerateDialog } from "./GenerateDialog";
 import { useCsvImport } from "./use-csv-import";
@@ -86,6 +87,7 @@ export function StopsTab() {
         <CsvErrors />
         {fileInput}
         <GenerateDialog open={generateOpen} onOpenChange={setGenerateOpen} />
+        <StartPresets variant="compact" className="border-t border-border pt-4" />
       </div>
     );
   }

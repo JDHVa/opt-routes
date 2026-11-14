@@ -2,7 +2,7 @@
 
 import { CircleCheck, Loader2, RotateCcw, TriangleAlert } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { Metric } from "@/components/planner/ResultsPanel";
+import { Metric, MetricGrid } from "@/components/ui/metric";
 import { Button } from "@/components/ui/button";
 import { Num } from "@/components/ui/num";
 import type { Locale } from "@/i18n/routing";
@@ -37,17 +37,17 @@ function Summary({ state }: { state: SimState }) {
           {infeasible ? t("infeasible") : t("feasible")}
         </p>
       </div>
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-4">
-        <Metric label={t("distance")} value={kmParts(metrics.total_distance_km, locale)} />
-        <Metric label={t("cost")} value={formatMXN(metrics.total_cost_mxn, locale)} />
-        <Metric label={t("duration")} value={durationParts(metrics.total_duration_min, locale)} />
-        <Metric label={t("makespan")} value={durationParts(metrics.makespan_min, locale)} />
-        <Metric label={t("vehicles")} value={String(metrics.vehicles_used)} />
-        <Metric label={t("lateness")} value={durationParts(metrics.lateness_min, locale)} />
+      <MetricGrid className="grid grid-cols-2 gap-x-4 gap-y-4">
+        <Metric label={t("distance")} help="metrics.distance" value={kmParts(metrics.total_distance_km, locale)} />
+        <Metric label={t("cost")} help="metrics.cost" value={formatMXN(metrics.total_cost_mxn, locale)} />
+        <Metric label={t("duration")} help="metrics.duration" value={durationParts(metrics.total_duration_min, locale)} />
+        <Metric label={t("makespan")} help="metrics.makespan" value={durationParts(metrics.makespan_min, locale)} />
+        <Metric label={t("vehicles")} help="metrics.vehicles" value={String(metrics.vehicles_used)} />
+        <Metric label={t("lateness")} help="metrics.lateness" value={durationParts(metrics.lateness_min, locale)} />
         {metrics.unassigned > 0 ? (
           <Metric label={t("unassigned")} value={String(metrics.unassigned)} />
         ) : null}
-      </dl>
+      </MetricGrid>
       <p className="text-small text-muted">
         {t("counts", { orders: state.orders.length, reopts: state.reoptCount })}
       </p>

@@ -9,7 +9,7 @@ describe("paleta de rutas", () => {
 
   it("asigna el mismo color al mismo índice, siempre", () => {
     for (let i = 0; i < 30; i += 1) expect(routeColor(i)).toBe(routeColor(i));
-    expect(routeColor(0)).toBe("#0072B2");
+    expect(routeColor(0)).toBe("#0A6CD6");
   });
 
   it("repite la paleta desde el repartidor 13", () => {

@@ -8,6 +8,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { InfoTip } from "@/components/ui/info-tip";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -80,7 +81,12 @@ export function AlgorithmTab() {
     <div className="flex flex-col gap-6">
       <section className="flex flex-col gap-3">
         <PanelHeading>{t("algorithm")}</PanelHeading>
-        <Field label={t("algorithmLabel")} htmlFor={selectId} help={current?.label}>
+        <Field
+          label={t("algorithmLabel")}
+          htmlFor={selectId}
+          help={current?.label}
+          info={<InfoTip topic={`algorithms.${algorithm}`} />}
+        >
           <Select
             items={items}
             value={algorithm}
@@ -103,7 +109,7 @@ export function AlgorithmTab() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <PanelHeading>{t("objective")}</PanelHeading>
+        <PanelHeading info={<InfoTip topic="objectives.title" />}>{t("objective")}</PanelHeading>
         <Segmented
           ariaLabel={t("objective")}
           value={preset}
@@ -112,8 +118,9 @@ export function AlgorithmTab() {
           spacing={1}
           options={PRESET_IDS.map((id) => ({ value: id, label: tp(id) }))}
         />
-        <p className="text-micro text-muted">
-          {preset ? tp(`${preset}Help`) : tp("customHelp")}
+        <p className="flex items-start gap-0.5 text-micro text-muted">
+          <span className="pt-1">{preset ? tp(`${preset}Help`) : tp("customHelp")}</span>
+          <InfoTip topic={preset ? `objectives.${preset}` : "objectives.weights"} className="-mt-0.5" />
         </p>
       </section>
 
@@ -145,10 +152,18 @@ export function AlgorithmTab() {
         <CollapsibleContent className="flex flex-col gap-6 pt-3">
           {weights ? (
             <div className="flex flex-col gap-3">
-              <h4 className="text-small font-medium">{t("weights")}</h4>
+              <div className="flex items-center gap-0.5">
+                <h4 className="text-small font-medium">{t("weights")}</h4>
+                <InfoTip topic="objectives.weights" />
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 {WEIGHT_KEYS.map((name) => (
-                  <Field key={name} label={t(`weightLabels.${name}`)} htmlFor={`${selectId}-${name}`}>
+                  <Field
+                    key={name}
+                    label={t(`weightLabels.${name}`)}
+                    htmlFor={`${selectId}-${name}`}
+                    info={<InfoTip topic={`objectives.${name}`} />}
+                  >
                     <Input
                       id={`${selectId}-${name}`}
                       type="number"
