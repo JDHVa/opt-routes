@@ -103,13 +103,13 @@ fitness = Σ_{j<3} weights[j] * f[j] / obj_scale[j]
 - Cada solver hereda de `Solver`, define `name`, `label`, `params_model` (subclase de `SolverParams`, con defaults en todo) y `multi_objective`, y se registra con `@register_solver`.
 - **`solve(inst, callback, warm_start, state, penalties) -> SolveResult`** debe:
   - respetar `time_limit_s` y `max_iterations`;
-  - llamar a `callback` cada `progress_every` iteraciones y una vez al final;
+  - llamar a `callback` cada `progress_every` iteraciones **o** cada `progress_interval_s` segundos (lo que ocurra primero; lógica común en `algorithms/progress.py::ProgressGate`), con un evento inicial al terminar la siembra (`stage=seeding`) y uno final (`stage=finished`);
   - detenerse si `callback` devuelve `False`;
   - aceptar `warm_start` (lista de `RouteSet`) para la re-optimización dinámica;
   - devolver en `state` lo que convenga reusar (por ejemplo `{"pheromone": ndarray}` en ACO).
 - Nombres registrados: `ga`, `aco`, `aco_ga`, `nsga2`, `pyvrp`, `ortools`.
 - La inicialización `init` es `random` | `nearest_neighbor` | `kmeans` | `sweep` y vive en `algorithms/init.py` + `algorithms/clustering.py`. Punto de entrada: `initial_routesets(inst, strategy, count, rng, penalties) -> list[RouteSet]`.
-- Búsqueda local: `algorithms/local_search.py::improve(inst, rs, penalties, rng, max_rounds) -> RouteSet`. Nunca empeora el costo aditivo (`core.evaluate.additive_cost`). Ignora el makespan.
+- Búsqueda local: `algorithms/local_search.py::improve(inst, rs, penalties, rng, max_rounds) -> RouteSet`. Nunca empeora el costo aditivo (`core.evaluate.additive_cost`). Filtra candidatos con cotas inferiores O(1) por prefijo y sufijo (`algorithms/segments.py`), exactas sin ventanas. Todo movimiento aceptado se reevalúa completo.
 - API del núcleo que pueden usar los solvers:
   - `core.evaluate`: `evaluate`, `additive_cost`, `validate_routeset`, `route_eval`/`route_args` (numba), `additive_coefs`/`route_additive` (numba).
   - `core.split`: `split`, `routes_to_chromosome`, `random_chromosome`.
