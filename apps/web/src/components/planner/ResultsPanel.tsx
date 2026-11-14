@@ -169,8 +169,12 @@ function HybridBar() {
         aria-label={t("aria", { ga: contribution.ga, aco: contribution.aco })}
         className="flex h-2 overflow-hidden rounded-full bg-surface-2"
       >
-        <div style={{ width: `${percent}%`, backgroundColor: ALGORITHM_COLORS.ga }} />
-        <div style={{ width: `${100 - percent}%`, backgroundColor: ALGORITHM_COLORS.aco }} />
+        {contribution.ga + contribution.aco > 0 ? (
+          <>
+            <div style={{ width: `${percent}%`, backgroundColor: ALGORITHM_COLORS.ga }} />
+            <div style={{ width: `${100 - percent}%`, backgroundColor: ALGORITHM_COLORS.aco }} />
+          </>
+        ) : null}
       </div>
       <p className="flex gap-4 text-small">
         <span className="flex items-center gap-1.5">

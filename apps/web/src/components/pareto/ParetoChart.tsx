@@ -118,7 +118,7 @@ export function ParetoChart({
       className="h-80 w-full rounded-lg border border-border bg-surface p-3"
     >
       <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart data={rows} margin={{ top: 12, right: 16, bottom: 24, left: 8 }}>
+        <ComposedChart accessibilityLayer={false} data={rows} margin={{ top: 12, right: 16, bottom: 24, left: 8 }}>
           <CartesianGrid vertical={false} stroke="var(--border)" strokeWidth={1} />
           <XAxis
             type="number"

@@ -81,7 +81,7 @@ export function buildRouteCollection(
       const driver = problem.drivers[driverIndex];
       let coordinates: [number, number][];
       if (route.geometry && route.geometry.length > 1) {
-        coordinates = route.geometry.map(([lon, lat]) => [lon, lat]);
+        coordinates = route.geometry.map(([lat, lon]) => [lon, lat]);
       } else {
         coordinates = [];
         const origin = extras?.origins?.[driver.id] ?? originOf(problem, driver);

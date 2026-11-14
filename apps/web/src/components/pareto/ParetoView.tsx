@@ -120,12 +120,14 @@ export function ParetoView() {
   const locale = useLocale() as Locale;
   const router = useRouter();
   const limitId = useId();
+  const scenarioId = useId();
 
   const problem = usePlanner((state) => state.problem);
   const catalogStatus = usePlanner((state) => state.catalogStatus);
   const scenarioLoading = usePlanner((state) => state.scenarioLoading);
   const loadCatalog = usePlanner((state) => state.loadCatalog);
   const loadScenario = usePlanner((state) => state.loadScenario);
+  const scenarios = usePlanner((state) => state.scenarios);
   const adoptSolution = usePlanner((state) => state.adoptSolution);
 
   const status = useParetoStore((state) => state.status);
@@ -158,6 +160,14 @@ export function ParetoView() {
 
   const launch = () => {
     if (problem) void run(problem);
+  };
+
+  const scenarioItems = scenarios.map((scenario) => ({ value: scenario.id, label: scenario.name }));
+  const currentScenario = scenarios.find((scenario) => scenario.name === problem?.name)?.id ?? null;
+
+  const changeScenario = (id: string) => {
+    useParetoStore.setState({ points: [], status: "idle", selectedId: null, error: null });
+    void loadScenario(id);
   };
 
   const choose = (id: string) => {
@@ -194,14 +204,35 @@ export function ParetoView() {
   }
 
   return (
-    <div className="grid min-h-0 flex-1 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-      <div className="flex min-h-0 flex-col gap-5 overflow-y-auto p-4 md:border-r md:border-border">
+    <div className="flex flex-col md:grid md:min-h-0 md:flex-1 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <div className="flex flex-col gap-5 p-4 md:min-h-0 md:overflow-y-auto md:border-r md:border-border [&>*]:shrink-0">
         <header className="flex flex-col gap-1">
           <h1 className="text-h1 font-semibold tracking-[-0.01em]">{t("title")}</h1>
           <p className="max-w-prose text-muted">{t("subtitle")}</p>
         </header>
 
         <section aria-label={t("controls")} className="flex flex-col gap-3">
+          <Field label={t("scenario")} htmlFor={scenarioId}>
+            <Select
+              items={scenarioItems}
+              value={currentScenario}
+              disabled={running || scenarioLoading}
+              onValueChange={(next) => {
+                if (typeof next === "string") changeScenario(next);
+              }}
+            >
+              <SelectTrigger id={scenarioId} className="w-full">
+                <SelectValue placeholder={problem.name} />
+              </SelectTrigger>
+              <SelectContent>
+                {scenarioItems.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <AxisSelect axis="x" value={xKey} disabled={false} />
             <AxisSelect axis="y" value={yKey} disabled={false} />
@@ -233,7 +264,7 @@ export function ParetoView() {
                 {t("stop")}
               </Button>
             ) : (
-              <Button disabled={limitInvalid} onClick={launch}>
+              <Button disabled={limitInvalid || scenarioLoading} onClick={launch}>
                 <Play size={16} strokeWidth={1.75} aria-hidden="true" />
                 {points.length > 0 ? t("rerun") : t("run")}
               </Button>
@@ -269,6 +300,9 @@ export function ParetoView() {
               selectedId={selectedId}
               onSelect={choose}
             />
+            {points.length === 1 && !running ? (
+              <p className="text-small text-muted">{t("single")}</p>
+            ) : null}
             <p className="flex flex-wrap gap-x-4 text-micro text-muted">
               <span>{t("legend.size")}</span>
               <span>{t("legend.dominated")}</span>
@@ -356,7 +390,7 @@ export function ParetoView() {
         )}
       </div>
 
-      <div className="relative h-[60dvh] min-h-0 md:h-auto">
+      <div className="relative h-[60dvh] shrink-0 md:h-auto">
         <RouteMapLoader
           className="absolute inset-0"
           problem={problem}

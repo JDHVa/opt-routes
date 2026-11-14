@@ -496,7 +496,9 @@
     },
     "chart": {
       "aria": "Scatter plot of the Pareto front solutions. The same data is in the table below."
-    }
+    },
+    "scenario": "Scenario",
+    "single": "On this problem the objectives do not conflict: a single solution dominates the rest. Choose the multi-origin scenario to see a front with several."
   },
   "simulate": {
     "panelLabel": "Simulation settings and status",
@@ -582,7 +584,8 @@
       "makespan": "Last delivery",
       "vehicles": "Drivers",
       "lateness": "Lateness",
-      "counts": "{orders, plural, one {# new order} other {# new orders}} and {reopts, plural, one {# re-optimization} other {# re-optimizations}}."
+      "counts": "{orders, plural, one {# new order} other {# new orders}} and {reopts, plural, one {# re-optimization} other {# re-optimizations}}.",
+      "unassigned": "Not delivered"
     },
     "timeline": {
       "title": "Simulation timeline",

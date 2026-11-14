@@ -44,6 +44,9 @@ function Summary({ state }: { state: SimState }) {
         <Metric label={t("makespan")} value={durationParts(metrics.makespan_min, locale)} />
         <Metric label={t("vehicles")} value={String(metrics.vehicles_used)} />
         <Metric label={t("lateness")} value={durationParts(metrics.lateness_min, locale)} />
+        {metrics.unassigned > 0 ? (
+          <Metric label={t("unassigned")} value={String(metrics.unassigned)} />
+        ) : null}
       </dl>
       <p className="text-small text-muted">
         {t("counts", { orders: state.orders.length, reopts: state.reoptCount })}

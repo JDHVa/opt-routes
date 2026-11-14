@@ -496,7 +496,9 @@
     },
     "chart": {
       "aria": "Dispersión de las soluciones del frente de Pareto. Los mismos datos están en la tabla de abajo."
-    }
+    },
+    "scenario": "Escenario",
+    "single": "Con este problema los objetivos no entran en conflicto: una sola solución domina a las demás. Elige el escenario multi-origen para ver un frente con varias."
   },
   "simulate": {
     "panelLabel": "Configuración y estado de la simulación",
@@ -582,7 +584,8 @@
       "makespan": "Última entrega",
       "vehicles": "Repartidores",
       "lateness": "Retraso",
-      "counts": "{orders, plural, one {# pedido nuevo} other {# pedidos nuevos}} y {reopts, plural, one {# re-optimización} other {# re-optimizaciones}}."
+      "counts": "{orders, plural, one {# pedido nuevo} other {# pedidos nuevos}} y {reopts, plural, one {# re-optimización} other {# re-optimizaciones}}.",
+      "unassigned": "Sin entregar"
     },
     "timeline": {
       "title": "Línea de tiempo de la simulación",

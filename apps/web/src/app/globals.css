@@ -225,6 +225,11 @@
   }
 }
 
+[class*="recharts-"]:focus,
+[class*="recharts-"]:focus-visible {
+  outline: none;
+}
+
 @keyframes order-pulse {
   from {
     transform: scale(0.4);

@@ -243,7 +243,7 @@ export function SimulateView() {
           className={cn(
             "absolute z-10 flex flex-col overflow-hidden border border-border bg-surface shadow-sm",
             "inset-x-0 bottom-0 h-[45dvh] rounded-t-lg border-b-0",
-            "md:inset-x-auto md:top-3 md:right-3 md:bottom-3 md:h-auto md:w-80 md:rounded-lg md:border-b",
+            "md:inset-x-auto md:top-3 md:right-3 md:bottom-10 md:h-auto md:w-80 md:rounded-lg md:border-b",
           )}
         >
           {!desktop ? <MobileSwitch value={mobileTab} onChange={setMobileTab} /> : null}
