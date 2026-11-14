@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useReducedMotion } from "@/lib/motion/use-reduced-motion";
 import { PRESET_QUERY_PARAM } from "@/lib/presets";
@@ -41,7 +41,6 @@ function measure(step: (typeof STEPS)[number]): Rect | null {
 export function Coachmarks({ enabled }: { enabled: boolean }) {
   const t = useTranslations("planner.coach");
   const reduced = useReducedMotion();
-  const titleId = useId();
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const [rect, setRect] = useState<Rect | null>(null);
@@ -104,7 +103,6 @@ export function Coachmarks({ enabled }: { enabled: boolean }) {
         <motion.section
           key={step}
           role="dialog"
-          aria-labelledby={titleId}
           aria-label={t("label")}
           initial={reduced ? { opacity: 0 } : { opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -117,7 +115,7 @@ export function Coachmarks({ enabled }: { enabled: boolean }) {
             <p className="th-micro text-muted">
               {t("step", { current: index + 1, total: STEPS.length })}
             </p>
-            <h2 id={titleId} className="text-sm font-semibold">
+            <h2 className="text-sm font-semibold">
               {t(`steps.${step}.title`)}
             </h2>
             <p className="text-small text-muted">{t(`steps.${step}.body`)}</p>

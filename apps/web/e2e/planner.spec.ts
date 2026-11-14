@@ -38,13 +38,13 @@ test.describe("flujo principal", () => {
 
     await expect(page.getByRole("heading", { name: "Resultado" })).toBeVisible();
     await expect(page.getByText("Factible", { exact: true })).toBeVisible();
-    await expect(page.getByText("Distancia", { exact: true })).toBeVisible();
+    await expect(page.locator("dt", { hasText: "Distancia" }).first()).toBeVisible();
 
     const routes = depotSolution.solution.routes;
     const legend = page.getByRole("complementary", { name: "Resultados" });
-    await expect(legend.getByRole("button", { expanded: false })).toHaveCount(routes.length);
+    await expect(legend.locator('button[aria-pressed="false"]')).toHaveCount(routes.length);
 
-    await legend.getByRole("button", { expanded: false }).first().click();
+    await legend.locator('button[aria-pressed="false"]').first().click();
     await expect(legend.getByRole("table")).toBeVisible();
     await expect(legend.getByRole("row")).toHaveCount(routes[0].visits.length + 1);
 
@@ -136,7 +136,7 @@ test.describe("capturas", () => {
     await page.getByRole("button", { name: "Avanzado" }).click();
     await page.screenshot({ path: `${SHOTS}/planner-algorithm-light.png` });
 
-    await page.getByRole("complementary", { name: "Resultados" }).getByRole("button", { expanded: false }).first().click();
+    await page.getByRole("complementary", { name: "Resultados" }).locator('button[aria-pressed="false"]').first().click();
     await page.waitForTimeout(800);
     await page.screenshot({ path: `${SHOTS}/planner-selected-light.png` });
 

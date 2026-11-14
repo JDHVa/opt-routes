@@ -26,9 +26,9 @@ test.describe("comparar", () => {
     await expect(rows.filter({ hasText: /^ACO\+GA/ }).getByText("No")).toBeVisible();
 
     const costHeader = page.getByRole("columnheader", { name: /Costo/ });
-    await costHeader.getByRole("button").click();
+    await costHeader.getByRole("button", { name: "Costo", exact: true }).click();
     await expect(costHeader).toHaveAttribute("aria-sort", "ascending");
-    await costHeader.getByRole("button").click();
+    await costHeader.getByRole("button", { name: "Costo", exact: true }).click();
     await expect(costHeader).toHaveAttribute("aria-sort", "descending");
     await expect(rows.first()).toContainText("OR-Tools");
 
