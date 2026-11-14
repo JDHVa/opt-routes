@@ -57,12 +57,12 @@ Todos los colores se definen en `src/app/globals.css` como variables OKLCH y se 
 | `--border-strong` | `oklch(0.85 0.006 250)` | `oklch(0.38 0.01 250)` | separadores con énfasis, foco de input |
 | `--text` | `oklch(0.21 0.01 250)` | `oklch(0.95 0.004 250)` | texto principal |
 | `--text-muted` | `oklch(0.50 0.012 250)` | `oklch(0.70 0.01 250)` | secundario, labels (contraste ≥ 4.5:1 verificado) |
-| `--text-faint` | `oklch(0.64 0.01 250)` | `oklch(0.56 0.01 250)` | solo placeholders y metadatos no esenciales |
+| `--text-faint` | `oklch(0.54 0.01 250)` | `oklch(0.63 0.01 250)` | solo placeholders y metadatos no esenciales |
 | `--accent` | `oklch(0.53 0.15 255)` | `oklch(0.70 0.13 255)` | acción primaria, selección, foco |
 | `--accent-fg` | `oklch(0.99 0 0)` | `oklch(0.16 0.01 255)` | texto sobre el acento |
 | `--accent-soft` | `oklch(0.95 0.03 255)` | `oklch(0.28 0.05 255)` | fondo de items seleccionados |
-| `--success` | `oklch(0.56 0.13 155)` | `oklch(0.72 0.14 155)` | factible, completado |
-| `--warning` | `oklch(0.68 0.14 75)` | `oklch(0.80 0.13 80)` | retraso, overtime |
+| `--success` | `oklch(0.54 0.13 155)` | `oklch(0.72 0.14 155)` | factible, completado |
+| `--warning` | `oklch(0.56 0.13 75)` | `oklch(0.80 0.13 80)` | retraso, overtime |
 | `--danger` | `oklch(0.56 0.19 27)` | `oklch(0.70 0.17 25)` | infactible, error |
 
 - Dark mode: superficies escalonadas (bg → surface → surface-2), sin negro puro ni blanco puro.
@@ -205,7 +205,7 @@ La base de la app es 14 px. No hay texto de más de 24 px fuera de la landing.
 - **`prefers-reduced-motion: reduce`:** se desactivan desplazamientos y escalas (solo quedan fades de ≤ 100 ms), la cámara no vuela (`jumpTo` en vez de `flyTo`) y la simulación no interpola posiciones de forma suave.
 
 ## 13. Accesibilidad (WCAG 2.2 AA)
-- Contraste de texto ≥ 4.5:1 y de elementos UI ≥ 3:1, verificado en ambos temas.
+- Contraste de texto ≥ 4.5:1 y de elementos UI ≥ 3:1, verificado en ambos temas con `npm run contrast` (48 pares).
 - Foco visible: anillo de 2 px `--accent` con offset de 2 px, nunca `outline: none` sin reemplazo. El foco no queda oculto bajo la topbar o los paneles (2.4.11).
 - Todo es operable con teclado: ⌘K, tabs con flechas, Escape cierra paneles. El mapa tiene una alternativa en tabla con el itinerario completo.
 - Áreas táctiles ≥ 24×24 px (2.5.8).
