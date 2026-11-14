@@ -72,12 +72,12 @@ Todos los colores se definen en `src/app/globals.css` como variables OKLCH y se 
 ### Paleta categórica de rutas
 Se basa en Okabe-Ito y Paul Tol (apta para daltonismo), reordenada para que las rutas contiguas contrasten. El amarillo puro se excluye porque no se lee sobre el mapa claro.
 ```
---route-1  #0072B2   --route-7  #882255
---route-2  #D55E00   --route-8  #44AA99
---route-3  #009E73   --route-9  #997700
---route-4  #CC79A7   --route-10 #332288
---route-5  #56B4E9   --route-11 #EE6677
---route-6  #E69F00   --route-12 #117733
+--route-1  #0A6CD6   --route-7  #9E1F63
+--route-2  #E85A00   --route-8  #2BB5A0
+--route-3  #00A878   --route-9  #A87F00
+--route-4  #E06BAF   --route-10 #3D2BB8
+--route-5  #2CB1F5   --route-11 #F0556A
+--route-6  #F2A100   --route-12 #12883B
 ```
 - Los mismos valores sirven en light y dark; el casing (sección 7) da el contraste.
 - Más de 12 rutas: se repite la paleta y desde la 13 la línea es punteada (`line-dasharray: [2, 1]`). El número del repartidor siempre aparece en el marcador y en la leyenda.
