@@ -51,13 +51,6 @@
     "goTo": "go to",
     "goToPage": "Go to {page}"
   },
-  "placeholders": {
-    "simulate": {
-      "title": "Dynamic simulation",
-      "body": "No simulation is running. Load a scenario in the Planner to simulate new orders and real-time re-optimization.",
-      "action": "Open the Planner"
-    }
-  },
   "map": {
     "ariaLabel": "Route map",
     "depot": "Depot",
@@ -503,6 +496,124 @@
     },
     "chart": {
       "aria": "Scatter plot of the Pareto front solutions. The same data is in the table below."
+    }
+  },
+  "simulate": {
+    "panelLabel": "Simulation settings and status",
+    "placingHint": "Click the map to place the order. Escape cancels.",
+    "scenarioFailed": "Could not load the simulation scenario.",
+    "mobile": {
+      "label": "Simulation panels",
+      "panel": "Simulation",
+      "log": "Log"
+    },
+    "map": {
+      "driver": "Driver {n}"
+    },
+    "config": {
+      "loading": "Loading settings",
+      "title": "Dynamic simulation",
+      "scenario": "Scenario",
+      "algorithm": "Re-optimization algorithm",
+      "trigger": "When to re-optimize",
+      "triggers": {
+        "event": "Per order",
+        "batch": "In batches"
+      },
+      "triggerHelp": {
+        "event": "Every new order triggers a re-optimization.",
+        "batch": "New orders pile up and the plan is re-optimized every so often."
+      },
+      "fields": {
+        "batchMinutes": "Batch minutes",
+        "initialTimeLimitS": "Initial plan time",
+        "reoptTimeLimitS": "Time per re-optimization"
+      },
+      "speed": "Speed",
+      "speedValue": "{speed}×",
+      "speedHelp": "Simulated minutes per real second. At 60× one simulated hour passes in a second.",
+      "start": "Start simulation",
+      "connecting": "Connecting…"
+    },
+    "errors": {
+      "title": "The simulation stopped",
+      "causes": {
+        "disconnected": "The connection to the simulation server was lost. The web proxy does not support WebSocket: the connection goes straight to the solver.",
+        "busy": "The solver is busy with another optimization. Try again in a few seconds.",
+        "invalid_request": "The server rejected the settings or the order.",
+        "invalid_order": "The order is not valid or its id already exists.",
+        "simulation_error": "The simulation failed on the server.",
+        "unknown": "An unexpected error occurred."
+      },
+      "reconnect": "Reconnect and start over",
+      "field": {
+        "required": "Enter a value.",
+        "min": "Must be greater than 0.",
+        "max": "Must be at most {bound}."
+      }
+    },
+    "status": {
+      "phase": {
+        "idle": "No simulation",
+        "connecting": "Preparing the simulation",
+        "running": "Simulation running",
+        "paused": "Simulation paused",
+        "done": "Simulation finished",
+        "error": "Simulation stopped",
+        "closed": "Simulation stopped"
+      },
+      "planning": "Computing the initial plan…",
+      "scenario": "Scenario",
+      "algorithm": "Algorithm",
+      "trigger": "Re-optimization",
+      "event": "Per order",
+      "batch": "Every {minutes} min",
+      "clock": "Clock",
+      "delivered": "Delivered",
+      "newSimulation": "New simulation"
+    },
+    "summary": {
+      "title": "Day summary",
+      "feasible": "Within constraints",
+      "infeasible": "Constraints violated",
+      "distance": "Distance",
+      "cost": "Cost",
+      "duration": "Total time",
+      "makespan": "Last delivery",
+      "vehicles": "Drivers",
+      "lateness": "Lateness",
+      "counts": "{orders, plural, one {# new order} other {# new orders}} and {reopts, plural, one {# re-optimization} other {# re-optimizations}}."
+    },
+    "timeline": {
+      "title": "Simulation timeline",
+      "clock": "Clock",
+      "clockLabel": "Simulation clock: {time}",
+      "pause": "Pause",
+      "resume": "Resume",
+      "speed": "Simulation speed",
+      "speedValue": "{speed}×",
+      "addOrder": "Add order",
+      "placing": "Placing order…",
+      "stop": "Stop",
+      "progress": "Day progress",
+      "marks": {
+        "order": "New order",
+        "reopt": "Re-optimization"
+      }
+    },
+    "log": {
+      "title": "Event log",
+      "empty": "Events show up here once the simulation starts.",
+      "reopt": {
+        "initial": "Initial plan",
+        "event": "Re-optimization per order",
+        "batch": "Re-optimization per batch"
+      },
+      "reoptDetail": "{runtime} · {count, plural, one {# pending stop} other {# pending stops}}",
+      "order": "New order {id}",
+      "delivered": "Delivered: {ids}",
+      "done": "Day finished",
+      "error": "Error: {code}"
     }
   }
 }

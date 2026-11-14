@@ -1,4 +1,5 @@
-import { PlaceholderPage } from "@/components/shell/PlaceholderPage";
+import { setRequestLocale } from "next-intl/server";
+import { SimulateView } from "@/components/simulate/SimulateView";
 
 export default async function SimulatePage({
   params,
@@ -6,5 +7,6 @@ export default async function SimulatePage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  return <PlaceholderPage locale={locale} screen="simulate" />;
+  setRequestLocale(locale);
+  return <SimulateView />;
 }

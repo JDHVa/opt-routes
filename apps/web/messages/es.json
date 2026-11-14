@@ -51,13 +51,6 @@
     "goTo": "ir a",
     "goToPage": "Ir a {page}"
   },
-  "placeholders": {
-    "simulate": {
-      "title": "Simulación dinámica",
-      "body": "Aún no hay una simulación en marcha. Carga un escenario en el Planner para simular pedidos nuevos y re-optimización en tiempo real.",
-      "action": "Abrir el Planner"
-    }
-  },
   "map": {
     "ariaLabel": "Mapa de rutas",
     "depot": "Depósito",
@@ -503,6 +496,124 @@
     },
     "chart": {
       "aria": "Dispersión de las soluciones del frente de Pareto. Los mismos datos están en la tabla de abajo."
+    }
+  },
+  "simulate": {
+    "panelLabel": "Configuración y estado de la simulación",
+    "placingHint": "Haz clic en el mapa para colocar el pedido. Escape cancela.",
+    "scenarioFailed": "No se pudo cargar el escenario de la simulación.",
+    "mobile": {
+      "label": "Paneles de la simulación",
+      "panel": "Simulación",
+      "log": "Registro"
+    },
+    "map": {
+      "driver": "Repartidor {n}"
+    },
+    "config": {
+      "loading": "Cargando configuración",
+      "title": "Simulación dinámica",
+      "scenario": "Escenario",
+      "algorithm": "Algoritmo de re-optimización",
+      "trigger": "Cuándo re-optimizar",
+      "triggers": {
+        "event": "Por pedido",
+        "batch": "Por lote"
+      },
+      "triggerHelp": {
+        "event": "Cada pedido nuevo dispara una re-optimización.",
+        "batch": "Los pedidos nuevos se acumulan y se re-optimiza cada cierto tiempo."
+      },
+      "fields": {
+        "batchMinutes": "Minutos del lote",
+        "initialTimeLimitS": "Tiempo del plan inicial",
+        "reoptTimeLimitS": "Tiempo por re-optimización"
+      },
+      "speed": "Velocidad",
+      "speedValue": "{speed}×",
+      "speedHelp": "Minutos simulados por segundo real. A 60× una hora simulada pasa en un segundo.",
+      "start": "Iniciar simulación",
+      "connecting": "Conectando…"
+    },
+    "errors": {
+      "title": "La simulación se detuvo",
+      "causes": {
+        "disconnected": "Se perdió la conexión con el servidor de simulación. El proxy web no soporta WebSocket: la conexión es directa al solver.",
+        "busy": "El solver está ocupado con otra optimización. Inténtalo en unos segundos.",
+        "invalid_request": "El servidor rechazó la configuración o el pedido.",
+        "invalid_order": "El pedido no es válido o su id ya existe.",
+        "simulation_error": "La simulación falló en el servidor.",
+        "unknown": "Ocurrió un error inesperado."
+      },
+      "reconnect": "Reconectar e iniciar de nuevo",
+      "field": {
+        "required": "Ingresa un valor.",
+        "min": "Debe ser mayor que 0.",
+        "max": "Debe ser como máximo {bound}."
+      }
+    },
+    "status": {
+      "phase": {
+        "idle": "Sin simulación",
+        "connecting": "Preparando la simulación",
+        "running": "Simulación en curso",
+        "paused": "Simulación en pausa",
+        "done": "Simulación terminada",
+        "error": "Simulación detenida",
+        "closed": "Simulación detenida"
+      },
+      "planning": "Calculando el plan inicial…",
+      "scenario": "Escenario",
+      "algorithm": "Algoritmo",
+      "trigger": "Re-optimización",
+      "event": "Por pedido",
+      "batch": "Cada {minutes} min",
+      "clock": "Reloj",
+      "delivered": "Entregadas",
+      "newSimulation": "Nueva simulación"
+    },
+    "summary": {
+      "title": "Resumen de la jornada",
+      "feasible": "Dentro de las restricciones",
+      "infeasible": "Con restricciones incumplidas",
+      "distance": "Distancia",
+      "cost": "Costo",
+      "duration": "Tiempo total",
+      "makespan": "Última entrega",
+      "vehicles": "Repartidores",
+      "lateness": "Retraso",
+      "counts": "{orders, plural, one {# pedido nuevo} other {# pedidos nuevos}} y {reopts, plural, one {# re-optimización} other {# re-optimizaciones}}."
+    },
+    "timeline": {
+      "title": "Línea de tiempo de la simulación",
+      "clock": "Reloj",
+      "clockLabel": "Reloj de la simulación: {time}",
+      "pause": "Pausar",
+      "resume": "Reanudar",
+      "speed": "Velocidad de la simulación",
+      "speedValue": "{speed}×",
+      "addOrder": "Agregar pedido",
+      "placing": "Colocando pedido…",
+      "stop": "Detener",
+      "progress": "Avance de la jornada",
+      "marks": {
+        "order": "Pedido nuevo",
+        "reopt": "Re-optimización"
+      }
+    },
+    "log": {
+      "title": "Registro de eventos",
+      "empty": "Los eventos aparecen aquí cuando inicia la simulación.",
+      "reopt": {
+        "initial": "Plan inicial",
+        "event": "Re-optimización por pedido",
+        "batch": "Re-optimización por lote"
+      },
+      "reoptDetail": "{runtime} · {count, plural, one {# parada pendiente} other {# paradas pendientes}}",
+      "order": "Pedido nuevo {id}",
+      "delivered": "Entregadas: {ids}",
+      "done": "Jornada terminada",
+      "error": "Error: {code}"
     }
   }
 }
