@@ -27,6 +27,7 @@ class SolverParams(BaseModel):
     init: InitStrategy = InitStrategy.KMEANS
     local_search: bool = True
     progress_every: int = Field(default=5, ge=1)
+    progress_interval_s: float = Field(default=0.5, gt=0, le=10)
 
 
 @dataclass(slots=True)

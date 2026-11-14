@@ -118,14 +118,28 @@ def test_cancellation_stops_early() -> None:
 
     def callback(event: ProgressEvent) -> bool:
         calls.append(event.iteration)
-        return False
+        return event.extra["stage"] == "seeding"
 
     result = Nsga2Solver({"time_limit_s": 30, "max_iterations": 500, "seed": 0}).solve(
         inst, callback
     )
-    assert calls == [5]
+    assert calls == [0, 5]
     assert result.iterations == 5
     assert result.pareto
+
+
+def test_stage_sequence() -> None:
+    inst = make_instance(n=25, m=4, seed=1)
+    stages: list[str] = []
+
+    def callback(event: ProgressEvent) -> bool:
+        stages.append(event.extra["stage"])
+        return True
+
+    Nsga2Solver({"time_limit_s": 30, "max_iterations": 7, "seed": 0, "progress_every": 3}).solve(
+        inst, callback
+    )
+    assert stages == ["seeding", "evolving", "evolving", "finished"]
 
 
 def test_same_seed_same_front() -> None:

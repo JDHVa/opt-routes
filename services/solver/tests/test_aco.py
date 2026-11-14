@@ -97,26 +97,29 @@ def test_time_limit_and_cancel() -> None:
 
     def cancel(event: ProgressEvent) -> bool:
         events.append(event)
-        return False
+        return event.extra["stage"] == "seeding"
 
     cancelled = AcoSolver(
         {"time_limit_s": 30.0, "max_iterations": 1000, "progress_every": 3, "seed": 1}
     ).solve(inst, callback=cancel)
     assert cancelled.iterations == 3
-    assert len(events) == 1
-    assert set(events[0].extra) == {"avg_fitness", "branching", "tau_max", "tau_min"}
+    assert len(events) == 2
+    assert set(events[-1].extra) == {"avg_fitness", "branching", "tau_max", "tau_min", "stage"}
 
 
 def test_callback_cadence_and_final() -> None:
     inst = make_instance(n=20, m=3, seed=7)
     iterations: list[int] = []
+    stages: list[str] = []
 
     def record(event: ProgressEvent) -> bool:
         iterations.append(event.iteration)
+        stages.append(event.extra["stage"])
         return True
 
     AcoSolver(quick_params(max_iterations=10, progress_every=4)).solve(inst, callback=record)
-    assert iterations == [4, 8, 10]
+    assert iterations == [0, 4, 8, 10]
+    assert stages == ["seeding", "constructing", "constructing", "finished"]
 
 
 def test_state_mapping_by_keys() -> None:
@@ -207,3 +210,17 @@ def _iteration_ms(inst: Instance) -> float:
 def test_iteration_speed_n200() -> None:
     inst = make_instance(n=200, m=20, seed=11)
     assert _iteration_ms(inst) < 50.0
+
+
+def test_rank_based_deposit_adds_more_pheromone() -> None:
+    inst = make_instance(n=20, m=3, seed=4)
+
+    def total_after(deposit_top: int) -> float:
+        colony = AntColony(inst, AcoParams(), np.random.default_rng(0), None)
+        colony.seed([nearest_neighbor(inst)])
+        ants = colony.construct(6)
+        before = colony.pheromone.copy()
+        colony.update(ants, deposit_top=deposit_top)
+        return float(np.sum(colony.pheromone - before * (1.0 - colony.params.rho)))
+
+    assert total_after(3) >= total_after(1)

@@ -92,21 +92,24 @@ def test_stops_when_callback_returns_false() -> None:
         inst, callback=callback
     )
     assert len(events) == 3
-    assert result.iterations == 6
+    assert result.iterations == 4
     assert events[-1].best is not None
-    assert set(events[-1].extra) == {"avg_fitness", "diversity", "feasible_pct"}
+    assert set(events[-1].extra) == {"avg_fitness", "diversity", "feasible_pct", "stage"}
 
 
 def test_final_callback_is_called_once_at_end() -> None:
     inst = make_instance(n=20, m=3, seed=7)
     iterations: list[int] = []
+    stages: list[str] = []
 
     def callback(event: ProgressEvent) -> bool:
         iterations.append(event.iteration)
+        stages.append(event.extra["stage"])
         return True
 
     GaSolver(small_params(max_iterations=7, progress_every=5)).solve(inst, callback=callback)
-    assert iterations == [5, 7]
+    assert iterations == [0, 5, 7]
+    assert stages == ["seeding", "evolving", "finished"]
 
 
 def test_warm_start_is_never_worsened() -> None:
@@ -199,3 +202,24 @@ def test_cvrp_gap(name: str, limit: float) -> None:
 @pytest.mark.slow
 def test_solomon_c101_feasible_with_small_gap() -> None:
     assert gap_percent("C101") <= 8.0
+
+
+def test_time_based_progress_events_with_slow_cadence() -> None:
+    inst = make_instance(n=60, m=6, seed=3)
+    events: list[ProgressEvent] = []
+
+    def callback(event: ProgressEvent) -> bool:
+        events.append(event)
+        return True
+
+    GaSolver(
+        small_params(
+            time_limit_s=2.0,
+            max_iterations=10**6,
+            progress_every=10**6,
+            progress_interval_s=0.2,
+        )
+    ).solve(inst, callback=callback)
+    evolving = [e for e in events if e.extra["stage"] == "evolving"]
+    assert len(evolving) >= 4
+    assert all(e.best is not None for e in events)

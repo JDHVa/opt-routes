@@ -17,6 +17,12 @@ from routeopt.algorithms.base import (
 )
 from routeopt.algorithms.init import initial_routesets
 from routeopt.algorithms.local_search import improve
+from routeopt.algorithms.progress import (
+    STAGE_CONSTRUCTING,
+    STAGE_FINISHED,
+    STAGE_SEEDING,
+    ProgressGate,
+)
 from routeopt.core.evaluate import additive_coefs, evaluate, route_additive, route_args, route_eval
 from routeopt.core.types import F64, I64, Evaluation, Instance, Penalties, RouteSet
 
@@ -435,7 +441,10 @@ class AntColony:
         return [_to_routeset(mats[a], cnts[a]) for a in range(n_ants)]
 
     def update(
-        self, routesets: list[RouteSet], evaluations: list[Evaluation] | None = None
+        self,
+        routesets: list[RouteSet],
+        evaluations: list[Evaluation] | None = None,
+        deposit_top: int = 1,
     ) -> None:
         evals = evaluations or [evaluate(self.inst, rs, self.penalties) for rs in routesets]
         iteration_best = int(np.argmin([ev.fitness for ev in evals]))
@@ -451,6 +460,12 @@ class AntColony:
             source, fitness = routesets[iteration_best], evals[iteration_best].fitness
         self.pheromone *= 1.0 - self.params.rho
         self._deposit(source, 1.0 / max(fitness, TOLERANCE))
+        if deposit_top > 1:
+            ranked = np.argsort([ev.fitness for ev in evals], kind="stable")
+            for rank in range(1, min(deposit_top, len(ranked))):
+                idx = int(ranked[rank])
+                weight = (deposit_top - rank) / deposit_top
+                self._deposit(routesets[idx], weight / max(evals[idx].fitness, TOLERANCE))
         self._clip()
         if (
             self.since_improvement >= self.params.stagnation_iterations
@@ -531,8 +546,12 @@ class AcoSolver(Solver):
             colony.seed(starts)
         history: list[tuple[int, float, float]] = []
         iteration = 0
+        gate = ProgressGate(watch, params.progress_every, params.progress_interval_s)
         stopped = False
-        while iteration < params.max_iterations and not watch.expired():
+        if callback is not None:
+            stopped = not self._emit(callback, colony, [], 0, watch, STAGE_SEEDING)
+            gate.mark(0)
+        while not stopped and iteration < params.max_iterations and not watch.expired():
             ants = colony.construct(params.n_ants)
             evals = [evaluate(inst, rs, penalties) for rs in ants]
             if params.local_search and params.ls_ants > 0:
@@ -543,18 +562,18 @@ class AcoSolver(Solver):
                     evals[idx] = evaluate(inst, polished, penalties)
             colony.update(ants, evals)
             iteration += 1
-            if iteration % params.progress_every == 0:
+            if gate.due(iteration):
+                gate.mark(iteration)
                 history.append((iteration, watch.elapsed, colony.best()[1].fitness))
                 if callback is not None and not self._emit(
-                    callback, colony, evals, iteration, watch
+                    callback, colony, evals, iteration, watch, STAGE_CONSTRUCTING
                 ):
                     stopped = True
-                    break
         best_rs, best_ev = colony.best()
         if not history or history[-1][0] != iteration:
             history.append((iteration, watch.elapsed, best_ev.fitness))
         if callback is not None and not stopped:
-            self._emit(callback, colony, [], iteration, watch)
+            self._emit(callback, colony, [], iteration, watch, STAGE_FINISHED)
         return SolveResult(
             algorithm=self.name,
             best=best_rs,
@@ -572,6 +591,7 @@ class AcoSolver(Solver):
         evals: list[Evaluation],
         iteration: int,
         watch: Stopwatch,
+        stage: str,
     ) -> bool:
         best_rs, best_ev = colony.best()
         avg = float(np.mean([ev.fitness for ev in evals])) if evals else best_ev.fitness
@@ -587,6 +607,7 @@ class AcoSolver(Solver):
                     "branching": colony.branching(),
                     "tau_max": colony.tau_max,
                     "tau_min": colony.tau_min,
+                    "stage": stage,
                 },
             )
         )
