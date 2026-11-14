@@ -31,13 +31,20 @@ class OsrmClient:
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._max_table_size = max_table_size
-        self._client = httpx.AsyncClient(timeout=timeout_s, transport=transport)
+        self._timeout_s = timeout_s
+        self._transport = transport
+        self._client = self._new_client()
+
+    def _new_client(self) -> httpx.AsyncClient:
+        return httpx.AsyncClient(timeout=self._timeout_s, transport=self._transport)
 
     async def aclose(self) -> None:
         await self._client.aclose()
 
     async def _get(self, path: str, params: dict[str, str]) -> dict[str, Any]:
         url = f"{self._base_url}{path}"
+        if self._client.is_closed:
+            self._client = self._new_client()
         last: Exception | None = None
         for attempt in range(RETRIES + 1):
             if attempt:
