@@ -12,6 +12,9 @@ const THEMES = { light: ":root", dark: ".dark" };
 
 const TEXT_PAIRS = [
   ["text", "bg"],
+  ["accent-strong", "accent-press"],
+  ["accent-strong", "accent-soft"],
+  ["accent-fg", "accent-strong"],
   ["text", "surface"],
   ["text", "surface-2"],
   ["text-muted", "bg"],

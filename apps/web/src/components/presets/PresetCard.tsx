@@ -67,7 +67,7 @@ export function PresetCard({
         <Link
           href={presetHref(preset)}
           aria-label={t("tryNamed", { name })}
-          className="group flex items-center gap-3 rounded-lg border border-border bg-surface p-2 transition-[border-color,background-color,transform] duration-[120ms] hover:-translate-y-px hover:border-accent hover:bg-accent-soft"
+          className="group flex items-center gap-3 rounded-lg border border-border bg-surface p-2 transition-[border-color,background-color,transform] duration-[120ms] hover:-translate-y-px hover:border-accent hover:bg-accent-soft active:translate-y-0 active:scale-[0.98] active:border-accent-strong active:bg-accent-press"
         >
           <span className="flex h-12 w-20 shrink-0 items-center justify-center rounded-md bg-surface-2">
             <PresetMinimap scenarioId={preset.scenarioId} color={color} className="size-full" />
@@ -94,7 +94,8 @@ export function PresetCard({
         aria-label={t("tryNamed", { name })}
         className={cn(
           "group flex w-full flex-col overflow-hidden rounded-lg border border-border bg-surface",
-          "transition-[border-color,transform] duration-[120ms] ease-panel hover:-translate-y-0.5 hover:border-accent",
+          "transition-[border-color,background-color,transform,box-shadow] duration-[120ms] ease-panel hover:-translate-y-0.5 hover:border-accent",
+          "active:translate-y-0 active:scale-[0.985] active:border-accent-strong active:bg-accent-soft active:shadow-[0_0_0_3px_var(--accent-soft)]",
         )}
       >
         <div className="relative flex aspect-[8/5] items-center justify-center bg-surface-2">

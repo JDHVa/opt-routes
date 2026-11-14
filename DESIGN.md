@@ -61,6 +61,8 @@ Todos los colores se definen en `src/app/globals.css` como variables OKLCH y se 
 | `--accent` | `oklch(0.55 0.20 258)` | `oklch(0.72 0.17 258)` | acción primaria, selección, foco (azul eléctrico, más vivo) |
 | `--accent-fg` | `oklch(0.99 0 0)` | `oklch(0.16 0.01 255)` | texto sobre el acento |
 | `--accent-soft` | `oklch(0.95 0.04 258)` | `oklch(0.30 0.07 258)` | fondo de items seleccionados |
+| `--accent-strong` | `oklch(0.45 0.20 258)` | `oklch(0.84 0.12 258)` | estado **presionado** del botón primario y texto de controles presionados (en dark aclara, en light oscurece) |
+| `--accent-press` | `oklch(0.90 0.07 258)` | `oklch(0.36 0.10 258)` | fondo **presionado** de botones outline, ghost y secondary, toggles y tarjetas |
 | `--signal` | `oklch(0.75 0.17 65)` | `oklch(0.80 0.16 70)` | acento secundario "feromona" (ámbar): hormigas, mejoras encontradas, highlights puntuales. Nunca para texto largo |
 | `--success` | `oklch(0.54 0.13 155)` | `oklch(0.72 0.14 155)` | factible, completado |
 | `--warning` | `oklch(0.56 0.13 75)` | `oklch(0.80 0.13 80)` | retraso, overtime |
@@ -200,6 +202,7 @@ La base de la app es 14 px. No hay texto de más de 24 px fuera de la landing.
 ## 12. Motion
 La UI debe sentirse **viva**: el usuario ve cómo trabaja el algoritmo. Cada animación comunica algo real (progreso, cambio, causa y efecto); nada es decoración en loop.
 
+- **Feedback de click (obligatorio):** todo elemento clicable cambia de color al presionarlo (`:active`): el primario pasa a `--accent-strong`, los demás a `--accent-press` con texto `--accent-strong`. Además se hunde con `scale(0.96–0.985)` en 75 ms. Los toggles y segmented seleccionados quedan en `--accent-soft` con texto `--accent-strong`. Un click nunca debe sentirse "muerto".
 - **Base:**
   - hover y foco en 120 ms;
   - paneles, popovers, tabs y diálogos en 180–240 ms con `cubic-bezier(0.2, 0, 0, 1)`;

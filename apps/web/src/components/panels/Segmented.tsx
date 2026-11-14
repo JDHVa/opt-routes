@@ -39,7 +39,7 @@ export function Segmented<T extends string>({
         <ToggleGroupItem
           key={option.value}
           value={option.value}
-          className="h-8 min-w-0 px-2 text-small aria-pressed:bg-accent-soft aria-pressed:text-foreground data-[pressed]:bg-accent-soft"
+          className="h-8 min-w-0 px-2 text-small aria-pressed:bg-accent-soft aria-pressed:text-accent-strong aria-pressed:font-semibold data-[pressed]:bg-accent-soft data-[pressed]:text-accent-strong active:scale-[0.97] active:bg-accent-press"
         >
           <span className="truncate">{option.label}</span>
         </ToggleGroupItem>
