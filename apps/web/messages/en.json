@@ -52,16 +52,6 @@
     "goToPage": "Go to {page}"
   },
   "placeholders": {
-    "compare": {
-      "title": "Compare algorithms",
-      "body": "There are no runs to compare yet. Optimize a scenario in the Planner and come back to see cost, time and vehicles for each algorithm.",
-      "action": "Open the Planner"
-    },
-    "pareto": {
-      "title": "Pareto front",
-      "body": "There is no computed front yet. Run NSGA-II in the Planner to see the trade-off between time and cost.",
-      "action": "Open the Planner"
-    },
     "simulate": {
       "title": "Dynamic simulation",
       "body": "No simulation is running. Load a scenario in the Planner to simulate new orders and real-time re-optimization.",
@@ -398,6 +388,121 @@
       "osm": "Map and routes: © OpenStreetMap contributors (ODbL). OpenMapTiles tiles via OpenFreeMap.",
       "amazon": "Reference deliveries: Amazon Last Mile Routing Challenge, Amazon and MIT CTL (CC BY-NC 4.0, non-commercial use only).",
       "project": "RouteOpt NL is a school and portfolio project. Demo region: Monterrey metropolitan area, Nuevo León."
+    }
+  },
+  "compare": {
+    "title": "Compare algorithms",
+    "subtitle": "Run several algorithms on the same problem, one after another, and compare cost, time, vehicles and convergence.",
+    "loading": "Loading configuration",
+    "config": "Comparison settings",
+    "timeLimit": "Time limit",
+    "run": "Compare {count} runs",
+    "stop": "Stop",
+    "progress": "{done} of {total} runs finished",
+    "stops": "{count, plural, one {stop} other {stops}}",
+    "drivers": "{count, plural, one {driver} other {drivers}}",
+    "results": "Results",
+    "gapNote": "Gap: fitness difference against the best run. The best cell of each column is shown in green.",
+    "empty": "No results yet. {algorithms} will run one after another on the same problem.",
+    "source": {
+      "label": "Problem",
+      "planner": "Planner problem ({count, plural, one {# stop} other {# stops}})"
+    },
+    "runs": {
+      "title": "Runs",
+      "add": "Add run",
+      "algorithm": "Algorithm for run {n}",
+      "remove": "Remove run {n}",
+      "limits": "{min} to {max} runs. They execute in sequence."
+    },
+    "table": {
+      "caption": "Run comparison by algorithm",
+      "columns": {
+        "algorithm": "Algorithm",
+        "cost": "Cost",
+        "duration": "Total time",
+        "makespan": "Last delivery",
+        "vehicles": "Vehicles",
+        "distance": "Distance",
+        "gap": "Gap",
+        "runtime": "Runtime",
+        "feasible": "Feasible"
+      },
+      "status": {
+        "pending": "Queued",
+        "running": "Running"
+      },
+      "feasible": {
+        "yes": "Yes",
+        "no": "No"
+      }
+    },
+    "chart": {
+      "title": "Convergence",
+      "aria": "Best-fitness convergence curves per algorithm. Final values are in the table.",
+      "xAxis": "Time (s)",
+      "yAxis": "Best fitness",
+      "logScale": "Logarithmic scale",
+      "logHint": "The range is wide",
+      "empty": "Curves appear when the first progress update arrives."
+    },
+    "minimaps": {
+      "title": "Routes by algorithm",
+      "show": "Show minimaps",
+      "sync": "Sync the maps",
+      "empty": "Maps appear when a run delivers its first solution."
+    }
+  },
+  "pareto": {
+    "title": "Pareto front",
+    "subtitle": "NSGA-II does not pick a winner: it returns the solutions that cannot improve one objective without worsening another. You choose the trade-off.",
+    "noProblem": "No problem is loaded yet. Load the demo scenario or prepare one in the Planner, then compute its front.",
+    "loadDemo": "Load Monterrey demo",
+    "controls": "Front controls",
+    "axis": {
+      "x": "Horizontal axis",
+      "y": "Vertical axis"
+    },
+    "timeLimit": "Time limit",
+    "run": "Compute front",
+    "rerun": "Recompute front",
+    "stop": "Stop",
+    "preparing": "Preparing the instance",
+    "running": "Computing with NSGA-II · {elapsed}",
+    "count": "{count, plural, one {# solution on the front.} other {# solutions on the front.}}",
+    "idle": "NSGA-II runs on the {stops} stops of the current problem.",
+    "empty": "No front yet. Compute it to see the trade-off between time, cost and vehicles.",
+    "legend": {
+      "size": "Point size shows the number of vehicles.",
+      "dominated": "Faded points are dominated on these two axes.",
+      "front": "The step line joins the non-dominated points."
+    },
+    "dominated": "Dominated on these axes",
+    "nonDominated": "Non-dominated",
+    "selectHint": "Click a point or a row to see its routes on the map.",
+    "card": {
+      "title": "Selected solution",
+      "time": "Total time",
+      "cost": "Cost",
+      "vehicles": "Vehicles",
+      "makespan": "Last delivery",
+      "distance": "Distance"
+    },
+    "useInPlanner": "Use this solution in the Planner",
+    "list": {
+      "title": "Front solutions",
+      "caption": "Pareto front solutions with their four objectives",
+      "select": "Select solution {n}"
+    },
+    "mapHint": "stops. Select a solution to see its routes.",
+    "objectives": {
+      "time": "Total time",
+      "cost": "Cost",
+      "vehicles": "Vehicles",
+      "makespan": "Last delivery"
+    },
+    "chart": {
+      "aria": "Scatter plot of the Pareto front solutions. The same data is in the table below."
     }
   }
 }

@@ -27,7 +27,7 @@ import { ALGORITHM_COLORS, routeColor, routeIsDashed } from "@/lib/routes/palett
 import { cn } from "@/lib/utils";
 import { usePlanner } from "@/stores/planner";
 
-function Metric({ label, value }: { label: string; value: string | ValuePart[] }) {
+export function Metric({ label, value }: { label: string; value: string | ValuePart[] }) {
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
       <dt className="text-micro font-medium text-muted">{label}</dt>
