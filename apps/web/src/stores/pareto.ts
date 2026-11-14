@@ -37,7 +37,7 @@ export const useParetoStore = create<ParetoState>((set, get) => ({
   error: null,
   wakeSince: null,
   timeLimitS: DEFAULT_PARETO_TIME_LIMIT_S,
-  xKey: "time",
+  xKey: "makespan",
   yKey: "cost",
   selectedId: null,
 
