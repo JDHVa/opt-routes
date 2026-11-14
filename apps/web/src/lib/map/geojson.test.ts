@@ -37,17 +37,20 @@ describe("buildRouteCollection", () => {
     expect(feature.geometry.coordinates).toHaveLength(route.visits.length + 1);
   });
 
-  it("usa Route.geometry cuando existe", () => {
+  it("usa Route.geometry (lat, lon) y la convierte a (lon, lat)", () => {
     const geometry: [number, number][] = [
-      [-100.3, 25.6],
-      [-100.2, 25.7],
+      [25.6, -100.3],
+      [25.7, -100.2],
     ];
     const withGeometry: Solution = {
       ...depotSol,
       routes: depotSol.routes.map((r) => ({ ...r, geometry })),
     };
     const routes = buildRouteCollection(depot, withGeometry, EMPTY_FOCUS);
-    expect(routes.features[0].geometry.coordinates).toEqual(geometry);
+    expect(routes.features[0].geometry.coordinates).toEqual([
+      [-100.3, 25.6],
+      [-100.2, 25.7],
+    ]);
   });
 
   it("el color depende del índice del repartidor, no del orden de las rutas", () => {

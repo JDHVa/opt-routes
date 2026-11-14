@@ -41,6 +41,7 @@ export const ALLOWED_POST = [
   /^geometry$/,
   /^import\/csv$/,
   /^export\/csv$/,
+  /^scenarios\/generate$/,
 ];
 
 export function isAllowed(method: "GET" | "POST", path: string): boolean {

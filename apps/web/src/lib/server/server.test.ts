@@ -28,6 +28,8 @@ describe("rutas permitidas del proxy", () => {
     expect(isAllowed("GET", "algorithms")).toBe(true);
     expect(isAllowed("GET", "scenarios/mty-centro-depot-40")).toBe(true);
     expect(isAllowed("POST", "solve/stream")).toBe(true);
+    expect(isAllowed("POST", "scenarios/generate")).toBe(true);
+    expect(isAllowed("POST", "import/csv")).toBe(true);
     expect(isAllowed("POST", "algorithms")).toBe(false);
     expect(isAllowed("GET", "../etc/passwd")).toBe(false);
     expect(isAllowed("GET", "docs")).toBe(false);

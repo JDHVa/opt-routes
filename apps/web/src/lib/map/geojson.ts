@@ -10,6 +10,12 @@ export type MapFocus = {
   selectedStopId: string | null;
 };
 
+export type MapExtras = {
+  origins?: Record<string, Location>;
+  delivered?: ReadonlySet<string>;
+  flagUnassigned?: boolean;
+};
+
 export const EMPTY_FOCUS: MapFocus = {
   selectedRoute: null,
   hoveredRoute: null,
@@ -32,6 +38,7 @@ export type StopProps = {
   emphasis: Emphasis;
   selected: boolean;
   infeasible: boolean;
+  delivered: boolean;
 };
 
 export function emphasisFor(driverIndex: number, focus: MapFocus): Emphasis {
@@ -62,6 +69,7 @@ export function buildRouteCollection(
   problem: Problem,
   solution: Solution | null,
   focus: MapFocus,
+  extras?: MapExtras,
 ): FeatureCollection<LineString, RouteProps> {
   const features: Feature<LineString, RouteProps>[] = [];
   if (solution) {
@@ -73,10 +81,10 @@ export function buildRouteCollection(
       const driver = problem.drivers[driverIndex];
       let coordinates: [number, number][];
       if (route.geometry && route.geometry.length > 1) {
-        coordinates = route.geometry.map(([lon, lat]) => [lon, lat]);
+        coordinates = route.geometry.map(([lat, lon]) => [lon, lat]);
       } else {
         coordinates = [];
-        const origin = originOf(problem, driver);
+        const origin = extras?.origins?.[driver.id] ?? originOf(problem, driver);
         if (origin) coordinates.push(lngLat(origin));
         for (const visit of route.visits) {
           const stop = stopsById.get(visit.stop_id);
@@ -110,6 +118,7 @@ export function buildStopCollections(
   problem: Problem,
   solution: Solution | null,
   focus: MapFocus,
+  extras?: MapExtras,
 ): StopCollections {
   const assigned: Feature<Point, StopProps>[] = [];
   const loose: Feature<Point, StopProps>[] = [];
@@ -137,13 +146,14 @@ export function buildStopCollections(
             emphasis: emphasisFor(driverIndex, focus),
             selected: focus.selectedStopId === stop.id,
             infeasible: false,
+            delivered: false,
           },
         });
       });
     }
   }
 
-  const infeasible = solution !== null;
+  const infeasible = solution !== null && (extras?.flagUnassigned ?? true);
   for (const stop of problem.stops) {
     if (placed.has(stop.id)) continue;
     loose.push({
@@ -157,7 +167,8 @@ export function buildStopCollections(
         high: stop.priority === "high",
         emphasis: "normal",
         selected: focus.selectedStopId === stop.id,
-        infeasible,
+        infeasible: infeasible && !extras?.delivered?.has(stop.id),
+        delivered: extras?.delivered?.has(stop.id) ?? false,
       },
     });
   }

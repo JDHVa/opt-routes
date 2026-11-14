@@ -1,4 +1,5 @@
-import { PlaceholderPage } from "@/components/shell/PlaceholderPage";
+import { setRequestLocale } from "next-intl/server";
+import { CompareView } from "@/components/compare/CompareView";
 
 export default async function ComparePage({
   params,
@@ -6,5 +7,6 @@ export default async function ComparePage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  return <PlaceholderPage locale={locale} screen="compare" />;
+  setRequestLocale(locale);
+  return <CompareView />;
 }

@@ -51,26 +51,8 @@
     "goTo": "go to",
     "goToPage": "Go to {page}"
   },
-  "placeholders": {
-    "compare": {
-      "title": "Compare algorithms",
-      "body": "There are no runs to compare yet. Optimize a scenario in the Planner and come back to see cost, time and vehicles for each algorithm.",
-      "action": "Open the Planner"
-    },
-    "pareto": {
-      "title": "Pareto front",
-      "body": "There is no computed front yet. Run NSGA-II in the Planner to see the trade-off between time and cost.",
-      "action": "Open the Planner"
-    },
-    "simulate": {
-      "title": "Dynamic simulation",
-      "body": "No simulation is running. Load a scenario in the Planner to simulate new orders and real-time re-optimization.",
-      "action": "Open the Planner"
-    }
-  },
   "map": {
     "ariaLabel": "Route map",
-    "attribution": "© OpenMapTiles · © OpenStreetMap contributors",
     "depot": "Depot",
     "driverStart": "Start of driver {n}",
     "tooltip": {
@@ -109,7 +91,6 @@
       "loadDemo": "Load Monterrey demo",
       "importCsv": "Import CSV",
       "generate": "Generate random",
-      "generateSoon": "Random stop generation is not available on the server yet.",
       "importFailed": "Could not import the CSV. Check the format and try again.",
       "count": "{count, plural, one {stop} other {stops}}",
       "highPriority": "high priority",
@@ -119,7 +100,14 @@
         "low": "Low",
         "high": "High"
       },
-      "showMore": "Show {count} more"
+      "showMore": "Show {count} more",
+      "importDone": "{count, plural, one {Imported # stop.} other {Imported # stops.}}",
+      "csvErrors": {
+        "title": "The CSV has errors",
+        "summary": "{count, plural, one {# row could not be read.} other {# rows could not be read.}} Nothing was imported.",
+        "row": "Row",
+        "dismiss": "Dismiss errors"
+      }
     },
     "fleet": {
       "noProblem": "Load a scenario to view and edit the fleet.",
@@ -248,7 +236,21 @@
       "elapsed": "Time",
       "bestFitness": "Best fitness",
       "convergence": "Best fitness convergence",
-      "stop": "Stop"
+      "stop": "Stop",
+      "progress": "Progress",
+      "stages": {
+        "seeding": "Seeding population",
+        "seedingInit": {
+          "random": "Seeding population (random)",
+          "nearest_neighbor": "Seeding population (nearest neighbor)",
+          "kmeans": "Seeding population (K-means)",
+          "sweep": "Seeding population (sweep)"
+        },
+        "evolving": "Evolving",
+        "constructing": "Building ant tours",
+        "cooperating": "GA ↔ ACO cooperation",
+        "finished": "Finished"
+      }
     },
     "results": {
       "panelLabel": "Results",
@@ -273,7 +275,16 @@
       "itineraryFor": "Itinerary for {name}",
       "stop": "Stop",
       "eta": "Arrival",
-      "late": "Late"
+      "late": "Late",
+      "hybrid": {
+        "title": "Improvements contributed",
+        "aria": "Improvements contributed: GA {ga}, ACO {aco}"
+      },
+      "export": {
+        "csv": "Export CSV",
+        "json": "Export JSON",
+        "failed": "Could not export the itinerary. Try again."
+      }
     },
     "wake": {
       "title": "Waking up the server…",
@@ -301,6 +312,28 @@
         "overtime": "Excess shift time: {amount}"
       },
       "hint": "Add drivers, use vehicles with more capacity or relax a constraint."
+    },
+    "generate": {
+      "title": "Generate random stops",
+      "description": "Creates a synthetic scenario over real Monterrey businesses. The same seed gives the same scenario.",
+      "fields": {
+        "nStops": "Stops",
+        "nDrivers": "Drivers",
+        "mode": "Mode",
+        "timeWindowsPct": "With time window",
+        "highPriorityPct": "High priority",
+        "dynamicPct": "Dynamic orders",
+        "seed": "Seed"
+      },
+      "errors": {
+        "required": "Enter a value.",
+        "integer": "Must be an integer.",
+        "min": "Must be at least {bound}.",
+        "max": "Must be at most {bound}."
+      },
+      "cancel": "Cancel",
+      "submit": "Generate scenario",
+      "generating": "Generating…"
     }
   },
   "landing": {
@@ -348,6 +381,242 @@
       "osm": "Map and routes: © OpenStreetMap contributors (ODbL). OpenMapTiles tiles via OpenFreeMap.",
       "amazon": "Reference deliveries: Amazon Last Mile Routing Challenge, Amazon and MIT CTL (CC BY-NC 4.0, non-commercial use only).",
       "project": "RouteOpt NL is a school and portfolio project. Demo region: Monterrey metropolitan area, Nuevo León."
+    }
+  },
+  "compare": {
+    "title": "Compare algorithms",
+    "subtitle": "Run several algorithms on the same problem, one after another, and compare cost, time, vehicles and convergence.",
+    "loading": "Loading configuration",
+    "config": "Comparison settings",
+    "timeLimit": "Time limit",
+    "run": "Compare {count} runs",
+    "stop": "Stop",
+    "progress": "{done} of {total} runs finished",
+    "stops": "{count, plural, one {stop} other {stops}}",
+    "drivers": "{count, plural, one {driver} other {drivers}}",
+    "results": "Results",
+    "gapNote": "Gap: fitness difference against the best run. The best cell of each column is shown in green.",
+    "empty": "No results yet. {algorithms} will run one after another on the same problem.",
+    "source": {
+      "label": "Problem",
+      "planner": "Planner problem ({count, plural, one {# stop} other {# stops}})"
+    },
+    "runs": {
+      "title": "Runs",
+      "add": "Add run",
+      "algorithm": "Algorithm for run {n}",
+      "remove": "Remove run {n}",
+      "limits": "{min} to {max} runs. They execute in sequence."
+    },
+    "table": {
+      "caption": "Run comparison by algorithm",
+      "columns": {
+        "algorithm": "Algorithm",
+        "cost": "Cost",
+        "duration": "Total time",
+        "makespan": "Last delivery",
+        "vehicles": "Vehicles",
+        "distance": "Distance",
+        "gap": "Gap",
+        "runtime": "Runtime",
+        "feasible": "Feasible"
+      },
+      "status": {
+        "pending": "Queued",
+        "running": "Running"
+      },
+      "feasible": {
+        "yes": "Yes",
+        "no": "No"
+      }
+    },
+    "chart": {
+      "title": "Convergence",
+      "aria": "Best-fitness convergence curves per algorithm. Final values are in the table.",
+      "xAxis": "Time (s)",
+      "yAxis": "Best fitness",
+      "logScale": "Logarithmic scale",
+      "logHint": "The range is wide",
+      "empty": "Curves appear when the first progress update arrives."
+    },
+    "minimaps": {
+      "title": "Routes by algorithm",
+      "show": "Show minimaps",
+      "sync": "Sync the maps",
+      "empty": "Maps appear when a run delivers its first solution."
+    }
+  },
+  "pareto": {
+    "title": "Pareto front",
+    "subtitle": "NSGA-II does not pick a winner: it returns the solutions that cannot improve one objective without worsening another. You choose the trade-off.",
+    "noProblem": "No problem is loaded yet. Load the demo scenario or prepare one in the Planner, then compute its front.",
+    "loadDemo": "Load Monterrey demo",
+    "controls": "Front controls",
+    "axis": {
+      "x": "Horizontal axis",
+      "y": "Vertical axis"
+    },
+    "timeLimit": "Time limit",
+    "run": "Compute front",
+    "rerun": "Recompute front",
+    "stop": "Stop",
+    "preparing": "Preparing the instance",
+    "running": "Computing with NSGA-II · {elapsed}",
+    "count": "{count, plural, one {# solution on the front.} other {# solutions on the front.}}",
+    "idle": "NSGA-II runs on the {stops} stops of the current problem.",
+    "empty": "No front yet. Compute it to see the trade-off between time, cost and vehicles.",
+    "legend": {
+      "size": "Point size shows the number of vehicles.",
+      "dominated": "Faded points are dominated on these two axes.",
+      "front": "The step line joins the non-dominated points."
+    },
+    "dominated": "Dominated on these axes",
+    "nonDominated": "Non-dominated",
+    "selectHint": "Click a point or a row to see its routes on the map.",
+    "card": {
+      "title": "Selected solution",
+      "time": "Total time",
+      "cost": "Cost",
+      "vehicles": "Vehicles",
+      "makespan": "Last delivery",
+      "distance": "Distance"
+    },
+    "useInPlanner": "Use this solution in the Planner",
+    "list": {
+      "title": "Front solutions",
+      "caption": "Pareto front solutions with their four objectives",
+      "select": "Select solution {n}"
+    },
+    "mapHint": "stops. Select a solution to see its routes.",
+    "objectives": {
+      "time": "Total time",
+      "cost": "Cost",
+      "vehicles": "Vehicles",
+      "makespan": "Last delivery"
+    },
+    "chart": {
+      "aria": "Scatter plot of the Pareto front solutions. The same data is in the table below."
+    },
+    "scenario": "Scenario",
+    "single": "On this problem the objectives do not conflict: a single solution dominates the rest. Choose the multi-origin scenario to see a front with several."
+  },
+  "simulate": {
+    "panelLabel": "Simulation settings and status",
+    "placingHint": "Click the map to place the order. Escape cancels.",
+    "scenarioFailed": "Could not load the simulation scenario.",
+    "mobile": {
+      "label": "Simulation panels",
+      "panel": "Simulation",
+      "log": "Log"
+    },
+    "map": {
+      "driver": "Driver {n}"
+    },
+    "config": {
+      "loading": "Loading settings",
+      "title": "Dynamic simulation",
+      "scenario": "Scenario",
+      "algorithm": "Re-optimization algorithm",
+      "trigger": "When to re-optimize",
+      "triggers": {
+        "event": "Per order",
+        "batch": "In batches"
+      },
+      "triggerHelp": {
+        "event": "Every new order triggers a re-optimization.",
+        "batch": "New orders pile up and the plan is re-optimized every so often."
+      },
+      "fields": {
+        "batchMinutes": "Batch minutes",
+        "initialTimeLimitS": "Initial plan time",
+        "reoptTimeLimitS": "Time per re-optimization"
+      },
+      "speed": "Speed",
+      "speedValue": "{speed}×",
+      "speedHelp": "Simulated minutes per real second. At 60× one simulated hour passes in a second.",
+      "start": "Start simulation",
+      "connecting": "Connecting…"
+    },
+    "errors": {
+      "title": "The simulation stopped",
+      "causes": {
+        "disconnected": "The connection to the simulation server was lost. The web proxy does not support WebSocket: the connection goes straight to the solver.",
+        "busy": "The solver is busy with another optimization. Try again in a few seconds.",
+        "invalid_request": "The server rejected the settings or the order.",
+        "invalid_order": "The order is not valid or its id already exists.",
+        "simulation_error": "The simulation failed on the server.",
+        "unknown": "An unexpected error occurred."
+      },
+      "reconnect": "Reconnect and start over",
+      "field": {
+        "required": "Enter a value.",
+        "min": "Must be greater than 0.",
+        "max": "Must be at most {bound}."
+      }
+    },
+    "status": {
+      "phase": {
+        "idle": "No simulation",
+        "connecting": "Preparing the simulation",
+        "running": "Simulation running",
+        "paused": "Simulation paused",
+        "done": "Simulation finished",
+        "error": "Simulation stopped",
+        "closed": "Simulation stopped"
+      },
+      "planning": "Computing the initial plan…",
+      "scenario": "Scenario",
+      "algorithm": "Algorithm",
+      "trigger": "Re-optimization",
+      "event": "Per order",
+      "batch": "Every {minutes} min",
+      "clock": "Clock",
+      "delivered": "Delivered",
+      "newSimulation": "New simulation"
+    },
+    "summary": {
+      "title": "Day summary",
+      "feasible": "Within constraints",
+      "infeasible": "Constraints violated",
+      "distance": "Distance",
+      "cost": "Cost",
+      "duration": "Total time",
+      "makespan": "Last delivery",
+      "vehicles": "Drivers",
+      "lateness": "Lateness",
+      "counts": "{orders, plural, one {# new order} other {# new orders}} and {reopts, plural, one {# re-optimization} other {# re-optimizations}}.",
+      "unassigned": "Not delivered"
+    },
+    "timeline": {
+      "title": "Simulation timeline",
+      "clock": "Clock",
+      "clockLabel": "Simulation clock: {time}",
+      "pause": "Pause",
+      "resume": "Resume",
+      "speed": "Simulation speed",
+      "speedValue": "{speed}×",
+      "addOrder": "Add order",
+      "placing": "Placing order…",
+      "stop": "Stop",
+      "progress": "Day progress",
+      "marks": {
+        "order": "New order",
+        "reopt": "Re-optimization"
+      }
+    },
+    "log": {
+      "title": "Event log",
+      "empty": "Events show up here once the simulation starts.",
+      "reopt": {
+        "initial": "Initial plan",
+        "event": "Re-optimization per order",
+        "batch": "Re-optimization per batch"
+      },
+      "reoptDetail": "{runtime} · {count, plural, one {# pending stop} other {# pending stops}}",
+      "order": "New order {id}",
+      "delivered": "Delivered: {ids}",
+      "done": "Day finished",
+      "error": "Error: {code}"
     }
   }
 }

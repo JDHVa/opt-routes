@@ -51,26 +51,8 @@
     "goTo": "ir a",
     "goToPage": "Ir a {page}"
   },
-  "placeholders": {
-    "compare": {
-      "title": "Comparar algoritmos",
-      "body": "Aún no hay corridas para comparar. Optimiza un escenario en el Planner y vuelve para ver la tabla de costo, tiempo y vehículos de cada algoritmo.",
-      "action": "Abrir el Planner"
-    },
-    "pareto": {
-      "title": "Frente de Pareto",
-      "body": "Aún no hay un frente calculado. Corre NSGA-II en el Planner para ver el compromiso entre tiempo y costo.",
-      "action": "Abrir el Planner"
-    },
-    "simulate": {
-      "title": "Simulación dinámica",
-      "body": "Aún no hay una simulación en marcha. Carga un escenario en el Planner para simular pedidos nuevos y re-optimización en tiempo real.",
-      "action": "Abrir el Planner"
-    }
-  },
   "map": {
     "ariaLabel": "Mapa de rutas",
-    "attribution": "© OpenMapTiles · © OpenStreetMap contributors",
     "depot": "Depósito",
     "driverStart": "Inicio del repartidor {n}",
     "tooltip": {
@@ -109,7 +91,6 @@
       "loadDemo": "Cargar demo Monterrey",
       "importCsv": "Importar CSV",
       "generate": "Generar aleatorias",
-      "generateSoon": "La generación de paradas aleatorias aún no está disponible en el servidor.",
       "importFailed": "No se pudo importar el CSV. Revisa el formato e inténtalo de nuevo.",
       "count": "{count, plural, one {parada} other {paradas}}",
       "highPriority": "de prioridad alta",
@@ -119,7 +100,14 @@
         "low": "Baja",
         "high": "Alta"
       },
-      "showMore": "Mostrar {count} más"
+      "showMore": "Mostrar {count} más",
+      "importDone": "{count, plural, one {Se importó # parada.} other {Se importaron # paradas.}}",
+      "csvErrors": {
+        "title": "El CSV tiene errores",
+        "summary": "{count, plural, one {# fila no se pudo leer.} other {# filas no se pudieron leer.}} No se importó nada.",
+        "row": "Fila",
+        "dismiss": "Descartar errores"
+      }
     },
     "fleet": {
       "noProblem": "Carga un escenario para ver y editar la flota.",
@@ -248,7 +236,21 @@
       "elapsed": "Tiempo",
       "bestFitness": "Mejor fitness",
       "convergence": "Convergencia del mejor fitness",
-      "stop": "Detener"
+      "stop": "Detener",
+      "progress": "Avance",
+      "stages": {
+        "seeding": "Sembrando población",
+        "seedingInit": {
+          "random": "Sembrando población (aleatoria)",
+          "nearest_neighbor": "Sembrando población (vecino más cercano)",
+          "kmeans": "Sembrando población (K-means)",
+          "sweep": "Sembrando población (barrido)"
+        },
+        "evolving": "Evolucionando",
+        "constructing": "Construyendo hormigas",
+        "cooperating": "Cooperación GA ↔ ACO",
+        "finished": "Terminado"
+      }
     },
     "results": {
       "panelLabel": "Resultados",
@@ -273,7 +275,16 @@
       "itineraryFor": "Itinerario de {name}",
       "stop": "Parada",
       "eta": "Llegada",
-      "late": "Retraso"
+      "late": "Retraso",
+      "hybrid": {
+        "title": "Mejoras aportadas",
+        "aria": "Mejoras aportadas: GA {ga}, ACO {aco}"
+      },
+      "export": {
+        "csv": "Exportar CSV",
+        "json": "Exportar JSON",
+        "failed": "No se pudo exportar el itinerario. Inténtalo de nuevo."
+      }
     },
     "wake": {
       "title": "Despertando el servidor…",
@@ -301,6 +312,28 @@
         "overtime": "Exceso de jornada: {amount}"
       },
       "hint": "Añade repartidores, usa vehículos con más capacidad o relaja una restricción."
+    },
+    "generate": {
+      "title": "Generar paradas aleatorias",
+      "description": "Crea un escenario sintético sobre establecimientos reales de Monterrey. La misma semilla da el mismo escenario.",
+      "fields": {
+        "nStops": "Paradas",
+        "nDrivers": "Repartidores",
+        "mode": "Modo",
+        "timeWindowsPct": "Con ventana de tiempo",
+        "highPriorityPct": "Prioridad alta",
+        "dynamicPct": "Pedidos dinámicos",
+        "seed": "Semilla"
+      },
+      "errors": {
+        "required": "Ingresa un valor.",
+        "integer": "Debe ser un entero.",
+        "min": "Debe ser al menos {bound}.",
+        "max": "Debe ser como máximo {bound}."
+      },
+      "cancel": "Cancelar",
+      "submit": "Generar escenario",
+      "generating": "Generando…"
     }
   },
   "landing": {
@@ -348,6 +381,242 @@
       "osm": "Mapa y rutas: © OpenStreetMap contributors (ODbL). Teselas de OpenMapTiles vía OpenFreeMap.",
       "amazon": "Entregas de referencia: Amazon Last Mile Routing Challenge, Amazon y MIT CTL (CC BY-NC 4.0, solo uso no comercial).",
       "project": "RouteOpt NL es un proyecto escolar y de portafolio. Región demo: área metropolitana de Monterrey, Nuevo León."
+    }
+  },
+  "compare": {
+    "title": "Comparar algoritmos",
+    "subtitle": "Corre varios algoritmos sobre el mismo problema, uno tras otro, y compara costo, tiempo, vehículos y convergencia.",
+    "loading": "Cargando configuración",
+    "config": "Configuración de la comparación",
+    "timeLimit": "Tiempo límite",
+    "run": "Comparar {count} corridas",
+    "stop": "Detener",
+    "progress": "{done} de {total} corridas terminadas",
+    "stops": "{count, plural, one {parada} other {paradas}}",
+    "drivers": "{count, plural, one {repartidor} other {repartidores}}",
+    "results": "Resultados",
+    "gapNote": "Gap: diferencia del fitness contra la mejor corrida. La mejor celda de cada columna va en verde.",
+    "empty": "Aún no hay resultados. Se correrán {algorithms}, una tras otra, con el mismo problema.",
+    "source": {
+      "label": "Problema",
+      "planner": "Problema del Planner ({count, plural, one {# parada} other {# paradas}})"
+    },
+    "runs": {
+      "title": "Corridas",
+      "add": "Añadir corrida",
+      "algorithm": "Algoritmo de la corrida {n}",
+      "remove": "Quitar la corrida {n}",
+      "limits": "De {min} a {max} corridas. Se ejecutan en secuencia."
+    },
+    "table": {
+      "caption": "Comparación de corridas por algoritmo",
+      "columns": {
+        "algorithm": "Algoritmo",
+        "cost": "Costo",
+        "duration": "Tiempo total",
+        "makespan": "Última entrega",
+        "vehicles": "Vehículos",
+        "distance": "Distancia",
+        "gap": "Gap",
+        "runtime": "Runtime",
+        "feasible": "Factible"
+      },
+      "status": {
+        "pending": "En espera",
+        "running": "En curso"
+      },
+      "feasible": {
+        "yes": "Sí",
+        "no": "No"
+      }
+    },
+    "chart": {
+      "title": "Convergencia",
+      "aria": "Curvas de convergencia del mejor fitness por algoritmo. Los valores finales están en la tabla.",
+      "xAxis": "Tiempo (s)",
+      "yAxis": "Mejor fitness",
+      "logScale": "Escala logarítmica",
+      "logHint": "El rango es amplio",
+      "empty": "Las curvas aparecen cuando llega el primer avance."
+    },
+    "minimaps": {
+      "title": "Rutas por algoritmo",
+      "show": "Mostrar minimapas",
+      "sync": "Sincronizar los mapas",
+      "empty": "Los mapas aparecen cuando una corrida entrega su primera solución."
+    }
+  },
+  "pareto": {
+    "title": "Frente de Pareto",
+    "subtitle": "NSGA-II no elige un ganador: devuelve las soluciones que no se pueden mejorar en un objetivo sin empeorar otro. Elige tú el compromiso.",
+    "noProblem": "Aún no hay un problema cargado. Carga el escenario demo o prepara uno en el Planner y calcula su frente.",
+    "loadDemo": "Cargar demo Monterrey",
+    "controls": "Controles del frente",
+    "axis": {
+      "x": "Eje horizontal",
+      "y": "Eje vertical"
+    },
+    "timeLimit": "Tiempo límite",
+    "run": "Calcular frente",
+    "rerun": "Recalcular frente",
+    "stop": "Detener",
+    "preparing": "Preparando la instancia",
+    "running": "Calculando con NSGA-II · {elapsed}",
+    "count": "{count, plural, one {# solución en el frente.} other {# soluciones en el frente.}}",
+    "idle": "NSGA-II se corre sobre las {stops} paradas del problema actual.",
+    "empty": "Aún no hay un frente. Calcúlalo para ver el compromiso entre tiempo, costo y vehículos.",
+    "legend": {
+      "size": "El tamaño del punto indica el número de vehículos.",
+      "dominated": "Los puntos tenues están dominados en estos dos ejes.",
+      "front": "La línea escalonada une los no dominados."
+    },
+    "dominated": "Dominada en estos ejes",
+    "nonDominated": "No dominada",
+    "selectHint": "Haz clic en un punto o en una fila para ver sus rutas en el mapa.",
+    "card": {
+      "title": "Solución seleccionada",
+      "time": "Tiempo total",
+      "cost": "Costo",
+      "vehicles": "Vehículos",
+      "makespan": "Última entrega",
+      "distance": "Distancia"
+    },
+    "useInPlanner": "Usar esta solución en el Planner",
+    "list": {
+      "title": "Soluciones del frente",
+      "caption": "Soluciones del frente de Pareto con sus cuatro objetivos",
+      "select": "Seleccionar la solución {n}"
+    },
+    "mapHint": "paradas. Selecciona una solución para ver sus rutas.",
+    "objectives": {
+      "time": "Tiempo total",
+      "cost": "Costo",
+      "vehicles": "Vehículos",
+      "makespan": "Última entrega"
+    },
+    "chart": {
+      "aria": "Dispersión de las soluciones del frente de Pareto. Los mismos datos están en la tabla de abajo."
+    },
+    "scenario": "Escenario",
+    "single": "Con este problema los objetivos no entran en conflicto: una sola solución domina a las demás. Elige el escenario multi-origen para ver un frente con varias."
+  },
+  "simulate": {
+    "panelLabel": "Configuración y estado de la simulación",
+    "placingHint": "Haz clic en el mapa para colocar el pedido. Escape cancela.",
+    "scenarioFailed": "No se pudo cargar el escenario de la simulación.",
+    "mobile": {
+      "label": "Paneles de la simulación",
+      "panel": "Simulación",
+      "log": "Registro"
+    },
+    "map": {
+      "driver": "Repartidor {n}"
+    },
+    "config": {
+      "loading": "Cargando configuración",
+      "title": "Simulación dinámica",
+      "scenario": "Escenario",
+      "algorithm": "Algoritmo de re-optimización",
+      "trigger": "Cuándo re-optimizar",
+      "triggers": {
+        "event": "Por pedido",
+        "batch": "Por lote"
+      },
+      "triggerHelp": {
+        "event": "Cada pedido nuevo dispara una re-optimización.",
+        "batch": "Los pedidos nuevos se acumulan y se re-optimiza cada cierto tiempo."
+      },
+      "fields": {
+        "batchMinutes": "Minutos del lote",
+        "initialTimeLimitS": "Tiempo del plan inicial",
+        "reoptTimeLimitS": "Tiempo por re-optimización"
+      },
+      "speed": "Velocidad",
+      "speedValue": "{speed}×",
+      "speedHelp": "Minutos simulados por segundo real. A 60× una hora simulada pasa en un segundo.",
+      "start": "Iniciar simulación",
+      "connecting": "Conectando…"
+    },
+    "errors": {
+      "title": "La simulación se detuvo",
+      "causes": {
+        "disconnected": "Se perdió la conexión con el servidor de simulación. El proxy web no soporta WebSocket: la conexión es directa al solver.",
+        "busy": "El solver está ocupado con otra optimización. Inténtalo en unos segundos.",
+        "invalid_request": "El servidor rechazó la configuración o el pedido.",
+        "invalid_order": "El pedido no es válido o su id ya existe.",
+        "simulation_error": "La simulación falló en el servidor.",
+        "unknown": "Ocurrió un error inesperado."
+      },
+      "reconnect": "Reconectar e iniciar de nuevo",
+      "field": {
+        "required": "Ingresa un valor.",
+        "min": "Debe ser mayor que 0.",
+        "max": "Debe ser como máximo {bound}."
+      }
+    },
+    "status": {
+      "phase": {
+        "idle": "Sin simulación",
+        "connecting": "Preparando la simulación",
+        "running": "Simulación en curso",
+        "paused": "Simulación en pausa",
+        "done": "Simulación terminada",
+        "error": "Simulación detenida",
+        "closed": "Simulación detenida"
+      },
+      "planning": "Calculando el plan inicial…",
+      "scenario": "Escenario",
+      "algorithm": "Algoritmo",
+      "trigger": "Re-optimización",
+      "event": "Por pedido",
+      "batch": "Cada {minutes} min",
+      "clock": "Reloj",
+      "delivered": "Entregadas",
+      "newSimulation": "Nueva simulación"
+    },
+    "summary": {
+      "title": "Resumen de la jornada",
+      "feasible": "Dentro de las restricciones",
+      "infeasible": "Con restricciones incumplidas",
+      "distance": "Distancia",
+      "cost": "Costo",
+      "duration": "Tiempo total",
+      "makespan": "Última entrega",
+      "vehicles": "Repartidores",
+      "lateness": "Retraso",
+      "counts": "{orders, plural, one {# pedido nuevo} other {# pedidos nuevos}} y {reopts, plural, one {# re-optimización} other {# re-optimizaciones}}.",
+      "unassigned": "Sin entregar"
+    },
+    "timeline": {
+      "title": "Línea de tiempo de la simulación",
+      "clock": "Reloj",
+      "clockLabel": "Reloj de la simulación: {time}",
+      "pause": "Pausar",
+      "resume": "Reanudar",
+      "speed": "Velocidad de la simulación",
+      "speedValue": "{speed}×",
+      "addOrder": "Agregar pedido",
+      "placing": "Colocando pedido…",
+      "stop": "Detener",
+      "progress": "Avance de la jornada",
+      "marks": {
+        "order": "Pedido nuevo",
+        "reopt": "Re-optimización"
+      }
+    },
+    "log": {
+      "title": "Registro de eventos",
+      "empty": "Los eventos aparecen aquí cuando inicia la simulación.",
+      "reopt": {
+        "initial": "Plan inicial",
+        "event": "Re-optimización por pedido",
+        "batch": "Re-optimización por lote"
+      },
+      "reoptDetail": "{runtime} · {count, plural, one {# parada pendiente} other {# paradas pendientes}}",
+      "order": "Pedido nuevo {id}",
+      "delivered": "Entregadas: {ids}",
+      "done": "Jornada terminada",
+      "error": "Error: {code}"
     }
   }
 }

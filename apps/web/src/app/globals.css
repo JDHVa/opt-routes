@@ -12,12 +12,12 @@
   --border-strong: oklch(0.85 0.006 250);
   --text: oklch(0.21 0.01 250);
   --text-muted: oklch(0.5 0.012 250);
-  --text-faint: oklch(0.64 0.01 250);
+  --text-faint: oklch(0.54 0.01 250);
   --accent: oklch(0.53 0.15 255);
   --accent-fg: oklch(0.99 0 0);
   --accent-soft: oklch(0.95 0.03 255);
-  --success: oklch(0.56 0.13 155);
-  --warning: oklch(0.68 0.14 75);
+  --success: oklch(0.54 0.13 155);
+  --warning: oklch(0.56 0.13 75);
   --danger: oklch(0.56 0.19 27);
   --elevation: 0 1px 2px oklch(0.21 0.01 250 / 8%);
 
@@ -61,7 +61,7 @@
   --border-strong: oklch(0.38 0.01 250);
   --text: oklch(0.95 0.004 250);
   --text-muted: oklch(0.7 0.01 250);
-  --text-faint: oklch(0.56 0.01 250);
+  --text-faint: oklch(0.63 0.01 250);
   --accent: oklch(0.7 0.13 255);
   --accent-fg: oklch(0.16 0.01 255);
   --accent-soft: oklch(0.28 0.05 255);
@@ -223,4 +223,29 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+[class*="recharts-"]:focus,
+[class*="recharts-"]:focus-visible {
+  outline: none;
+}
+
+@keyframes order-pulse {
+  from {
+    transform: scale(0.4);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+.order-pulse {
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  border: 2px solid var(--accent);
+  pointer-events: none;
+  animation: order-pulse 600ms cubic-bezier(0.2, 0, 0, 1) 1 forwards;
 }

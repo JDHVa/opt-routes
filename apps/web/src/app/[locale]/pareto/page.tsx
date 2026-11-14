@@ -1,4 +1,5 @@
-import { PlaceholderPage } from "@/components/shell/PlaceholderPage";
+import { setRequestLocale } from "next-intl/server";
+import { ParetoView } from "@/components/pareto/ParetoView";
 
 export default async function ParetoPage({
   params,
@@ -6,5 +7,6 @@ export default async function ParetoPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  return <PlaceholderPage locale={locale} screen="pareto" />;
+  setRequestLocale(locale);
+  return <ParetoView />;
 }

@@ -13,6 +13,7 @@ import MapGL, {
   Source,
   type MapLayerMouseEvent,
   type MapRef,
+  type ViewStateChangeEvent,
 } from "react-map-gl/maplibre";
 import { setWorkerUrl, type ExpressionSpecification } from "maplibre-gl";
 import type { Problem, Solution } from "@/lib/api/types";
@@ -22,6 +23,7 @@ import {
   computeBounds,
   describeStop,
   originOf,
+  type MapExtras,
   type MapFocus,
 } from "@/lib/map/geojson";
 import { routeColor } from "@/lib/routes/palette";
@@ -39,6 +41,18 @@ const LABEL_FONT = ["Noto Sans Bold"];
 
 export type MapPadding = { top: number; right: number; bottom: number; left: number };
 
+export type MapView = { longitude: number; latitude: number; zoom: number };
+
+const VIEW_EPSILON = 1e-6;
+
+function sameView(a: MapView, b: MapView): boolean {
+  return (
+    Math.abs(a.longitude - b.longitude) < VIEW_EPSILON &&
+    Math.abs(a.latitude - b.latitude) < VIEW_EPSILON &&
+    Math.abs(a.zoom - b.zoom) < VIEW_EPSILON
+  );
+}
+
 export type RouteMapProps = {
   problem: Problem | null;
   solution: Solution | null;
@@ -47,6 +61,14 @@ export type RouteMapProps = {
   fitNonce: number;
   interactive?: boolean;
   showNavigation?: boolean;
+  panZoom?: boolean;
+  compactAttribution?: boolean;
+  placing?: boolean;
+  extras?: MapExtras;
+  view?: MapView | null;
+  onViewChange?: (view: MapView) => void;
+  onMapClick?: (point: { lng: number; lat: number }) => void;
+  children?: React.ReactNode;
   onHoverRoute?: (index: number | null) => void;
   onSelectRoute?: (index: number | null) => void;
   onSelectStop?: (id: string | null) => void;
@@ -66,6 +88,14 @@ export default function RouteMap({
   fitNonce,
   interactive = true,
   showNavigation = true,
+  panZoom,
+  compactAttribution = false,
+  placing = false,
+  extras,
+  view = null,
+  onViewChange,
+  onMapClick,
+  children,
   onHoverRoute,
   onSelectRoute,
   onSelectStop,
@@ -83,12 +113,12 @@ export default function RouteMap({
   const mapStyle = resolvedTheme === "dark" ? STYLE_DARK : STYLE_LIGHT;
 
   const routes = useMemo(
-    () => (problem ? buildRouteCollection(problem, solution, focus) : null),
-    [problem, solution, focus],
+    () => (problem ? buildRouteCollection(problem, solution, focus, extras) : null),
+    [problem, solution, focus, extras],
   );
   const stops = useMemo(
-    () => (problem ? buildStopCollections(problem, solution, focus) : null),
-    [problem, solution, focus],
+    () => (problem ? buildStopCollections(problem, solution, focus, extras) : null),
+    [problem, solution, focus, extras],
   );
   const bounds = useMemo(() => (problem ? computeBounds(problem) : null), [problem]);
   const clusterLoose = (stops?.loose.features.length ?? 0) > CLUSTER_THRESHOLD;
@@ -118,6 +148,25 @@ export default function RouteMap({
     if (reducedMotion) map.jumpTo(camera);
     else map.easeTo({ ...camera, duration: 500 });
   }, [bounds, padding, reducedMotion]);
+
+  useEffect(() => {
+    if (!ready || !view) return;
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    const center = map.getCenter();
+    const current = { longitude: center.lng, latitude: center.lat, zoom: map.getZoom() };
+    if (sameView(current, view)) return;
+    map.jumpTo({ center: [view.longitude, view.latitude], zoom: view.zoom });
+  }, [ready, view]);
+
+  const handleMoveEnd = useCallback(
+    (event: ViewStateChangeEvent) => {
+      if (!event.originalEvent || !onViewChange) return;
+      const { longitude, latitude, zoom } = event.viewState;
+      onViewChange({ longitude, latitude, zoom });
+    },
+    [onViewChange],
+  );
 
   const lastFit = useRef(-1);
   useEffect(() => {
@@ -174,6 +223,10 @@ export default function RouteMap({
 
   const handleClick = useCallback(
     (event: MapLayerMouseEvent) => {
+      if (placing && onMapClick) {
+        onMapClick({ lng: event.lngLat.lng, lat: event.lngLat.lat });
+        return;
+      }
       if (!interactive) return;
       const feature = event.features?.[0];
       if (!feature) {
@@ -188,7 +241,7 @@ export default function RouteMap({
       const id = feature.properties?.id;
       if (typeof id === "string") onSelectStop?.(id);
     },
-    [interactive, onSelectRoute, onSelectStop],
+    [interactive, placing, onMapClick, onSelectRoute, onSelectStop],
   );
 
   const hoverDetail = useMemo(
@@ -210,12 +263,14 @@ export default function RouteMap({
         onMouseMove={handleMove}
         onMouseLeave={handleLeave}
         onClick={handleClick}
+        onMoveEnd={handleMoveEnd}
         interactiveLayerIds={interactiveLayerIds}
-        cursor={cursor}
-        attributionControl={{ compact: false, customAttribution: t("attribution") }}
+        cursor={placing ? "crosshair" : cursor}
+        attributionControl={{ compact: compactAttribution }}
         dragRotate={false}
         touchPitch={false}
-        scrollZoom={interactive}
+        scrollZoom={panZoom ?? interactive}
+        dragPan={panZoom ?? interactive}
         style={{ width: "100%", height: "100%" }}
       >
         {showNavigation ? (
@@ -328,11 +383,15 @@ export default function RouteMap({
                 "circle-color": colors.surface,
                 "circle-stroke-color": [
                   "case",
+                  ["get", "delivered"],
+                  colors.success,
                   ["get", "infeasible"],
                   colors.danger,
                   colors["text-muted"],
                 ],
                 "circle-stroke-width": 2,
+                "circle-opacity": ["case", ["get", "delivered"], 0.4, 1],
+                "circle-stroke-opacity": ["case", ["get", "delivered"], 0.6, 1],
               }}
             />
             <Layer
@@ -417,7 +476,7 @@ export default function RouteMap({
           </Marker>
         ) : null}
 
-        {problem && problem.mode === "multi_origin"
+        {problem && problem.mode === "multi_origin" && !extras?.origins
           ? problem.drivers.map((driver, index) => {
               const origin = originOf(problem, driver);
               if (!origin) return null;
@@ -454,6 +513,7 @@ export default function RouteMap({
             <StopTooltip detail={hoverDetail} />
           </Popup>
         ) : null}
+        {children}
       </MapGL>
     </div>
   );

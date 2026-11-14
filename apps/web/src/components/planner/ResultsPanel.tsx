@@ -1,10 +1,15 @@
 "use client";
 
-import { ChevronDown, CircleCheck, TriangleAlert, X } from "lucide-react";
+import { ChevronDown, CircleCheck, Download, TriangleAlert, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Num } from "@/components/ui/num";
 import type { Locale } from "@/i18n/routing";
+import { exportCsv } from "@/lib/api/client";
+import { downloadText } from "@/lib/download";
+import { hybridContribution } from "@/lib/planner/hybrid";
 import type { Problem, Route, Solution } from "@/lib/api/types";
 import {
   durationParts,
@@ -18,11 +23,11 @@ import {
 } from "@/lib/format";
 import { algorithmDisplayName } from "@/lib/planner/algorithms";
 import { isInfeasible } from "@/lib/planner/derive";
-import { routeColor, routeIsDashed } from "@/lib/routes/palette";
+import { ALGORITHM_COLORS, routeColor, routeIsDashed } from "@/lib/routes/palette";
 import { cn } from "@/lib/utils";
 import { usePlanner } from "@/stores/planner";
 
-function Metric({ label, value }: { label: string; value: string | ValuePart[] }) {
+export function Metric({ label, value }: { label: string; value: string | ValuePart[] }) {
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
       <dt className="text-micro font-medium text-muted">{label}</dt>
@@ -149,6 +154,82 @@ function RouteItem({
   );
 }
 
+function HybridBar() {
+  const t = useTranslations("planner.results.hybrid");
+  const extra = usePlanner((state) => state.progress?.extra ?? null);
+  const algorithm = usePlanner((state) => state.solution?.algorithm ?? null);
+  const contribution = extra && algorithm === "aco_ga" ? hybridContribution(extra) : null;
+  if (!contribution) return null;
+  const percent = Math.round(contribution.gaShare * 100);
+  return (
+    <div className="flex flex-col gap-2 border-b border-border p-4">
+      <h3 className="th-micro text-muted">{t("title")}</h3>
+      <div
+        role="img"
+        aria-label={t("aria", { ga: contribution.ga, aco: contribution.aco })}
+        className="flex h-2 overflow-hidden rounded-full bg-surface-2"
+      >
+        {contribution.ga + contribution.aco > 0 ? (
+          <>
+            <div style={{ width: `${percent}%`, backgroundColor: ALGORITHM_COLORS.ga }} />
+            <div style={{ width: `${100 - percent}%`, backgroundColor: ALGORITHM_COLORS.aco }} />
+          </>
+        ) : null}
+      </div>
+      <p className="flex gap-4 text-small">
+        <span className="flex items-center gap-1.5">
+          <span
+            aria-hidden="true"
+            className="size-2 rounded-full"
+            style={{ backgroundColor: ALGORITHM_COLORS.ga }}
+          />
+          GA <Num className="font-medium">{contribution.ga}</Num>
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span
+            aria-hidden="true"
+            className="size-2 rounded-full"
+            style={{ backgroundColor: ALGORITHM_COLORS.aco }}
+          />
+          ACO <Num className="font-medium">{contribution.aco}</Num>
+        </span>
+      </p>
+    </div>
+  );
+}
+
+function ExportActions({ solution }: { solution: Solution }) {
+  const t = useTranslations("planner.results.export");
+  const [busy, setBusy] = useState(false);
+
+  const exportAsCsv = async () => {
+    setBusy(true);
+    try {
+      downloadText("routeopt-itinerary.csv", await exportCsv(solution), "text/csv;charset=utf-8");
+    } catch {
+      toast.error(t("failed"));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const exportAsJson = () =>
+    downloadText("routeopt-solution.json", JSON.stringify(solution, null, 2), "application/json");
+
+  return (
+    <div className="flex gap-2 border-t border-border p-3">
+      <Button variant="outline" className="flex-1" disabled={busy} onClick={() => void exportAsCsv()}>
+        <Download size={16} strokeWidth={1.75} aria-hidden="true" />
+        {t("csv")}
+      </Button>
+      <Button variant="outline" className="flex-1" onClick={exportAsJson}>
+        <Download size={16} strokeWidth={1.75} aria-hidden="true" />
+        {t("json")}
+      </Button>
+    </div>
+  );
+}
+
 export function ResultsPanel({
   solution,
   problem,
@@ -220,6 +301,8 @@ export function ResultsPanel({
           <Metric label={t("metrics.lateness")} value={durationParts(metrics.lateness_min, locale)} />
         </dl>
 
+        <HybridBar />
+
         <div className="flex flex-col">
           <h3 className="th-micro px-4 pt-4 pb-2 text-muted">{t("routes")}</h3>
           <ul className="border-t border-border">
@@ -238,6 +321,7 @@ export function ResultsPanel({
           </ul>
         </div>
       </div>
+      {!live ? <ExportActions solution={solution} /> : null}
     </div>
   );
 }

@@ -12,7 +12,8 @@
     "gen:api": "uv run --directory ../../services/solver python scripts/export_openapi.py ../../apps/web/openapi.json && openapi-typescript openapi.json -o src/lib/api/schema.d.ts",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "contrast": "node --no-warnings scripts/contrast.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

@@ -5,6 +5,7 @@ export const MAP_COLOR_TOKENS = [
   "text-muted",
   "danger",
   "accent",
+  "success",
 ] as const;
 
 export type MapColorToken = (typeof MAP_COLOR_TOKENS)[number];
@@ -17,6 +18,7 @@ export const FALLBACK_MAP_COLORS: MapColors = {
   "text-muted": "rgb(98, 104, 114)",
   danger: "rgb(196, 52, 38)",
   accent: "rgb(30, 100, 200)",
+  success: "rgb(36, 130, 84)",
 };
 
 let scratch: CanvasRenderingContext2D | null = null;
