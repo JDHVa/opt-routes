@@ -1,7 +1,11 @@
 "use client";
 
 import { ArrowDown, ArrowUp, ArrowUpDown, CircleCheck, TriangleAlert } from "lucide-react";
+import { motion } from "motion/react";
 import { useLocale, useTranslations } from "next-intl";
+import { InfoTip } from "@/components/ui/info-tip";
+import { useReducedMotion } from "@/lib/motion/use-reduced-motion";
+import { riseVariants, staggerVariants } from "@/lib/motion/variants";
 import { useMemo, useState } from "react";
 import type { Locale } from "@/i18n/routing";
 import {
@@ -27,6 +31,18 @@ import { algorithmSeriesStyle } from "@/lib/routes/palette";
 import { cn } from "@/lib/utils";
 
 type Column = { key: SortKey; numeric: boolean };
+
+const HELP_TOPIC: Record<SortKey, string> = {
+  algorithm: "algorithms.title",
+  cost: "metrics.cost",
+  duration: "metrics.duration",
+  makespan: "metrics.makespan",
+  vehicles: "metrics.vehicles",
+  distance: "metrics.distance",
+  gap: "metrics.gap",
+  runtime: "metrics.runtime",
+  feasible: "metrics.feasible",
+};
 
 const COLUMNS: Column[] = [
   { key: "algorithm", numeric: false },
@@ -98,6 +114,7 @@ function AlgorithmCell({ row, position }: { row: CompareRow; position: number })
 export function CompareTable({ runs, running }: { runs: RunState[]; running: boolean }) {
   const t = useTranslations("compare.table");
   const locale = useLocale() as Locale;
+  const reduced = useReducedMotion();
   const [sort, setSort] = useState<{ key: SortKey; direction: SortDirection } | null>(null);
 
   const rows = useMemo(() => buildRows(runs), [runs]);
@@ -124,28 +141,32 @@ export function CompareTable({ runs, running }: { runs: RunState[]; running: boo
                   }
                   className={cn("px-3 py-2 font-medium", column.numeric ? "text-right" : "text-left")}
                 >
-                  <button
-                    type="button"
-                    onClick={() => setSort((current) => nextDirection(current, column.key))}
-                    className={cn(
-                      "th-micro inline-flex h-6 items-center gap-1 rounded-sm text-muted hover:text-foreground",
-                      column.numeric && "flex-row-reverse",
-                    )}
-                  >
-                    {t(`columns.${column.key}`)}
-                    <SortIcon active={active} direction={sort?.direction ?? "asc"} />
-                  </button>
+                  <div className={cn("flex items-center gap-0.5", column.numeric && "justify-end")}>
+                    <button
+                      type="button"
+                      onClick={() => setSort((current) => nextDirection(current, column.key))}
+                      className={cn(
+                        "th-micro inline-flex h-6 items-center gap-1 rounded-sm text-muted hover:text-foreground",
+                        column.numeric && "flex-row-reverse",
+                      )}
+                    >
+                      {t(`columns.${column.key}`)}
+                      <SortIcon active={active} direction={sort?.direction ?? "asc"} />
+                    </button>
+                    <InfoTip topic={HELP_TOPIC[column.key]} side="bottom" />
+                  </div>
                 </th>
               );
             })}
           </tr>
         </thead>
-        <tbody>
+        <motion.tbody initial="hidden" animate="show" variants={staggerVariants(reduced, 0.05)}>
           {ordered.map((row) => {
             const position = rows.findIndex((r) => r.index === row.index);
             return (
-              <tr
+              <motion.tr
                 key={row.index}
+                variants={riseVariants(reduced, 8)}
                 className={cn(
                   "border-b border-border last:border-b-0",
                   row.status === "pending" && "text-muted",
@@ -190,10 +211,10 @@ export function CompareTable({ runs, running }: { runs: RunState[]; running: boo
                     </span>
                   )}
                 </td>
-              </tr>
+              </motion.tr>
             );
           })}
-        </tbody>
+        </motion.tbody>
       </table>
     </div>
   );

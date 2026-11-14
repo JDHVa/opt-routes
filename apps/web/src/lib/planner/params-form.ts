@@ -3,7 +3,7 @@ import { z } from "zod";
 export type ParamValue = number | boolean | string | null;
 export type ParamValues = Record<string, ParamValue>;
 
-type FieldBase = { key: string; title: string; nullable: boolean };
+type FieldBase = { key: string; title: string; nullable: boolean; description?: string };
 
 export type NumberField = FieldBase & {
   kind: "number" | "integer";
@@ -75,7 +75,8 @@ export function buildParamFields(paramsSchema: JsonSchema): ParamField[] {
     if (!node) continue;
     const { schema, nullable } = unwrapNullable(node, defs);
     const title = typeof schema["title"] === "string" ? schema["title"] : key;
-    const base = { key, title, nullable };
+    const description = typeof schema["description"] === "string" ? schema["description"] : undefined;
+    const base = { key, title, nullable, description };
     const options = schema["enum"];
     if (Array.isArray(options)) {
       const values = options.filter((o): o is string => typeof o === "string");

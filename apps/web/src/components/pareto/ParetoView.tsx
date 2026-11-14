@@ -2,9 +2,9 @@
 
 import { CircleAlert, Loader2, Play, Square, Warehouse } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Field } from "@/components/panels/Field";
-import { Metric } from "@/components/planner/ResultsPanel";
+import { Metric, MetricGrid } from "@/components/ui/metric";
 import { RouteMapLoader } from "@/components/map/RouteMapLoader";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +12,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { InfoTip } from "@/components/ui/info-tip";
 import { Input } from "@/components/ui/input";
 import { Num } from "@/components/ui/num";
 import {
@@ -38,6 +39,7 @@ import {
 } from "@/lib/pareto/front";
 import { formatObjective } from "@/lib/pareto/format";
 import { cn } from "@/lib/utils";
+import { clearPresetParam, usePresetParam } from "@/lib/use-preset-param";
 import { usePlanner } from "@/stores/planner";
 import { useParetoStore } from "@/stores/pareto";
 import { ParetoChart } from "./ParetoChart";
@@ -58,7 +60,7 @@ function AxisSelect({
   const setAxis = useParetoStore((state) => state.setAxis);
   const items = OBJECTIVE_KEYS.map((key) => ({ value: key, label: t(`objectives.${key}`) }));
   return (
-    <Field label={t(`axis.${axis}`)} htmlFor={id}>
+    <Field label={t(`axis.${axis}`)} htmlFor={id} info={<InfoTip topic="axes.pareto" />}>
       <Select
         items={items}
         value={value}
@@ -149,6 +151,26 @@ export function ParetoView() {
     void loadCatalog();
   }, [loadCatalog]);
 
+  const preset = usePresetParam("pareto");
+  const handledPreset = useRef<string | null>(null);
+  useEffect(() => {
+    if (!preset) {
+      handledPreset.current = null;
+      return;
+    }
+    if (handledPreset.current === preset.id) return;
+    handledPreset.current = preset.id;
+    clearPresetParam();
+    void (async () => {
+      useParetoStore.setState({ points: [], status: "idle", selectedId: null, error: null });
+      await loadScenario(preset.scenarioId);
+      const loaded = usePlanner.getState().problem;
+      if (!loaded) return;
+      useParetoStore.getState().setTimeLimit(preset.timeLimitS);
+      await useParetoStore.getState().run(loaded);
+    })();
+  }, [preset, loadScenario]);
+
   const front = useMemo(() => toFrontPoints(points, xKey, yKey), [points, xKey, yKey]);
   const ordered = useMemo(
     () => [...front].sort((a, b) => a.x - b.x || a.y - b.y),
@@ -236,7 +258,7 @@ export function ParetoView() {
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <AxisSelect axis="x" value={xKey} disabled={false} />
             <AxisSelect axis="y" value={yKey} disabled={false} />
-            <Field label={t("timeLimit")} htmlFor={limitId}>
+            <Field label={t("timeLimit")} htmlFor={limitId} info={<InfoTip topic="params.time_limit_s" />}>
               <div className="relative">
                 <Input
                   id={limitId}
@@ -303,10 +325,16 @@ export function ParetoView() {
             {points.length === 1 && !running ? (
               <p className="text-small text-muted">{t("single")}</p>
             ) : null}
-            <p className="flex flex-wrap gap-x-4 text-micro text-muted">
-              <span>{t("legend.size")}</span>
+            <p className="flex flex-wrap items-center gap-x-4 text-micro text-muted">
+              <span className="flex items-center gap-0.5">
+                {t("legend.size")}
+                <InfoTip topic="axes.size" />
+              </span>
               <span>{t("legend.dominated")}</span>
-              <span>{t("legend.front")}</span>
+              <span className="flex items-center gap-0.5">
+                {t("legend.front")}
+                <InfoTip topic="axes.pareto" />
+              </span>
             </p>
 
             {selected && solution ? (
@@ -320,13 +348,13 @@ export function ParetoView() {
                     {selected.dominated ? t("dominated") : t("nonDominated")}
                   </span>
                 </div>
-                <dl className="grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-3">
-                  <Metric label={t("card.time")} value={durationParts(solution.metrics.total_duration_min, locale)} />
-                  <Metric label={t("card.cost")} value={formatMXN(solution.metrics.total_cost_mxn, locale)} />
-                  <Metric label={t("card.vehicles")} value={String(solution.metrics.vehicles_used)} />
-                  <Metric label={t("card.makespan")} value={durationParts(solution.metrics.makespan_min, locale)} />
-                  <Metric label={t("card.distance")} value={kmParts(solution.metrics.total_distance_km, locale)} />
-                </dl>
+                <MetricGrid className="grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-3">
+                  <Metric label={t("card.time")} help="metrics.duration" value={durationParts(solution.metrics.total_duration_min, locale)} />
+                  <Metric label={t("card.cost")} help="metrics.cost" value={formatMXN(solution.metrics.total_cost_mxn, locale)} />
+                  <Metric label={t("card.vehicles")} help="metrics.vehicles" value={String(solution.metrics.vehicles_used)} />
+                  <Metric label={t("card.makespan")} help="metrics.makespan" value={durationParts(solution.metrics.makespan_min, locale)} />
+                  <Metric label={t("card.distance")} help="metrics.distance" value={kmParts(solution.metrics.total_distance_km, locale)} />
+                </MetricGrid>
                 <div>
                   <Button onClick={useInPlanner}>{t("useInPlanner")}</Button>
                 </div>
@@ -358,8 +386,9 @@ export function ParetoView() {
                     {ordered.map((point, index) => (
                       <tr
                         key={point.id}
+                        style={{ animationDelay: `${Math.min(index * 40, 400)}ms` }}
                         className={cn(
-                          "border-b border-border last:border-b-0",
+                          "animate-in fade-in-0 slide-in-from-bottom-1 fill-mode-both duration-[240ms] border-b border-border last:border-b-0",
                           point.id === selectedId && "bg-accent-soft",
                           point.dominated && "text-muted",
                         )}

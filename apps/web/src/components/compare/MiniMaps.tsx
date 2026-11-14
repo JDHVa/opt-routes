@@ -43,6 +43,7 @@ export function MiniMaps({ problem, runs }: { problem: Problem; runs: RunState[]
                 focus={EMPTY_FOCUS}
                 padding={PADDING}
                 fitNonce={1}
+                drawNonce={0}
                 interactive={false}
                 panZoom
                 showNavigation={false}

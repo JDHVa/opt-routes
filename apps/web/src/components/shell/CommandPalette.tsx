@@ -1,7 +1,9 @@
 "use client";
 
 import {
+  BookOpen,
   Cpu,
+  Rocket,
   Languages,
   Map as MapIcon,
   Monitor,
@@ -26,6 +28,8 @@ import {
 } from "@/components/ui/command";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
+import { GLOSSARY_TERMS } from "@/lib/glossary";
+import { presetHref, START_PRESETS } from "@/lib/presets";
 import { usePlanner } from "@/stores/planner";
 import { useUi } from "@/stores/ui";
 
@@ -34,6 +38,8 @@ const PAGES = ["planner", "compare", "pareto", "simulate"] as const;
 export function CommandPalette() {
   const t = useTranslations("cmd");
   const tn = useTranslations("nav");
+  const th = useTranslations("help.glossary");
+  const tp = useTranslations("startPresets");
   const tt = useTranslations("topbar");
   const locale = useLocale() as Locale;
   const pathname = usePathname();
@@ -146,6 +152,36 @@ export function CommandPalette() {
               ))}
             </CommandGroup>
           ) : null}
+
+          <CommandGroup heading={t("groups.presets")}>
+            {START_PRESETS.map((preset) => (
+              <CommandItem
+                key={preset.id}
+                value={`${tp("try")} ${tp(`items.${preset.id}.name`)}`}
+                onSelect={() => run(() => router.push(presetHref(preset)))}
+              >
+                <Rocket size={16} strokeWidth={1.75} aria-hidden="true" />
+                {tp(`items.${preset.id}.name`)}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+
+          <CommandGroup heading={t("groups.glossary")}>
+            {GLOSSARY_TERMS.map((term) => (
+              <CommandItem
+                key={term}
+                value={`${t("glossaryPrefix")} ${th(`${term}.title`)} ${th(`${term}.body`)}`}
+                onSelect={() => undefined}
+                className="items-start"
+              >
+                <BookOpen size={16} strokeWidth={1.75} aria-hidden="true" className="mt-0.5" />
+                <span className="flex min-w-0 flex-col gap-0.5">
+                  <span>{t("glossaryLabel", { term: th(`${term}.title`) })}</span>
+                  <span className="text-small whitespace-normal text-muted">{th(`${term}.body`)}</span>
+                </span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
 
           <CommandGroup heading={t("groups.language")}>
             {routing.locales.map((id) => (

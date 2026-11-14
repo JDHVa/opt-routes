@@ -4,6 +4,7 @@ import { CircleAlert, Loader2, Play, RotateCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useId } from "react";
 import { Field } from "@/components/panels/Field";
+import { InfoTip } from "@/components/ui/info-tip";
 import { Segmented } from "@/components/panels/Segmented";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -146,7 +147,11 @@ export function SimConfigPanel({
             </Select>
           </Field>
 
-          <Field label={t("algorithm")} htmlFor={`${baseId}-algorithm`}>
+          <Field
+            label={t("algorithm")}
+            htmlFor={`${baseId}-algorithm`}
+            info={<InfoTip topic={`algorithms.${form.algorithm}`} />}
+          >
             <Select
               items={algorithmItems}
               value={form.algorithm}
@@ -167,7 +172,11 @@ export function SimConfigPanel({
             </Select>
           </Field>
 
-          <Field label={t("trigger")} help={t(`triggerHelp.${form.trigger}`)}>
+          <Field
+            label={t("trigger")}
+            help={t(`triggerHelp.${form.trigger}`)}
+            info={<InfoTip topic="axes.trigger" />}
+          >
             <Segmented<TriggerMode>
               ariaLabel={t("trigger")}
               value={form.trigger}
@@ -215,7 +224,7 @@ export function SimConfigPanel({
             })}
           </div>
 
-          <Field label={t("speed")}>
+          <Field label={t("speed")} info={<InfoTip topic="axes.speed" />}>
             <Segmented
               ariaLabel={t("speed")}
               value={String(form.speed)}

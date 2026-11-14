@@ -1,18 +1,22 @@
 "use client";
 
 import { Line, LineChart, YAxis } from "recharts";
+import { useReducedMotion } from "@/lib/motion/use-reduced-motion";
 
 export function Sparkline({
   values,
   width = 160,
   height = 32,
   label,
+  highlight = false,
 }: {
   values: number[];
   width?: number;
   height?: number;
   label: string;
+  highlight?: boolean;
 }) {
+  const reduced = useReducedMotion();
   const data = values.map((value, index) => ({ index, value }));
   return (
     <div role="img" aria-label={label} style={{ width, height }}>
@@ -21,10 +25,12 @@ export function Sparkline({
         <Line
           type="monotone"
           dataKey="value"
-          stroke="var(--accent)"
-          strokeWidth={1.5}
+          stroke={highlight ? "var(--signal)" : "var(--accent)"}
+          strokeWidth={highlight ? 2.5 : 1.5}
           dot={false}
-          isAnimationActive={false}
+          isAnimationActive={!reduced}
+          animationDuration={300}
+          animationEasing="ease-out"
         />
       </LineChart>
     </div>

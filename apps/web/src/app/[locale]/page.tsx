@@ -1,6 +1,7 @@
-import { ArrowRight, ExternalLink } from "lucide-react";
+import { ArrowDown, ArrowRight, ExternalLink } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { LandingMap } from "@/components/landing/LandingMap";
+import { StartPresets } from "@/components/presets/StartPresets";
 import { ParetoDiagram, PheromoneDiagram, SplitDiagram } from "@/components/landing/Diagrams";
 import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -21,36 +22,48 @@ export default async function LandingPage({ params }: Params) {
   ] as const;
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col px-4 md:px-6">
-      <section className="flex flex-col gap-6 pt-10 pb-8 md:pt-16">
-        <div className="flex max-w-4xl flex-col gap-4">
-          <h1 className="text-[28px] leading-9 font-semibold tracking-[-0.02em] md:text-display md:leading-10">
-            {t("title")}
-          </h1>
-          <p className="max-w-2xl text-base text-muted">{t("subtitle")}</p>
+    <div className="mx-auto flex w-full max-w-6xl flex-col px-4 md:px-6">
+      <section className="grid items-center gap-8 pt-8 pb-10 md:pt-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-12">
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
+            <h1 className="text-[28px] leading-9 font-semibold tracking-[-0.02em] md:text-display md:leading-10">
+              {t("title")}
+            </h1>
+            <p className="max-w-xl text-base text-muted">{t("subtitle")}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <a
+              href="#presets"
+              className={cn(buttonVariants({ variant: "default", size: "lg" }), "px-4")}
+            >
+              {t("ctaPresets")}
+              <ArrowDown size={16} strokeWidth={1.75} aria-hidden="true" />
+            </a>
+            <Link
+              href="/planner?demo=1"
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "px-4")}
+            >
+              {t("ctaDemo")}
+              <ArrowRight size={16} strokeWidth={1.75} aria-hidden="true" />
+            </Link>
+            <a
+              href={REPO_URL}
+              target="_blank"
+              rel="noreferrer"
+              className={cn(buttonVariants({ variant: "ghost", size: "lg" }), "px-3")}
+            >
+              {t("ctaCode")}
+              <ExternalLink size={16} strokeWidth={1.75} aria-hidden="true" />
+            </a>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <Link
-            href="/planner?demo=1"
-            className={cn(buttonVariants({ variant: "default", size: "lg" }), "px-4")}
-          >
-            {t("ctaDemo")}
-            <ArrowRight size={16} strokeWidth={1.75} aria-hidden="true" />
-          </Link>
-          <a
-            href={REPO_URL}
-            target="_blank"
-            rel="noreferrer"
-            className={cn(buttonVariants({ variant: "outline", size: "lg" }), "px-4")}
-          >
-            {t("ctaCode")}
-            <ExternalLink size={16} strokeWidth={1.75} aria-hidden="true" />
-          </a>
-        </div>
+        <section aria-label={t("map.label")} className="min-w-0">
+          <LandingMap />
+        </section>
       </section>
 
-      <section aria-label={t("map.label")} className="pb-12">
-        <LandingMap />
+      <section id="presets" className="scroll-mt-16 pb-12">
+        <StartPresets />
       </section>
 
       {techniques.map(({ id, diagram }) => (

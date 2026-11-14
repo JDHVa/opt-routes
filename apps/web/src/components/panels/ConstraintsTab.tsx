@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { InfoTip } from "@/components/ui/info-tip";
 import { Switch } from "@/components/ui/switch";
 import type { ConstraintToggles, ProblemMode } from "@/lib/api/types";
 import { usePlanner } from "@/stores/planner";
@@ -30,7 +31,7 @@ export function ConstraintsTab() {
   return (
     <div className="flex flex-col gap-6">
       <section className="flex flex-col gap-3">
-        <PanelHeading>{t("mode")}</PanelHeading>
+        <PanelHeading info={<InfoTip topic={`modes.${problem.mode}`} />}>{t("mode")}</PanelHeading>
         <Segmented
           ariaLabel={t("mode")}
           value={problem.mode}
@@ -44,8 +45,8 @@ export function ConstraintsTab() {
         <PanelHeading>{t("title")}</PanelHeading>
         <ul className="flex flex-col divide-y divide-border">
           {TOGGLES.map((key) => (
-            <li key={key}>
-              <label className="flex cursor-pointer items-start justify-between gap-4 py-3">
+            <li key={key} className="flex items-start justify-between gap-2">
+              <label className="flex min-w-0 flex-1 cursor-pointer items-start justify-between gap-4 py-3">
                 <span className="flex min-w-0 flex-col gap-0.5">
                   <span className="text-sm">{t(`toggles.${key}.label`)}</span>
                   <span className="text-micro text-muted">{t(`toggles.${key}.help`)}</span>
@@ -56,6 +57,9 @@ export function ConstraintsTab() {
                   className="mt-0.5"
                 />
               </label>
+              <span className="pt-2.5">
+                <InfoTip topic={`constraints.${key}`} side="left" />
+              </span>
             </li>
           ))}
         </ul>

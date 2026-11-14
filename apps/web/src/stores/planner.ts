@@ -33,6 +33,8 @@ import {
   type ParamValues,
 } from "@/lib/planner/params-form";
 import { presetToWeights, type PresetId } from "@/lib/planner/presets";
+import { hybridContribution } from "@/lib/planner/hybrid";
+import type { StartPreset } from "@/lib/presets";
 
 export const DEMO_SCENARIO_ID = "mty-centro-depot-40";
 export const WAKE_NOTICE_DELAY_MS = 3000;
@@ -47,6 +49,10 @@ export type PlannerError = {
   detail: string;
   retry: "optimize" | "scenario" | "catalog";
 };
+
+export type ImprovementSource = "ga" | "aco" | null;
+
+export type Improvement = { nonce: number; source: ImprovementSource };
 
 export type Progress = {
   iteration: number;
@@ -82,6 +88,9 @@ type PlannerState = {
   hoveredRoute: number | null;
   selectedStopId: string | null;
   fitNonce: number;
+  drawNonce: number;
+  improvement: Improvement;
+  startedAt: number | null;
 
   loadCatalog: () => Promise<void>;
   loadScenario: (id?: string) => Promise<void>;
@@ -100,6 +109,7 @@ type PlannerState = {
   addDriver: () => void;
   removeDriver: (index: number) => void;
   optimize: () => Promise<void>;
+  runStartPreset: (preset: StartPreset) => Promise<void>;
   stop: () => void;
   retry: () => void;
   setLeftTab: (tab: LeftTab) => void;
@@ -129,6 +139,40 @@ function algorithmDefaults(info: AlgorithmInfo | undefined): ParamValues {
 function pickDemo(scenarios: ScenarioInfo[]): string {
   const demo = scenarios.find((s) => s.id === DEMO_SCENARIO_ID);
   return demo?.id ?? scenarios[0]?.id ?? DEMO_SCENARIO_ID;
+}
+
+function improvementCounts(extra: Record<string, unknown>): { ga: number; aco: number } | null {
+  const contribution = hybridContribution(extra);
+  return contribution ? { ga: contribution.ga, aco: contribution.aco } : null;
+}
+
+function nextImprovement(
+  state: PlannerState,
+  bestFitness: number,
+  extra: Record<string, unknown>,
+): Improvement {
+  const previous = state.progress?.bestFitness;
+  if (previous === undefined || !(bestFitness < previous - 1e-9)) return state.improvement;
+  const before = state.progress ? improvementCounts(state.progress.extra) : null;
+  const after = improvementCounts(extra);
+  let source: ImprovementSource = null;
+  if (before && after) {
+    if (after.ga > before.ga) source = "ga";
+    else if (after.aco > before.aco) source = "aco";
+  }
+  return { nonce: state.improvement.nonce + 1, source };
+}
+
+async function ensureCatalog(): Promise<void> {
+  await usePlanner.getState().loadCatalog();
+  if (usePlanner.getState().catalogStatus !== "loading") return;
+  await new Promise<void>((resolve) => {
+    const unsubscribe = usePlanner.subscribe((state) => {
+      if (state.catalogStatus === "loading") return;
+      unsubscribe();
+      resolve();
+    });
+  });
 }
 
 export const usePlanner = create<PlannerState>((set, get) => {
@@ -171,6 +215,9 @@ export const usePlanner = create<PlannerState>((set, get) => {
     hoveredRoute: null,
     selectedStopId: null,
     fitNonce: 0,
+    drawNonce: 0,
+    improvement: { nonce: 0, source: null },
+    startedAt: null,
 
     loadCatalog: async () => {
       if (get().catalogStatus === "loading" || get().catalogStatus === "ready") return;
@@ -274,6 +321,7 @@ export const usePlanner = create<PlannerState>((set, get) => {
         hoveredRoute: null,
         selectedStopId: null,
         fitNonce: get().fitNonce + 1,
+        drawNonce: get().drawNonce + 1,
       }),
 
     setMode: (mode) => {
@@ -382,12 +430,14 @@ export const usePlanner = create<PlannerState>((set, get) => {
       const run = new AbortController();
       controller = run;
       set({
+        startedAt: Date.now(),
         status: "loading",
         stopped: false,
         error: null,
         solution: null,
         history: [],
         progress: null,
+        improvement: { nonce: 0, source: null },
         selectedRoute: null,
         hoveredRoute: null,
       });
@@ -414,6 +464,9 @@ export const usePlanner = create<PlannerState>((set, get) => {
             set((state) => ({
               status: "running",
               solution: payload.solution ?? state.solution,
+              drawNonce:
+                state.solution === null && payload.solution ? state.drawNonce + 1 : state.drawNonce,
+              improvement: nextImprovement(state, payload.best_fitness, payload.extra ?? {}),
               progress: {
                 iteration: payload.iteration,
                 elapsedS: payload.elapsed_s,
@@ -479,6 +532,19 @@ export const usePlanner = create<PlannerState>((set, get) => {
           });
         }
       }
+    },
+
+    runStartPreset: async (preset) => {
+      await ensureCatalog();
+      if (get().catalogStatus !== "ready") return;
+      await get().loadScenario(preset.scenarioId);
+      if (get().problem === null || get().error !== null) return;
+      if (get().algorithms.some((a) => a.name === preset.algorithm)) {
+        get().setAlgorithm(preset.algorithm);
+        get().setParam("time_limit_s", preset.timeLimitS);
+      }
+      if (preset.objective) get().applyPreset(preset.objective);
+      await get().optimize();
     },
 
     stop: () => {

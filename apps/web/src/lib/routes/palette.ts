@@ -1,16 +1,16 @@
 export const ROUTE_PALETTE = [
-  "#0072B2",
-  "#D55E00",
-  "#009E73",
-  "#CC79A7",
-  "#56B4E9",
-  "#E69F00",
-  "#882255",
-  "#44AA99",
-  "#997700",
-  "#332288",
-  "#EE6677",
-  "#117733",
+  "#0A6CD6",
+  "#E85A00",
+  "#00A878",
+  "#E06BAF",
+  "#2CB1F5",
+  "#F2A100",
+  "#9E1F63",
+  "#2BB5A0",
+  "#A87F00",
+  "#3D2BB8",
+  "#F0556A",
+  "#12883B",
 ] as const;
 
 export const PALETTE_SIZE = ROUTE_PALETTE.length;

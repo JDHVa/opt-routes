@@ -1,14 +1,16 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { RouteMapLoader } from "@/components/map/RouteMapLoader";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { clearPresetParam, usePresetParam } from "@/lib/use-preset-param";
 import { usePlanner } from "@/stores/planner";
 import { LeftPanel } from "./LeftPanel";
 import { LiveBar } from "./LiveBar";
 import { ResultsPanel } from "./ResultsPanel";
+import { Coachmarks } from "./Coachmarks";
 import { StatusBanners } from "./StatusBanners";
 
 const DESKTOP_QUERY = "(min-width: 768px)";
@@ -42,6 +44,8 @@ export function PlannerView() {
   const solution = usePlanner((state) => state.solution);
   const status = usePlanner((state) => state.status);
   const fitNonce = usePlanner((state) => state.fitNonce);
+  const drawNonce = usePlanner((state) => state.drawNonce);
+  const runStartPreset = usePlanner((state) => state.runStartPreset);
   const selectedRoute = usePlanner((state) => state.selectedRoute);
   const hoveredRoute = usePlanner((state) => state.hoveredRoute);
   const selectedStopId = usePlanner((state) => state.selectedStopId);
@@ -62,6 +66,19 @@ export function PlannerView() {
       void loadScenario();
     }
   }, [loadCatalog, loadScenario]);
+
+  const preset = usePresetParam("planner");
+  const handledPreset = useRef<string | null>(null);
+  useEffect(() => {
+    if (!preset) {
+      handledPreset.current = null;
+      return;
+    }
+    if (handledPreset.current === preset.id) return;
+    handledPreset.current = preset.id;
+    clearPresetParam();
+    void runStartPreset(preset);
+  }, [preset, runStartPreset]);
 
   const hasSolution = solution !== null;
   const [seenSolution, setSeenSolution] = useState(hasSolution);
@@ -118,6 +135,8 @@ export function PlannerView() {
         focus={focus}
         padding={padding}
         fitNonce={fitNonce}
+        drawNonce={drawNonce}
+        ants={running && solution !== null}
         onHoverRoute={hoverRoute}
         onSelectRoute={setSelectedRoute}
         onSelectStop={selectStop}
@@ -175,6 +194,8 @@ export function PlannerView() {
           {t("results.show")}
         </Button>
       ) : null}
+
+      <Coachmarks enabled={desktop && problem === null} />
 
       {running ? (
         <LiveBar

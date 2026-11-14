@@ -13,9 +13,10 @@
   --text: oklch(0.21 0.01 250);
   --text-muted: oklch(0.5 0.012 250);
   --text-faint: oklch(0.54 0.01 250);
-  --accent: oklch(0.53 0.15 255);
+  --accent: oklch(0.55 0.2 258);
   --accent-fg: oklch(0.99 0 0);
-  --accent-soft: oklch(0.95 0.03 255);
+  --accent-soft: oklch(0.95 0.04 258);
+  --signal: oklch(0.75 0.17 65);
   --success: oklch(0.54 0.13 155);
   --warning: oklch(0.56 0.13 75);
   --danger: oklch(0.56 0.19 27);
@@ -62,9 +63,10 @@
   --text: oklch(0.95 0.004 250);
   --text-muted: oklch(0.7 0.01 250);
   --text-faint: oklch(0.63 0.01 250);
-  --accent: oklch(0.7 0.13 255);
+  --accent: oklch(0.72 0.17 258);
   --accent-fg: oklch(0.16 0.01 255);
-  --accent-soft: oklch(0.28 0.05 255);
+  --accent-soft: oklch(0.3 0.07 258);
+  --signal: oklch(0.8 0.16 70);
   --success: oklch(0.72 0.14 155);
   --warning: oklch(0.8 0.13 80);
   --danger: oklch(0.7 0.17 25);
@@ -86,6 +88,7 @@
   --color-accent: var(--accent);
   --color-accent-fg: var(--accent-fg);
   --color-accent-soft: var(--accent-soft);
+  --color-signal: var(--signal);
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
@@ -225,6 +228,62 @@
   }
 }
 
+@keyframes signal-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklch, var(--signal) 70%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 10px color-mix(in oklch, var(--signal) 0%, transparent);
+  }
+}
+
+.signal-pulse {
+  animation: signal-pulse 600ms cubic-bezier(0.2, 0, 0, 1) 1;
+}
+
+@keyframes delta-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  15%,
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+}
+
+.delta-badge {
+  animation: delta-rise 1500ms cubic-bezier(0.2, 0, 0, 1) 1 forwards;
+}
+
+@keyframes check-draw {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.check-draw {
+  stroke-dasharray: 24;
+  animation: check-draw 360ms cubic-bezier(0.2, 0, 0, 1) 1 forwards;
+}
+
+@keyframes progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 [class*="recharts-"]:focus,
 [class*="recharts-"]:focus-visible {
   outline: none;
@@ -248,4 +307,40 @@
   border: 2px solid var(--accent);
   pointer-events: none;
   animation: order-pulse 600ms cubic-bezier(0.2, 0, 0, 1) 1 forwards;
+}
+
+@keyframes dot-in {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.dot-in {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: dot-in 320ms cubic-bezier(0.2, 0, 0, 1) 1 forwards;
+}
+
+@keyframes point-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.point-in {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: point-in 300ms cubic-bezier(0.2, 0, 0, 1) 1 forwards;
 }

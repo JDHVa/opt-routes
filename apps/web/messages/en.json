@@ -37,7 +37,9 @@
       "algorithm": "Algorithm",
       "language": "Language",
       "theme": "Theme",
-      "go": "Go to"
+      "go": "Go to",
+      "glossary": "Glossary",
+      "presets": "Start presets"
     },
     "loadDemo": "Load Monterrey demo",
     "stop": "Stop optimization",
@@ -49,7 +51,9 @@
     "themeDark": "Dark theme",
     "themeSystem": "System theme",
     "goTo": "go to",
-    "goToPage": "Go to {page}"
+    "goToPage": "Go to {page}",
+    "glossaryLabel": "What is {term}?",
+    "glossaryPrefix": "glossary what is"
   },
   "map": {
     "ariaLabel": "Route map",
@@ -250,7 +254,11 @@
         "constructing": "Building ant tours",
         "cooperating": "GA ↔ ACO cooperation",
         "finished": "Finished"
-      }
+      },
+      "improved": "Improved",
+      "improvedBy": "Improved by {source}",
+      "progressLabel": "Time limit progress",
+      "deltaBetter": "Improved {amount}"
     },
     "results": {
       "panelLabel": "Results",
@@ -334,11 +342,37 @@
       "cancel": "Cancel",
       "submit": "Generate scenario",
       "generating": "Generating…"
+    },
+    "coach": {
+      "label": "Welcome tour",
+      "step": "Step {current} of {total}",
+      "next": "Next",
+      "back": "Back",
+      "done": "Got it",
+      "skip": "Skip tour",
+      "steps": {
+        "stops": {
+          "title": "1. Load the stops",
+          "body": "Pick a scenario, import a CSV or generate random stops. They show up as dots on the map."
+        },
+        "fleet": {
+          "title": "2. Review the fleet and constraints",
+          "body": "This is where you define couriers, vehicles, capacity, shifts and time windows."
+        },
+        "algorithm": {
+          "title": "3. Choose algorithm and objective",
+          "body": "Each one explores differently. Hover the ⓘ icons to understand every parameter."
+        },
+        "optimize": {
+          "title": "4. Optimize and watch it work",
+          "body": "Routes draw themselves, ants explore and metrics improve live. You can stop whenever you want."
+        }
+      }
     }
   },
   "landing": {
     "title": "Optimize delivery routes with genetic algorithms and ant colonies",
-    "subtitle": "Plan last-mile delivery in the Monterrey metropolitan area with memetic GA, ACO, the ACO+GA hybrid and NSGA-II on real streets, with time windows, capacity and priorities.",
+    "subtitle": "Plan last-mile delivery in Monterrey with memetic GA, ACO, the ACO+GA hybrid and NSGA-II on real streets. Watch them work: routes draw themselves, ants explore and metrics improve live.",
     "ctaDemo": "Open Monterrey demo",
     "ctaCode": "View code",
     "map": {
@@ -381,7 +415,12 @@
       "osm": "Map and routes: © OpenStreetMap contributors (ODbL). OpenMapTiles tiles via OpenFreeMap.",
       "amazon": "Reference deliveries: Amazon Last Mile Routing Challenge, Amazon and MIT CTL (CC BY-NC 4.0, non-commercial use only).",
       "project": "RouteOpt NL is a school and portfolio project. Demo region: Monterrey metropolitan area, Nuevo León."
-    }
+    },
+    "heroMap": {
+      "label": "Routes drawing over Monterrey",
+      "legend": "Each amber dot is an ant exploring a route"
+    },
+    "ctaPresets": "Pick a preset"
   },
   "compare": {
     "title": "Compare algorithms",
@@ -617,6 +656,442 @@
       "delivered": "Delivered: {ids}",
       "done": "Day finished",
       "error": "Error: {code}"
+    }
+  },
+  "startPresets": {
+    "title": "Try it now",
+    "subtitle": "One click loads the scenario, configures the algorithm and starts the optimization for you.",
+    "try": "Try it",
+    "tryNamed": "Try: {name}",
+    "stops": "{count} stops",
+    "emptyTitle": "Or try a preset",
+    "emptyBody": "Each one loads a real Monterrey scenario and starts on its own.",
+    "targets": {
+      "planner": "Planner",
+      "pareto": "Pareto",
+      "simulate": "Simulation"
+    },
+    "items": {
+      "fast-center": {
+        "name": "Fast delivery downtown",
+        "blurb": "GA minimizes the last delivery with a single depot and 40 stops."
+      },
+      "mixed-fleet": {
+        "name": "Mixed fleet across Monterrey",
+        "blurb": "ACO+GA spreads 150 stops across 12 couriers and several vehicle types."
+      },
+      "multi-origin": {
+        "name": "Couriers starting from home",
+        "blurb": "Each courier starts from their own point and ACO seeks the lowest cost with open routes."
+      },
+      "urgent-windows": {
+        "name": "Urgent orders with time windows",
+        "blurb": "Half of the 120 stops have a time window and 24 are high priority."
+      },
+      "pareto-tradeoff": {
+        "name": "Cost vs speed (Pareto)",
+        "blurb": "NSGA-II draws the front: each point is a different trade-off between time and cost."
+      },
+      "live-day": {
+        "name": "Day with live orders",
+        "blurb": "Simulation: orders arrive during the day and the plan is re-optimized on the fly."
+      }
+    }
+  },
+  "help": {
+    "coachTitle": "Help",
+    "trigger": "More info: {name}",
+    "metrics": {
+      "distance": {
+        "title": "Distance",
+        "body": "Kilometers driven by all couriers combined, on real streets. Less distance usually means less fuel and wear.",
+        "example": "71 km = sum of all routes"
+      },
+      "cost": {
+        "title": "Cost",
+        "body": "Fuel, hourly wages and fixed vehicle costs, in pesos. If it grows too much, try fewer couriers or shorter routes.",
+        "example": "$1,400 MXN total"
+      },
+      "duration": {
+        "title": "Total time",
+        "body": "Sum of every route's duration: driving, service at each stop and waiting. It measures labor spent, not when the day ends."
+      },
+      "makespan": {
+        "title": "Last delivery",
+        "body": "When the longest route finishes. Lowering it means the last customer is served sooner, which requires spreading load more evenly."
+      },
+      "vehicles": {
+        "title": "Couriers",
+        "body": "How many couriers go out. Fewer couriers save fixed costs, but routes get longer and closer to the shift limit."
+      },
+      "lateness": {
+        "title": "Lateness",
+        "body": "Accumulated minutes of arrivals outside the time window, weighted by priority. Zero is ideal; being late to an urgent stop weighs three times more."
+      },
+      "gap": {
+        "title": "Gap",
+        "body": "How far a run is from the best one, as a fitness percentage. 0% is the best; 5% means 5% worse than the winner."
+      },
+      "fitness": {
+        "title": "Fitness",
+        "body": "A single number combining time, cost, vehicles and penalties according to your weights. Lower is better; use it to compare solutions of the same problem."
+      },
+      "runtime": {
+        "title": "Runtime",
+        "body": "Real seconds the algorithm took to deliver this solution."
+      },
+      "feasible": {
+        "title": "Feasible",
+        "body": "The solution respects capacity and shift limits and delivers every stop. Time window lateness is soft and does not make it infeasible."
+      }
+    },
+    "params": {
+      "time_limit_s": {
+        "title": "Time limit",
+        "body": "Maximum seconds the algorithm may think. More time usually gives better routes with diminishing returns; less time answers fast but rougher.",
+        "example": "10 s for a demo, 60 s for 200 stops"
+      },
+      "max_iterations": {
+        "title": "Max iterations",
+        "body": "Cap on generations or cycles. It stops at this cap or at the time limit, whichever comes first."
+      },
+      "seed": {
+        "title": "Seed",
+        "body": "Makes randomness reproducible: the same seed gives the same result. Change it to explore a different solution."
+      },
+      "init": {
+        "title": "Initialization",
+        "body": "How the starting population or solution is built. K-means groups by zone, nearest neighbor is greedy, sweep rotates around the depot and random uses no heuristic."
+      },
+      "local_search": {
+        "title": "Local search",
+        "body": "Polishes each solution by moving or swapping stops while cost improves. On gives better routes for a bit more compute."
+      },
+      "progress_every": {
+        "title": "Report every",
+        "body": "How many iterations between progress updates on screen. A low number makes the chart smoother with more traffic."
+      },
+      "progress_interval_s": {
+        "title": "Progress interval",
+        "body": "Minimum seconds between progress updates sent to the screen."
+      },
+      "pop_size": {
+        "title": "Population",
+        "body": "How many solutions compete in each generation. A bigger population explores better but each generation takes longer."
+      },
+      "crossover_rate": {
+        "title": "Crossover rate",
+        "body": "How often two parents combine their routes into a child. High mixes a lot; low keeps what already works."
+      },
+      "mutation_rate": {
+        "title": "Mutation rate",
+        "body": "How often a child is randomly altered. Raising it avoids getting stuck; lowering it fine-tunes what exists."
+      },
+      "ls_rate": {
+        "title": "Local search rate",
+        "body": "Fraction of children polished with local search. Higher gives better children but is slower."
+      },
+      "elite_size": {
+        "title": "Elite",
+        "body": "How many of the best solutions pass untouched to the next generation, so progress is not lost."
+      },
+      "tournament_size": {
+        "title": "Tournament size",
+        "body": "How many contenders are drawn when picking a parent. Bigger puts more pressure toward the best."
+      },
+      "crossover": {
+        "title": "Crossover operator",
+        "body": "OX keeps the relative order of stops from a parent; PMX keeps positions. Both produce a valid tour."
+      },
+      "stagnation_generations": {
+        "title": "Generations without improvement",
+        "body": "If nothing improves for this many generations, the algorithm stops or partially restarts."
+      },
+      "granular_k": {
+        "title": "Granular neighbors",
+        "body": "For each stop only its k nearest neighbors are tried. Lower is faster; higher checks more moves."
+      },
+      "n_ants": {
+        "title": "Ants",
+        "body": "How many ants build a solution each iteration. More ants explore more and take longer."
+      },
+      "alpha": {
+        "title": "Alpha (pheromone)",
+        "body": "How much pheromone weighs when choosing the next stop. High follows the trail; low ignores experience."
+      },
+      "beta": {
+        "title": "Beta (heuristic)",
+        "body": "How much closeness weighs when choosing the next stop. High is greedy toward the nearest; low follows pheromone more."
+      },
+      "rho": {
+        "title": "Evaporation (ρ)",
+        "body": "Fraction of pheromone that evaporates each iteration. High forgets fast and explores; low reinforces and converges sooner.",
+        "example": "ρ = 0.1 → 10% evaporates"
+      },
+      "q0": {
+        "title": "q0 (exploitation)",
+        "body": "Probability of picking the best option directly instead of sampling. High is greedier; low explores more."
+      },
+      "cand_k": {
+        "title": "Candidates per node",
+        "body": "How many nearby stops an ant considers as the next step. Fewer candidates speed up construction."
+      },
+      "tw_weight": {
+        "title": "Time window weight",
+        "body": "How much time windows influence the next-stop choice. Higher prioritizes arriving on time."
+      },
+      "ls_ants": {
+        "title": "Ants with local search",
+        "body": "How many of each iteration's best ants are polished with local search."
+      },
+      "stagnation_iterations": {
+        "title": "Iterations without improvement",
+        "body": "If nothing improves for this many iterations, pheromone is reset to explore again."
+      },
+      "ls_every": {
+        "title": "Local search every",
+        "body": "Every how many generations local search is applied. 0 turns it off and speeds up NSGA-II."
+      },
+      "ga_generations_per_cycle": {
+        "title": "Generations per cycle",
+        "body": "How many GA generations run before handing over to the ants."
+      },
+      "ants_per_cycle": {
+        "title": "Ants per cycle",
+        "body": "How many ants build solutions in each cycle of the hybrid."
+      },
+      "elite_deposit": {
+        "title": "Depositing elite",
+        "body": "How many GA solutions reinforce the ants' pheromone."
+      },
+      "inject_k": {
+        "title": "Injected solutions",
+        "body": "How many ant solutions enter the GA population each cycle."
+      },
+      "seed_ants": {
+        "title": "Seeding ants",
+        "body": "Ants used to seed the initial population. Empty lets the algorithm decide."
+      },
+      "adaptive": {
+        "title": "Adaptive",
+        "body": "Gives more time to the method (GA or ACO) that is improving most."
+      },
+      "ga_crossover": {
+        "title": "GA crossover",
+        "body": "OX keeps the relative order of stops; PMX keeps positions."
+      },
+      "ga_crossover_rate": {
+        "title": "GA crossover rate",
+        "body": "How often two GA parents combine their routes."
+      },
+      "ga_mutation_rate": {
+        "title": "GA mutation rate",
+        "body": "How often a GA child is randomly altered."
+      },
+      "ga_ls_rate": {
+        "title": "GA local search rate",
+        "body": "Fraction of GA children polished with local search."
+      },
+      "ga_elite_size": {
+        "title": "GA elite",
+        "body": "How many best GA solutions pass untouched to the next generation."
+      },
+      "ga_stagnation_generations": {
+        "title": "GA stagnation",
+        "body": "Generations without improvement after which the GA yields to the ants."
+      },
+      "aco_alpha": {
+        "title": "ACO alpha",
+        "body": "How much pheromone weighs when choosing the next stop."
+      },
+      "aco_beta": {
+        "title": "ACO beta",
+        "body": "How much closeness weighs when choosing the next stop."
+      },
+      "aco_rho": {
+        "title": "ACO evaporation",
+        "body": "Fraction of pheromone that evaporates each cycle."
+      },
+      "aco_cand_k": {
+        "title": "ACO candidates",
+        "body": "How many nearby stops an ant considers as the next step."
+      },
+      "aco_stagnation_cycles": {
+        "title": "ACO stagnation",
+        "body": "Cycles without improvement after which pheromone is reset."
+      },
+      "objectives": {
+        "title": "Objectives",
+        "body": "Which objectives NSGA-II compares to build the Pareto front."
+      }
+    },
+    "objectives": {
+      "title": {
+        "title": "Objective",
+        "body": "What the algorithm cares about most when comparing solutions. Changing it changes the weights of time, cost, vehicles and last delivery."
+      },
+      "fastest": {
+        "title": "Fastest",
+        "body": "Prioritizes the last route finishing as early as possible. Spreads load evenly, even if it costs more."
+      },
+      "cheapest": {
+        "title": "Cheapest",
+        "body": "Prioritizes total cost. Tends to bundle stops into fewer, longer routes."
+      },
+      "fewest": {
+        "title": "Fewest couriers",
+        "body": "Prioritizes using few vehicles. Each extra courier is a fixed cost."
+      },
+      "balanced": {
+        "title": "Balanced",
+        "body": "Splits the weight between time, cost and vehicles. A good starting point."
+      },
+      "weights": {
+        "title": "Objective weights",
+        "body": "How much each objective is worth against the others. They are normalized to sum to 1: only the proportion matters."
+      },
+      "time": {
+        "title": "Total time weight",
+        "body": "Raising it reduces the sum of hours across all couriers."
+      },
+      "cost": {
+        "title": "Cost weight",
+        "body": "Raising it favors routes cheaper in fuel, wages and fixed costs."
+      },
+      "vehicles": {
+        "title": "Vehicles weight",
+        "body": "Raising it pushes toward using fewer couriers."
+      },
+      "makespan": {
+        "title": "Last delivery weight",
+        "body": "Raising it balances routes so they all finish around the same time."
+      }
+    },
+    "constraints": {
+      "capacity_kg": {
+        "title": "Weight capacity",
+        "body": "Each route cannot carry more kg than its vehicle. Turning it off allows shorter but unrealistic routes."
+      },
+      "capacity_m3": {
+        "title": "Volume capacity",
+        "body": "Each route cannot carry more m³ than its vehicle. It matters with large, light parcels."
+      },
+      "time_windows": {
+        "title": "Time windows",
+        "body": "Each customer asks for a range of hours. Arriving early forces waiting and arriving late is penalized."
+      },
+      "max_shift": {
+        "title": "Max shift",
+        "body": "A route cannot last longer than the courier's shift. Turning it off allows fewer couriers but long shifts."
+      },
+      "priorities": {
+        "title": "Priorities",
+        "body": "High priority stops weigh 3 times more when measuring lateness; low ones, half."
+      }
+    },
+    "algorithms": {
+      "title": {
+        "title": "Algorithm",
+        "body": "The method that searches for routes. All receive the same problem; they differ in how they explore and how much time they need."
+      },
+      "ga": {
+        "title": "Memetic GA",
+        "body": "Evolves a population of routes through crossover and mutation, and polishes each child with local search. A solid all-rounder."
+      },
+      "aco": {
+        "title": "ACO (MMAS)",
+        "body": "Virtual ants build routes following a pheromone trail that is reinforced on the best ones. Shines on routes with clear structure."
+      },
+      "aco_ga": {
+        "title": "ACO + GA",
+        "body": "Hybrid: the GA and the ants hand each other their best solutions. Often wins on big problems, with more parameters."
+      },
+      "nsga2": {
+        "title": "NSGA-II",
+        "body": "Multi-objective: it returns not one route set but a Pareto front of trade-offs between time, cost and vehicles."
+      },
+      "pyvrp": {
+        "title": "PyVRP",
+        "body": "State-of-the-art reference solver. Useful to measure how far the others are."
+      },
+      "ortools": {
+        "title": "OR-Tools",
+        "body": "Google's routing solver, fast and robust. Useful as a comparison point."
+      }
+    },
+    "modes": {
+      "depot": {
+        "title": "Single depot",
+        "body": "All couriers leave the same depot and return to it. The classic distribution center case."
+      },
+      "multi_origin": {
+        "title": "Multi-origin",
+        "body": "Each courier starts from their own point, such as home. With no end point, the route is open and ends at the last delivery."
+      }
+    },
+    "axes": {
+      "fitness": {
+        "title": "Best fitness",
+        "body": "A single number summarizing how good the best solution found is. Lower is better; the curve drops as the algorithm learns."
+      },
+      "time": {
+        "title": "Time",
+        "body": "Real seconds elapsed since the run started."
+      },
+      "logScale": {
+        "title": "Log scale",
+        "body": "Each tick is ten times the previous one. Useful when curves start very high and then flatten."
+      },
+      "size": {
+        "title": "Point size",
+        "body": "How many vehicles each solution uses: bigger point, more couriers."
+      },
+      "pareto": {
+        "title": "Front axes",
+        "body": "Each point is a solution. Choose which two objectives to compare; front points are those no other solution beats on both."
+      },
+      "trigger": {
+        "title": "When to re-optimize",
+        "body": "Per order: each new order triggers a recompute. Per batch: orders accumulate and a recompute runs every so often."
+      },
+      "speed": {
+        "title": "Speed",
+        "body": "Simulated minutes per real second. At 60x a simulated hour passes in a second."
+      }
+    },
+    "glossary": {
+      "split": {
+        "title": "Split",
+        "body": "Algorithm that cuts a long tour of stops into one route per courier, respecting capacity and shift and picking the cheapest cuts."
+      },
+      "pheromone": {
+        "title": "Pheromone",
+        "body": "Virtual trail ants leave on the edges of good routes. It evaporates over time and guides the next ants."
+      },
+      "pareto": {
+        "title": "Pareto front",
+        "body": "Set of solutions where improving one objective forces worsening another. You pick the trade-off."
+      },
+      "makespan": {
+        "title": "Makespan",
+        "body": "The moment the last route of the day finishes. Reducing it balances load between couriers."
+      },
+      "timeWindow": {
+        "title": "Time window",
+        "body": "Range of hours when the customer can receive. Arriving early forces waiting; arriving late is penalized."
+      },
+      "localSearch": {
+        "title": "Local search",
+        "body": "Polishing a solution with small changes, like moving a stop or reversing a segment, while they improve cost."
+      },
+      "kmeans": {
+        "title": "K-means",
+        "body": "Groups stops by proximity into k zones. Used to start with compact routes per courier."
+      },
+      "gap": {
+        "title": "Gap",
+        "body": "Percentage difference against the best known solution. 0% means matching it."
+      }
     }
   }
 }

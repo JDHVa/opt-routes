@@ -5,6 +5,12 @@ import depotSolution from "../src/test/fixtures/mty-centro-depot-40.solution.jso
 
 export const SCENARIO_ID = "mty-centro-depot-40";
 export const DYNAMIC_SCENARIO_ID = "mty-dynamic-100";
+const EXTRA_SCENARIO_IDS = [
+  "mty-metro-depot-150",
+  "mty-multiorigin-80",
+  "mty-urgent-tw-120",
+  "mty-motos-60",
+];
 
 const acoEntry = baseAlgorithms.find((entry) => entry.name === "aco");
 const algorithms = [
@@ -33,6 +39,15 @@ const scenarios = [
     mode: depotProblem.mode,
     region: "mty",
   },
+  ...EXTRA_SCENARIO_IDS.map((id) => ({
+    id,
+    name: id,
+    description: id,
+    n_stops: depotProblem.stops.length,
+    n_drivers: depotProblem.drivers.length,
+    mode: depotProblem.mode,
+    region: "mty",
+  })),
 ];
 
 function json(route: Route, body: unknown, status = 200): Promise<void> {
@@ -141,8 +156,17 @@ function compareEvents(runs: CompareRunBody[]) {
 
 export async function mockSolver(
   page: Page,
-  options: { failSolve?: boolean } = {},
+  options: { failSolve?: boolean; coach?: boolean } = {},
 ): Promise<SolverMock> {
+  if (!options.coach) {
+    await page.addInitScript(() => {
+      try {
+        window.localStorage.setItem("routeopt:coach:v1", "done");
+      } catch {
+        return;
+      }
+    });
+  }
   const state: SolverMock = {
     solveRequests: [],
     compareRequests: [],
@@ -159,7 +183,7 @@ export async function mockSolver(
     if (path === "algorithms") return json(route, algorithms);
     if (path === "vehicles") return json(route, { vehicles });
     if (path === "scenarios") return json(route, scenarios);
-    if (path === `scenarios/${SCENARIO_ID}` || path === `scenarios/${DYNAMIC_SCENARIO_ID}`) {
+    if (scenarios.some((scenario) => path === `scenarios/${scenario.id}`)) {
       return json(route, depotProblem);
     }
 

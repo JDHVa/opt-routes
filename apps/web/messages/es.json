@@ -37,7 +37,9 @@
       "algorithm": "Algoritmo",
       "language": "Idioma",
       "theme": "Tema",
-      "go": "Ir a"
+      "go": "Ir a",
+      "glossary": "Glosario",
+      "presets": "Presets de inicio"
     },
     "loadDemo": "Cargar demo Monterrey",
     "stop": "Detener optimización",
@@ -49,7 +51,9 @@
     "themeDark": "Tema oscuro",
     "themeSystem": "Tema del sistema",
     "goTo": "ir a",
-    "goToPage": "Ir a {page}"
+    "goToPage": "Ir a {page}",
+    "glossaryLabel": "¿Qué es {term}?",
+    "glossaryPrefix": "glosario qué es"
   },
   "map": {
     "ariaLabel": "Mapa de rutas",
@@ -250,7 +254,11 @@
         "constructing": "Construyendo hormigas",
         "cooperating": "Cooperación GA ↔ ACO",
         "finished": "Terminado"
-      }
+      },
+      "improved": "Mejora",
+      "improvedBy": "Mejora por {source}",
+      "progressLabel": "Avance del tiempo límite",
+      "deltaBetter": "Mejoró {amount}"
     },
     "results": {
       "panelLabel": "Resultados",
@@ -334,11 +342,37 @@
       "cancel": "Cancelar",
       "submit": "Generar escenario",
       "generating": "Generando…"
+    },
+    "coach": {
+      "label": "Recorrido de bienvenida",
+      "step": "Paso {current} de {total}",
+      "next": "Siguiente",
+      "back": "Atrás",
+      "done": "Entendido",
+      "skip": "Omitir recorrido",
+      "steps": {
+        "stops": {
+          "title": "1. Carga las paradas",
+          "body": "Elige un escenario, importa un CSV o genera paradas aleatorias. Aparecen como puntos en el mapa."
+        },
+        "fleet": {
+          "title": "2. Revisa la flota y las restricciones",
+          "body": "Aquí defines repartidores, vehículos, capacidad, jornada y ventanas de tiempo."
+        },
+        "algorithm": {
+          "title": "3. Elige algoritmo y objetivo",
+          "body": "Cada uno explora distinto. Pasa el cursor por los íconos ⓘ para entender cada parámetro."
+        },
+        "optimize": {
+          "title": "4. Optimiza y mira cómo trabaja",
+          "body": "Las rutas se dibujan, las hormigas exploran y las métricas mejoran en vivo. Puedes detener cuando quieras."
+        }
+      }
     }
   },
   "landing": {
     "title": "Optimiza rutas de reparto con algoritmos genéticos y colonias de hormigas",
-    "subtitle": "Planifica la última milla en el área metropolitana de Monterrey con GA memético, ACO, el híbrido ACO+GA y NSGA-II sobre calles reales, con ventanas de tiempo, capacidad y prioridades.",
+    "subtitle": "Planifica la última milla en Monterrey con GA memético, ACO, el híbrido ACO+GA y NSGA-II sobre calles reales. Mira cómo trabajan: las rutas se dibujan, las hormigas exploran y las métricas mejoran en vivo.",
     "ctaDemo": "Abrir demo Monterrey",
     "ctaCode": "Ver código",
     "map": {
@@ -381,7 +415,12 @@
       "osm": "Mapa y rutas: © OpenStreetMap contributors (ODbL). Teselas de OpenMapTiles vía OpenFreeMap.",
       "amazon": "Entregas de referencia: Amazon Last Mile Routing Challenge, Amazon y MIT CTL (CC BY-NC 4.0, solo uso no comercial).",
       "project": "RouteOpt NL es un proyecto escolar y de portafolio. Región demo: área metropolitana de Monterrey, Nuevo León."
-    }
+    },
+    "heroMap": {
+      "label": "Rutas dibujándose sobre Monterrey",
+      "legend": "Cada punto ámbar es una hormiga explorando una ruta"
+    },
+    "ctaPresets": "Elegir un preset"
   },
   "compare": {
     "title": "Comparar algoritmos",
@@ -617,6 +656,442 @@
       "delivered": "Entregadas: {ids}",
       "done": "Jornada terminada",
       "error": "Error: {code}"
+    }
+  },
+  "startPresets": {
+    "title": "Pruébalo ahora",
+    "subtitle": "Un click carga el escenario, configura el algoritmo y arranca la optimización por ti.",
+    "try": "Probar",
+    "tryNamed": "Probar: {name}",
+    "stops": "{count} paradas",
+    "emptyTitle": "O prueba un preset",
+    "emptyBody": "Cada uno carga un escenario real de Monterrey y arranca solo.",
+    "targets": {
+      "planner": "Planner",
+      "pareto": "Pareto",
+      "simulate": "Simulación"
+    },
+    "items": {
+      "fast-center": {
+        "name": "Entrega rápida en el centro",
+        "blurb": "GA minimiza la última entrega con un depósito único y 40 paradas."
+      },
+      "mixed-fleet": {
+        "name": "Flota mixta en todo Monterrey",
+        "blurb": "ACO+GA reparte 150 paradas entre 12 repartidores y varios tipos de vehículo."
+      },
+      "multi-origin": {
+        "name": "Repartidores desde casa",
+        "blurb": "Cada repartidor sale de su propio punto y ACO busca el menor costo con rutas abiertas."
+      },
+      "urgent-windows": {
+        "name": "Pedidos urgentes con ventanas",
+        "blurb": "La mitad de las 120 paradas tiene ventana de tiempo y 24 son de prioridad alta."
+      },
+      "pareto-tradeoff": {
+        "name": "Costo vs rapidez (Pareto)",
+        "blurb": "NSGA-II dibuja el frente: cada punto es un compromiso distinto entre tiempo y costo."
+      },
+      "live-day": {
+        "name": "Día con pedidos en vivo",
+        "blurb": "Simulación: llegan pedidos durante el día y el plan se re-optimiza en caliente."
+      }
+    }
+  },
+  "help": {
+    "coachTitle": "Ayuda",
+    "trigger": "Más información: {name}",
+    "metrics": {
+      "distance": {
+        "title": "Distancia",
+        "body": "Kilómetros que recorren todos los repartidores sumados, por calles reales. Menos distancia suele significar menos combustible y menos desgaste.",
+        "example": "71 km = suma de todas las rutas"
+      },
+      "cost": {
+        "title": "Costo",
+        "body": "Combustible, sueldo por hora y costos fijos de los vehículos usados, en pesos. Si sube mucho, prueba con menos repartidores o rutas más cortas.",
+        "example": "$1,400 MXN en total"
+      },
+      "duration": {
+        "title": "Tiempo total",
+        "body": "Suma de la duración de cada ruta: manejo, servicio en cada parada y esperas. Mide cuánto trabajo humano se gasta, no cuándo termina el día."
+      },
+      "makespan": {
+        "title": "Última entrega",
+        "body": "Cuándo termina la ruta más larga. Si baja, el último cliente recibe antes; para lograrlo se reparte mejor la carga entre repartidores."
+      },
+      "vehicles": {
+        "title": "Repartidores",
+        "body": "Cuántos repartidores salen a la calle. Menos repartidores ahorra costos fijos, pero rutas más largas y más cerca del límite de jornada."
+      },
+      "lateness": {
+        "title": "Retraso",
+        "body": "Minutos acumulados de llegadas fuera de la ventana de tiempo, ponderados por prioridad. Cero es ideal; llegar tarde a una parada urgente pesa tres veces más."
+      },
+      "gap": {
+        "title": "Gap",
+        "body": "Qué tan lejos está una corrida de la mejor, en porcentaje de fitness. 0 % es la mejor; 5 % significa que es 5 % peor que la ganadora."
+      },
+      "fitness": {
+        "title": "Fitness",
+        "body": "Un solo número que combina tiempo, costo, vehículos y penalizaciones según tus pesos. Menor es mejor; sirve para comparar soluciones del mismo problema."
+      },
+      "runtime": {
+        "title": "Runtime",
+        "body": "Segundos reales que tardó el algoritmo en entregar esta solución."
+      },
+      "feasible": {
+        "title": "Factible",
+        "body": "La solución respeta capacidad, jornada y entrega todas las paradas. Los retrasos en ventanas de tiempo son suaves y no la vuelven infactible."
+      }
+    },
+    "params": {
+      "time_limit_s": {
+        "title": "Tiempo límite",
+        "body": "Segundos máximos que el algoritmo puede pensar. Más tiempo suele dar mejores rutas con rendimientos decrecientes; menos tiempo responde rápido pero más burdo.",
+        "example": "10 s demo, 60 s para 200 paradas"
+      },
+      "max_iterations": {
+        "title": "Iteraciones máximas",
+        "body": "Tope de generaciones o ciclos. Se detiene al llegar a este tope o al tiempo límite, lo que ocurra primero."
+      },
+      "seed": {
+        "title": "Semilla",
+        "body": "Hace reproducible la aleatoriedad: la misma semilla da el mismo resultado. Cámbiala para explorar otra solución."
+      },
+      "init": {
+        "title": "Inicialización",
+        "body": "Cómo se arma la población o la solución de partida. K-means agrupa por zonas, vecino más cercano es voraz, barrido gira alrededor del depósito y aleatoria no usa heurística."
+      },
+      "local_search": {
+        "title": "Búsqueda local",
+        "body": "Pule cada solución moviendo o intercambiando paradas mientras mejore el costo. Activada da mejores rutas a cambio de algo más de cómputo."
+      },
+      "progress_every": {
+        "title": "Reportar cada",
+        "body": "Cada cuántas iteraciones se envía un avance a la pantalla. Número bajo: gráfica más fluida, más tráfico."
+      },
+      "progress_interval_s": {
+        "title": "Intervalo de avance",
+        "body": "Segundos mínimos entre avances enviados a la pantalla."
+      },
+      "pop_size": {
+        "title": "Población",
+        "body": "Cuántas soluciones compiten en cada generación. Más población explora mejor pero cada generación tarda más."
+      },
+      "crossover_rate": {
+        "title": "Probabilidad de cruce",
+        "body": "Con qué frecuencia dos padres combinan sus rutas para hacer un hijo. Alta mezcla mucho; baja conserva lo que ya funciona."
+      },
+      "mutation_rate": {
+        "title": "Probabilidad de mutación",
+        "body": "Con qué frecuencia se altera un hijo al azar. Subirla evita estancarse; bajarla afina lo que ya hay."
+      },
+      "ls_rate": {
+        "title": "Probabilidad de búsqueda local",
+        "body": "Qué fracción de los hijos se pule con búsqueda local. Más alta da mejores hijos, pero más lento."
+      },
+      "elite_size": {
+        "title": "Élite",
+        "body": "Cuántas de las mejores soluciones pasan intactas a la siguiente generación, para no perder lo ganado."
+      },
+      "tournament_size": {
+        "title": "Tamaño del torneo",
+        "body": "Cuántos competidores se sortean al elegir un padre. Más grande presiona más hacia los mejores."
+      },
+      "crossover": {
+        "title": "Operador de cruce",
+        "body": "OX conserva el orden relativo de las paradas de un padre; PMX conserva las posiciones. Ambos producen un tour válido."
+      },
+      "stagnation_generations": {
+        "title": "Generaciones sin mejora",
+        "body": "Si no mejora en tantas generaciones, el algoritmo se detiene o se reinicia parcialmente."
+      },
+      "granular_k": {
+        "title": "Vecinos granulares",
+        "body": "Para cada parada solo se prueban sus k vecinas más cercanas. Más bajo acelera; más alto revisa más movimientos."
+      },
+      "n_ants": {
+        "title": "Hormigas",
+        "body": "Cuántas hormigas construyen una solución en cada iteración. Más hormigas exploran más y tardan más."
+      },
+      "alpha": {
+        "title": "Alfa (feromona)",
+        "body": "Cuánto pesa la feromona al elegir la siguiente parada. Alta: sigue el rastro dejado; baja: ignora la experiencia."
+      },
+      "beta": {
+        "title": "Beta (heurística)",
+        "body": "Cuánto pesa la cercanía al elegir la siguiente parada. Alta: voraz hacia lo cercano; baja: se guía más por la feromona."
+      },
+      "rho": {
+        "title": "Evaporación (ρ)",
+        "body": "Fracción de feromona que se evapora cada iteración. Alta olvida rápido y explora; baja refuerza y converge antes.",
+        "example": "ρ = 0.1 → 10 % se evapora"
+      },
+      "q0": {
+        "title": "q0 (explotación)",
+        "body": "Probabilidad de elegir directamente la mejor opción en lugar de sortear. Alta es más voraz; baja explora más."
+      },
+      "cand_k": {
+        "title": "Candidatos por nodo",
+        "body": "Cuántas paradas cercanas considera una hormiga como siguiente paso. Menos candidatos acelera la construcción."
+      },
+      "tw_weight": {
+        "title": "Peso de ventanas",
+        "body": "Cuánto influyen las ventanas de tiempo al elegir la siguiente parada. Más alto prioriza llegar a tiempo."
+      },
+      "ls_ants": {
+        "title": "Hormigas con búsqueda local",
+        "body": "Cuántas de las mejores hormigas de cada iteración se pulen con búsqueda local."
+      },
+      "stagnation_iterations": {
+        "title": "Iteraciones sin mejora",
+        "body": "Si no mejora en tantas iteraciones, la feromona se reinicia para volver a explorar."
+      },
+      "ls_every": {
+        "title": "Búsqueda local cada",
+        "body": "Cada cuántas generaciones se aplica búsqueda local. 0 la apaga y acelera NSGA-II."
+      },
+      "ga_generations_per_cycle": {
+        "title": "Generaciones por ciclo",
+        "body": "Cuántas generaciones del GA corren antes de pasarle el relevo a las hormigas."
+      },
+      "ants_per_cycle": {
+        "title": "Hormigas por ciclo",
+        "body": "Cuántas hormigas construyen soluciones en cada ciclo del híbrido."
+      },
+      "elite_deposit": {
+        "title": "Élite que deposita",
+        "body": "Cuántas soluciones del GA refuerzan la feromona de las hormigas."
+      },
+      "inject_k": {
+        "title": "Soluciones inyectadas",
+        "body": "Cuántas soluciones de las hormigas entran a la población del GA en cada ciclo."
+      },
+      "seed_ants": {
+        "title": "Hormigas de arranque",
+        "body": "Hormigas usadas para sembrar la población inicial. Vacío deja que el algoritmo decida."
+      },
+      "adaptive": {
+        "title": "Adaptativo",
+        "body": "Reparte más tiempo al método (GA u ACO) que más está mejorando."
+      },
+      "ga_crossover": {
+        "title": "Cruce del GA",
+        "body": "OX conserva el orden relativo de las paradas; PMX conserva las posiciones."
+      },
+      "ga_crossover_rate": {
+        "title": "Cruce del GA",
+        "body": "Con qué frecuencia dos padres del GA combinan sus rutas."
+      },
+      "ga_mutation_rate": {
+        "title": "Mutación del GA",
+        "body": "Con qué frecuencia se altera al azar un hijo del GA."
+      },
+      "ga_ls_rate": {
+        "title": "Búsqueda local del GA",
+        "body": "Fracción de hijos del GA que se pulen con búsqueda local."
+      },
+      "ga_elite_size": {
+        "title": "Élite del GA",
+        "body": "Cuántas mejores soluciones del GA pasan intactas a la siguiente generación."
+      },
+      "ga_stagnation_generations": {
+        "title": "Estancamiento del GA",
+        "body": "Generaciones sin mejora tras las cuales el GA cede el turno a las hormigas."
+      },
+      "aco_alpha": {
+        "title": "Alfa del ACO",
+        "body": "Cuánto pesa la feromona al elegir la siguiente parada."
+      },
+      "aco_beta": {
+        "title": "Beta del ACO",
+        "body": "Cuánto pesa la cercanía al elegir la siguiente parada."
+      },
+      "aco_rho": {
+        "title": "Evaporación del ACO",
+        "body": "Fracción de feromona que se evapora cada ciclo."
+      },
+      "aco_cand_k": {
+        "title": "Candidatos del ACO",
+        "body": "Cuántas paradas cercanas considera una hormiga como siguiente paso."
+      },
+      "aco_stagnation_cycles": {
+        "title": "Estancamiento del ACO",
+        "body": "Ciclos sin mejora tras los cuales se reinicia la feromona."
+      },
+      "objectives": {
+        "title": "Objetivos",
+        "body": "Qué objetivos compara NSGA-II para construir el frente de Pareto."
+      }
+    },
+    "objectives": {
+      "title": {
+        "title": "Objetivo",
+        "body": "Qué le importa más al algoritmo al comparar soluciones. Cambiar el objetivo cambia los pesos de tiempo, costo, vehículos y última entrega."
+      },
+      "fastest": {
+        "title": "Más rápido",
+        "body": "Prioriza que la última ruta termine lo antes posible. Reparte la carga parejo, aunque cueste más."
+      },
+      "cheapest": {
+        "title": "Más barato",
+        "body": "Prioriza el costo total. Suele juntar paradas en menos rutas largas."
+      },
+      "fewest": {
+        "title": "Menos repartidores",
+        "body": "Prioriza usar pocos vehículos. Cada repartidor extra es un costo fijo."
+      },
+      "balanced": {
+        "title": "Balanceado",
+        "body": "Reparte el peso entre tiempo, costo y vehículos. Un buen punto de partida."
+      },
+      "weights": {
+        "title": "Pesos del objetivo",
+        "body": "Cuánto vale cada objetivo respecto a los demás. Se normalizan para sumar 1: lo que importa es la proporción, no el valor."
+      },
+      "time": {
+        "title": "Peso del tiempo total",
+        "body": "Subirlo reduce la suma de horas de todos los repartidores."
+      },
+      "cost": {
+        "title": "Peso del costo",
+        "body": "Subirlo favorece rutas más baratas en combustible, sueldo y costos fijos."
+      },
+      "vehicles": {
+        "title": "Peso de vehículos",
+        "body": "Subirlo empuja a usar menos repartidores."
+      },
+      "makespan": {
+        "title": "Peso de la última entrega",
+        "body": "Subirlo equilibra las rutas para que todas terminen cerca de la misma hora."
+      }
+    },
+    "constraints": {
+      "capacity_kg": {
+        "title": "Capacidad en peso",
+        "body": "Cada ruta no puede cargar más kg que su vehículo. Apagarla permite rutas más cortas pero irreales."
+      },
+      "capacity_m3": {
+        "title": "Capacidad en volumen",
+        "body": "Cada ruta no puede cargar más m³ que su vehículo. Importa con paquetes grandes y ligeros."
+      },
+      "time_windows": {
+        "title": "Ventanas de tiempo",
+        "body": "Cada cliente pide un rango de horas. Llegar antes obliga a esperar y llegar tarde se penaliza."
+      },
+      "max_shift": {
+        "title": "Jornada máxima",
+        "body": "Una ruta no puede durar más que la jornada del repartidor. Apagarla permite menos repartidores pero turnos largos."
+      },
+      "priorities": {
+        "title": "Prioridades",
+        "body": "Las paradas de prioridad alta pesan 3 veces más al medir el retraso; las bajas, la mitad."
+      }
+    },
+    "algorithms": {
+      "title": {
+        "title": "Algoritmo",
+        "body": "El método que busca las rutas. Todos reciben el mismo problema; cambian la forma de explorar y el tiempo que necesitan."
+      },
+      "ga": {
+        "title": "GA memético",
+        "body": "Evoluciona una población de rutas por cruces y mutaciones, y pule cada hijo con búsqueda local. Buen todoterreno."
+      },
+      "aco": {
+        "title": "ACO (MMAS)",
+        "body": "Hormigas virtuales construyen rutas siguiendo un rastro de feromona que se refuerza en las mejores. Brilla en rutas con estructura clara."
+      },
+      "aco_ga": {
+        "title": "ACO + GA",
+        "body": "Híbrido: el GA y las hormigas se pasan sus mejores soluciones. Suele ganar en problemas grandes, a costa de más parámetros."
+      },
+      "nsga2": {
+        "title": "NSGA-II",
+        "body": "Multiobjetivo: no da una sola ruta sino un frente de Pareto con compromisos entre tiempo, costo y vehículos."
+      },
+      "pyvrp": {
+        "title": "PyVRP",
+        "body": "Solver de referencia del estado del arte. Sirve para medir qué tan lejos están los demás."
+      },
+      "ortools": {
+        "title": "OR-Tools",
+        "body": "Solver de enrutamiento de Google, rápido y robusto. Sirve como punto de comparación."
+      }
+    },
+    "modes": {
+      "depot": {
+        "title": "Depósito único",
+        "body": "Todos los repartidores salen del mismo depósito y regresan a él. Es el caso clásico de un centro de distribución."
+      },
+      "multi_origin": {
+        "title": "Multi-origen",
+        "body": "Cada repartidor parte de su propio punto, por ejemplo su casa. Sin punto final, la ruta es abierta y termina en la última entrega."
+      }
+    },
+    "axes": {
+      "fitness": {
+        "title": "Mejor fitness",
+        "body": "Un solo número que resume qué tan buena es la mejor solución encontrada. Menor es mejor; la curva baja conforme el algoritmo aprende."
+      },
+      "time": {
+        "title": "Tiempo",
+        "body": "Segundos reales transcurridos desde que empezó la corrida."
+      },
+      "logScale": {
+        "title": "Escala logarítmica",
+        "body": "Cada marca vale diez veces la anterior. Útil cuando las curvas arrancan muy arriba y luego se aplanan."
+      },
+      "size": {
+        "title": "Tamaño del punto",
+        "body": "Cuántos vehículos usa cada solución: punto más grande, más repartidores."
+      },
+      "pareto": {
+        "title": "Ejes del frente",
+        "body": "Cada punto es una solución. Elige qué dos objetivos comparar; los puntos del frente son los que ningún otro supera en ambos."
+      },
+      "trigger": {
+        "title": "Cuándo re-optimizar",
+        "body": "Por pedido: cada pedido nuevo dispara un recálculo. Por lote: se acumulan y se recalcula cada cierto tiempo."
+      },
+      "speed": {
+        "title": "Velocidad",
+        "body": "Minutos simulados por segundo real. A 60× una hora simulada pasa en un segundo."
+      }
+    },
+    "glossary": {
+      "split": {
+        "title": "Split",
+        "body": "Algoritmo que corta un tour largo de paradas en rutas por repartidor, respetando capacidad y jornada y escogiendo los cortes más baratos."
+      },
+      "pheromone": {
+        "title": "Feromona",
+        "body": "Rastro virtual que las hormigas dejan en las aristas de las buenas rutas. Se evapora con el tiempo y guía a las siguientes hormigas."
+      },
+      "pareto": {
+        "title": "Frente de Pareto",
+        "body": "Conjunto de soluciones donde mejorar un objetivo obliga a empeorar otro. Tú eliges el compromiso."
+      },
+      "makespan": {
+        "title": "Makespan",
+        "body": "El momento en que termina la última ruta del día. Reducirlo equilibra la carga entre repartidores."
+      },
+      "timeWindow": {
+        "title": "Ventana de tiempo",
+        "body": "Rango de horas en que el cliente puede recibir. Llegar antes obliga a esperar; llegar después se penaliza."
+      },
+      "localSearch": {
+        "title": "Búsqueda local",
+        "body": "Pulido de una solución con pequeños cambios, como mover una parada o invertir un tramo, mientras mejoren el costo."
+      },
+      "kmeans": {
+        "title": "K-means",
+        "body": "Agrupa las paradas por cercanía en k zonas. Se usa para arrancar con rutas compactas por repartidor."
+      },
+      "gap": {
+        "title": "Gap",
+        "body": "Diferencia porcentual contra la mejor solución conocida. 0 % es igualarla."
+      }
     }
   }
 }

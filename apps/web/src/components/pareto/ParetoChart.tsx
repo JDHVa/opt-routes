@@ -2,6 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo } from "react";
+import { useReducedMotion } from "@/lib/motion/use-reduced-motion";
 import {
   CartesianGrid,
   ComposedChart,
@@ -59,6 +60,7 @@ export function ParetoChart({
 }) {
   const t = useTranslations("pareto");
   const locale = useLocale() as Locale;
+  const reduced = useReducedMotion();
   const rows = useMemo(() => toFrontRows(points), [points]);
   const range = useMemo(() => vehicleRange(points), [points]);
 
@@ -67,11 +69,13 @@ export function ParetoChart({
     if (!payload || props.cx === undefined || props.cy === undefined) return <g />;
     const radius = sizeScale(payload.vehicles, range, MIN_RADIUS, MAX_RADIUS);
     const selected = payload.id === selectedId;
+    const order = (props as { index?: number }).index ?? 0;
     return (
       <g
         data-testid="pareto-point"
         onClick={() => onSelect(payload.id)}
-        style={{ cursor: "pointer" }}
+        className="point-in"
+        style={{ cursor: "pointer", animationDelay: `${Math.min(order * 45, 700)}ms` }}
       >
         {selected ? (
           <circle
@@ -164,7 +168,8 @@ export function ParetoChart({
             dot={false}
             activeDot={false}
             connectNulls
-            isAnimationActive={false}
+            isAnimationActive={!reduced}
+            animationDuration={300}
             legendType="none"
             tooltipType="none"
           />

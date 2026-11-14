@@ -5,7 +5,12 @@ import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { AlgorithmChip } from "@/components/ui/algorithm-chip";
+import { Metric } from "@/components/ui/metric";
 import { Num } from "@/components/ui/num";
+import { motion } from "motion/react";
+import { useReducedMotion } from "@/lib/motion/use-reduced-motion";
+import { riseVariants, staggerVariants } from "@/lib/motion/variants";
 import type { Locale } from "@/i18n/routing";
 import { exportCsv } from "@/lib/api/client";
 import { downloadText } from "@/lib/download";
@@ -16,36 +21,14 @@ import {
   formatClock,
   formatKm,
   kmParts,
-  type ValuePart,
   formatMinutes,
   formatMXN,
   formatSeconds,
 } from "@/lib/format";
-import { algorithmDisplayName } from "@/lib/planner/algorithms";
 import { isInfeasible } from "@/lib/planner/derive";
 import { ALGORITHM_COLORS, routeColor, routeIsDashed } from "@/lib/routes/palette";
 import { cn } from "@/lib/utils";
 import { usePlanner } from "@/stores/planner";
-
-export function Metric({ label, value }: { label: string; value: string | ValuePart[] }) {
-  return (
-    <div className="flex min-w-0 flex-col gap-0.5">
-      <dt className="text-micro font-medium text-muted">{label}</dt>
-      <dd className="flex flex-wrap items-baseline gap-x-1.5 text-metric font-medium">
-        {typeof value === "string" ? (
-          <span className="num">{value}</span>
-        ) : (
-          value.map((part) => (
-            <span key={part.unit} className="whitespace-nowrap">
-              <span className="num">{part.value}</span>
-              <span className="ml-0.5 text-small font-normal text-muted">{part.unit}</span>
-            </span>
-          ))
-        )}
-      </dd>
-    </div>
-  );
-}
 
 function RouteItem({
   problem,
@@ -68,9 +51,11 @@ function RouteItem({
   const stopsById = new Map(problem.stops.map((s) => [s.id, s]));
   const color = routeColor(driverIndex);
   const dashed = routeIsDashed(driverIndex);
+  const reduced = useReducedMotion();
 
   return (
-    <li
+    <motion.li
+      variants={riseVariants(reduced, 8)}
       className="border-b border-border last:border-b-0"
       onMouseEnter={() => hoverRoute(driverIndex)}
       onMouseLeave={() => hoverRoute(null)}
@@ -150,7 +135,7 @@ function RouteItem({
           </table>
         </div>
       ) : null}
-    </li>
+    </motion.li>
   );
 }
 
@@ -247,6 +232,7 @@ export function ResultsPanel({
   const metrics = solution.metrics;
   const infeasible = isInfeasible(metrics);
   const live = status === "running";
+  const reduced = useReducedMotion();
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -254,7 +240,7 @@ export function ResultsPanel({
         <div className="flex min-w-0 flex-col gap-1">
           <h2 className="text-h2 font-semibold">{t("title")}</h2>
           <p className="flex flex-wrap items-center gap-x-2 text-small text-muted">
-            <span>{algorithmDisplayName(solution.algorithm)}</span>
+            <AlgorithmChip algorithm={solution.algorithm} />
             <span aria-hidden="true">·</span>
             <Num>{formatSeconds(solution.runtime_s, locale)}</Num>
             {stopped ? (
@@ -292,20 +278,60 @@ export function ResultsPanel({
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-4 border-b border-border p-4">
-          <Metric label={t("metrics.distance")} value={kmParts(metrics.total_distance_km, locale)} />
-          <Metric label={t("metrics.cost")} value={formatMXN(metrics.total_cost_mxn, locale)} />
-          <Metric label={t("metrics.duration")} value={durationParts(metrics.total_duration_min, locale)} />
-          <Metric label={t("metrics.makespan")} value={durationParts(metrics.makespan_min, locale)} />
-          <Metric label={t("metrics.vehicles")} value={String(metrics.vehicles_used)} />
-          <Metric label={t("metrics.lateness")} value={durationParts(metrics.lateness_min, locale)} />
-        </dl>
+        <motion.dl
+          initial="hidden"
+          animate="show"
+          variants={staggerVariants(reduced, 0.04)}
+          className="grid grid-cols-2 gap-x-4 gap-y-4 border-b border-border p-4"
+        >
+          <Metric
+            label={t("metrics.distance")}
+            help="metrics.distance"
+            amount={metrics.total_distance_km}
+            format={(n) => kmParts(n, locale)}
+          />
+          <Metric
+            label={t("metrics.cost")}
+            help="metrics.cost"
+            amount={metrics.total_cost_mxn}
+            format={(n) => formatMXN(n, locale)}
+          />
+          <Metric
+            label={t("metrics.duration")}
+            help="metrics.duration"
+            amount={metrics.total_duration_min}
+            format={(n) => durationParts(n, locale)}
+          />
+          <Metric
+            label={t("metrics.makespan")}
+            help="metrics.makespan"
+            amount={metrics.makespan_min}
+            format={(n) => durationParts(n, locale)}
+          />
+          <Metric
+            label={t("metrics.vehicles")}
+            help="metrics.vehicles"
+            amount={metrics.vehicles_used}
+            format={(n) => String(Math.round(n))}
+          />
+          <Metric
+            label={t("metrics.lateness")}
+            help="metrics.lateness"
+            amount={metrics.lateness_min}
+            format={(n) => durationParts(n, locale)}
+          />
+        </motion.dl>
 
         <HybridBar />
 
         <div className="flex flex-col">
           <h3 className="th-micro px-4 pt-4 pb-2 text-muted">{t("routes")}</h3>
-          <ul className="border-t border-border">
+          <motion.ul
+            initial="hidden"
+            animate="show"
+            variants={staggerVariants(reduced, 0.04, 0.2)}
+            className="border-t border-border"
+          >
             {solution.routes.map((route) => {
               const driverIndex = problem.drivers.findIndex((d) => d.id === route.driver_id);
               return (
@@ -318,7 +344,7 @@ export function ResultsPanel({
                 />
               );
             })}
-          </ul>
+          </motion.ul>
         </div>
       </div>
       {!live ? <ExportActions solution={solution} /> : null}

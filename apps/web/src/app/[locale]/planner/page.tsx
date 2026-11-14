@@ -1,4 +1,5 @@
 import { setRequestLocale } from "next-intl/server";
+import { Suspense } from "react";
 import { PlannerView } from "@/components/planner/PlannerView";
 
 export default async function PlannerPage({
@@ -8,5 +9,9 @@ export default async function PlannerPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <PlannerView />;
+  return (
+    <Suspense fallback={null}>
+      <PlannerView />
+    </Suspense>
+  );
 }

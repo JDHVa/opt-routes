@@ -38,7 +38,11 @@ const UI_PAIRS = [
   ["warning", "surface"],
   ["success", "surface"],
   ["danger", "surface"],
+  ["accent", "surface-2"],
 ];
+
+const THEME_TEXT_PAIRS = { light: [["text", "signal"]], dark: [["accent-fg", "signal"]] };
+const THEME_UI_PAIRS = { light: [["signal", "text"]], dark: [["signal", "bg"], ["signal", "surface"]] };
 
 function color(tokens, name) {
   const parsed = parseOklch(tokens[name] ?? "");
@@ -61,6 +65,8 @@ for (const [theme, selector] of Object.entries(THEMES)) {
   };
   measure(TEXT_PAIRS, "texto", 4.5);
   measure(UI_PAIRS, "ui", 3);
+  measure(THEME_TEXT_PAIRS[theme], "texto", 4.5);
+  measure(THEME_UI_PAIRS[theme], "ui", 3);
 }
 
 for (const row of rows) {
