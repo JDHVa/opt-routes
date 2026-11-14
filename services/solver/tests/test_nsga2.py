@@ -68,8 +68,8 @@ def test_front_is_non_dominated_unique_and_valid() -> None:
         validate_routeset(inst, rs)
         assert rs.unassigned == []
         assert evaluate(inst, rs).total_cost_mxn == ev.total_cost_mxn
-    times = [ev.total_duration_min for _, ev in front]
-    assert times == sorted(times)
+    costs = [ev.total_cost_mxn for _, ev in front]
+    assert costs == sorted(costs)
 
 
 def test_front_has_trade_offs_with_varied_weights() -> None:
@@ -164,3 +164,14 @@ def test_works_with_multi_origin_and_time_windows() -> None:
     assert result.pareto
     for rs, _ in result.pareto:
         validate_routeset(inst, rs)
+
+
+def test_objectives_are_configurable() -> None:
+    inst = varied_instance()
+    params = {"time_limit_s": 5, "max_iterations": 30, "seed": 3, "objectives": ["time", "cost"]}
+    result = Nsga2Solver(params).solve(inst)
+    assert result.pareto is not None
+    pairs = [pareto_objectives(ev, ("time", "cost")) for _, ev in result.pareto]
+    for i, a in enumerate(pairs):
+        for j, b in enumerate(pairs):
+            assert i == j or not dominates(a, b)

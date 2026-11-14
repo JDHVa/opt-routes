@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field, replace
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 from pydantic import Field
@@ -35,13 +35,15 @@ from routeopt.core.evaluate import evaluate
 from routeopt.core.split import routes_to_chromosome, split
 from routeopt.core.types import F64, I64, Chromosome, Evaluation, Instance, Penalties, RouteSet
 
-WEIGHT_GENES = 3
+WEIGHT_GENES = 4
 WEIGHT_FLOOR = 0.02
 BLEND_ALPHA = 0.3
 GAUSSIAN_SIGMA = 0.15
 OBJECTIVE_DECIMALS = 6
 
 Point = tuple[RouteSet, Evaluation]
+ObjectiveName = Literal["time", "cost", "vehicles", "makespan"]
+DEFAULT_OBJECTIVES: tuple[ObjectiveName, ...] = ("cost", "makespan", "vehicles")
 
 
 class Nsga2Params(SolverParams):
@@ -49,6 +51,9 @@ class Nsga2Params(SolverParams):
     crossover_rate: float = Field(default=0.9, ge=0.0, le=1.0)
     mutation_rate: float = Field(default=0.2, ge=0.0, le=1.0)
     ls_every: int = Field(default=0, ge=0)
+    objectives: list[ObjectiveName] = Field(
+        default_factory=lambda: list(DEFAULT_OBJECTIVES), min_length=2, max_length=4
+    )
 
 
 @dataclass(slots=True)
@@ -63,11 +68,18 @@ class Genome:
         self.key = self.tour.tobytes()
 
 
-def pareto_objectives(ev: Evaluation) -> F64:
-    return np.array(
-        [ev.total_duration_min + ev.lateness_min, ev.total_cost_mxn, float(ev.vehicles_used)],
-        dtype=np.float64,
-    )
+def objective_value(ev: Evaluation, name: ObjectiveName) -> float:
+    if name == "time":
+        return ev.total_duration_min + ev.lateness_min
+    if name == "cost":
+        return ev.total_cost_mxn
+    if name == "vehicles":
+        return float(ev.vehicles_used)
+    return ev.makespan_min + ev.lateness_min
+
+
+def pareto_objectives(ev: Evaluation, names: tuple[ObjectiveName, ...] = DEFAULT_OBJECTIVES) -> F64:
+    return np.array([objective_value(ev, name) for name in names], dtype=np.float64)
 
 
 def violation(inst: Instance, ev: Evaluation) -> float:
@@ -80,8 +92,7 @@ def violation(inst: Instance, ev: Evaluation) -> float:
 
 def weight_vector(genes: F64) -> F64:
     raw = np.clip(genes, 0.0, 1.0) + WEIGHT_FLOOR
-    weights = np.zeros(4, dtype=np.float64)
-    weights[:WEIGHT_GENES] = raw / raw.sum()
+    weights: F64 = raw / raw.sum()
     return weights
 
 
@@ -103,12 +114,14 @@ def non_dominated_indices(objectives: F64) -> list[int]:
     return keep
 
 
-def merge_front(points: list[Point]) -> list[Point]:
+def merge_front(
+    points: list[Point], names: tuple[ObjectiveName, ...] = DEFAULT_OBJECTIVES
+) -> list[Point]:
     if not points:
         return []
     if any(ev.feasible for _, ev in points):
         points = [p for p in points if p[1].feasible]
-    objectives = np.array([pareto_objectives(ev) for _, ev in points])
+    objectives = np.array([pareto_objectives(ev, names) for _, ev in points])
     seen: set[tuple[float, ...]] = set()
     front: list[Point] = []
     for i in non_dominated_indices(objectives):
@@ -117,7 +130,7 @@ def merge_front(points: list[Point]) -> list[Point]:
             continue
         seen.add(key)
         front.append(points[i])
-    front.sort(key=lambda p: pareto_objectives(p[1]).tolist())
+    front.sort(key=lambda p: pareto_objectives(p[1], names).tolist())
     return front
 
 
@@ -223,19 +236,22 @@ class TourDuplicates(ElementwiseDuplicateElimination):
 
 
 class RoutingProblem(Problem):
-    def __init__(self, inst: Instance, penalties: Penalties | None) -> None:
-        super().__init__(n_var=1, n_obj=3, n_ieq_constr=1)
+    def __init__(
+        self, inst: Instance, penalties: Penalties | None, names: tuple[ObjectiveName, ...]
+    ) -> None:
+        super().__init__(n_var=1, n_obj=len(names), n_ieq_constr=1)
         self.inst = inst
         self.penalties = penalties
+        self.names = names
 
     def _evaluate(self, X: Any, out: dict[str, Any], *args: Any, **kwargs: Any) -> None:
-        objectives = np.zeros((X.shape[0], 3))
+        objectives = np.zeros((X.shape[0], len(self.names)))
         violations = np.zeros((X.shape[0], 1))
         for i in range(X.shape[0]):
             genome: Genome = X[i, 0]
             genome.result = decode(self.inst, genome, self.penalties)
             ev = genome.result[1]
-            objectives[i] = pareto_objectives(ev)
+            objectives[i] = pareto_objectives(ev, self.names)
             violations[i, 0] = violation(self.inst, ev)
         out["F"] = objectives
         out["G"] = violations
@@ -304,6 +320,7 @@ class Nsga2Solver(Solver):
         assert isinstance(params, Nsga2Params)
         watch = Stopwatch(params.time_limit_s)
         rng = np.random.default_rng(params.seed)
+        names = tuple(dict.fromkeys(params.objectives))
         genomes = initial_genomes(inst, params, rng, warm_start, penalties)
         algorithm = NSGA2(
             pop_size=params.pop_size,
@@ -313,11 +330,13 @@ class Nsga2Solver(Solver):
             eliminate_duplicates=TourDuplicates(),
         )
         algorithm.setup(
-            RoutingProblem(inst, penalties),
+            RoutingProblem(inst, penalties, names),
             termination=NoTermination(),
             seed=int(rng.integers(0, 2**31 - 1)),
         )
-        front: list[Point] = merge_front([decode(inst, genome, penalties) for genome in genomes])
+        front: list[Point] = merge_front(
+            [decode(inst, genome, penalties) for genome in genomes], names
+        )
         history: list[tuple[int, float, float]] = []
         generation = 0
         gate = ProgressGate(watch, params.progress_every, params.progress_interval_s)
@@ -328,9 +347,9 @@ class Nsga2Solver(Solver):
         while not stop:
             algorithm.next()
             generation += 1
-            front = merge_front([*front, *population_points(algorithm)])
+            front = merge_front([*front, *population_points(algorithm)], names)
             if params.ls_every and generation % params.ls_every == 0:
-                front = self.polish(inst, front, rng, penalties)
+                front = self.polish(inst, front, rng, penalties, names)
             best, best_eval = pick_best(front)
             history.append((generation, best_eval.fitness, watch.elapsed))
             if callback is not None and gate.due(generation):
@@ -366,13 +385,17 @@ class Nsga2Solver(Solver):
 
     @staticmethod
     def polish(
-        inst: Instance, front: list[Point], rng: np.random.Generator, penalties: Penalties | None
+        inst: Instance,
+        front: list[Point],
+        rng: np.random.Generator,
+        penalties: Penalties | None,
+        names: tuple[ObjectiveName, ...],
     ) -> list[Point]:
         improved = [
             (rs, evaluate(inst, rs, penalties))
             for rs in (improve(inst, p[0], penalties, rng) for p in front)
         ]
-        return merge_front([*front, *improved])
+        return merge_front([*front, *improved], names)
 
 
 def pick_best(front: list[Point]) -> Point:
