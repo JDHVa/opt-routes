@@ -25,6 +25,12 @@ from routeopt.algorithms.base import (
 )
 from routeopt.algorithms.init import initial_routesets
 from routeopt.algorithms.local_search import improve
+from routeopt.algorithms.progress import (
+    STAGE_EVOLVING,
+    STAGE_FINISHED,
+    STAGE_SEEDING,
+    ProgressGate,
+)
 from routeopt.core.evaluate import evaluate
 from routeopt.core.split import routes_to_chromosome, split
 from routeopt.core.types import F64, I64, Chromosome, Evaluation, Instance, Penalties, RouteSet
@@ -311,12 +317,15 @@ class Nsga2Solver(Solver):
             termination=NoTermination(),
             seed=int(rng.integers(0, 2**31 - 1)),
         )
-        front: list[Point] = []
+        front: list[Point] = merge_front([decode(inst, genome, penalties) for genome in genomes])
         history: list[tuple[int, float, float]] = []
         generation = 0
+        gate = ProgressGate(watch, params.progress_every, params.progress_interval_s)
         stop = False
-        reported = 0
-        while True:
+        if callback is not None:
+            stop = not callback(self.event(0, watch, front, STAGE_SEEDING))
+            gate.mark(0)
+        while not stop:
             algorithm.next()
             generation += 1
             front = merge_front([*front, *population_points(algorithm)])
@@ -324,14 +333,14 @@ class Nsga2Solver(Solver):
                 front = self.polish(inst, front, rng, penalties)
             best, best_eval = pick_best(front)
             history.append((generation, best_eval.fitness, watch.elapsed))
-            if callback is not None and generation % params.progress_every == 0:
-                reported = generation
-                stop = not callback(self.event(generation, watch, front))
+            if callback is not None and gate.due(generation):
+                gate.mark(generation)
+                stop = not callback(self.event(generation, watch, front, STAGE_EVOLVING))
             if stop or generation >= params.max_iterations or watch.expired():
                 break
         best, best_eval = pick_best(front)
-        if callback is not None and reported != generation:
-            callback(self.event(generation, watch, front))
+        if callback is not None and not stop:
+            callback(self.event(generation, watch, front, STAGE_FINISHED))
         return SolveResult(
             self.name,
             best,
@@ -343,7 +352,7 @@ class Nsga2Solver(Solver):
         )
 
     @staticmethod
-    def event(generation: int, watch: Stopwatch, front: list[Point]) -> ProgressEvent:
+    def event(generation: int, watch: Stopwatch, front: list[Point], stage: str) -> ProgressEvent:
         best, best_eval = pick_best(front)
         return ProgressEvent(
             generation,
@@ -352,6 +361,7 @@ class Nsga2Solver(Solver):
             best_eval,
             best=best,
             pareto=list(front),
+            extra={"stage": stage},
         )
 
     @staticmethod

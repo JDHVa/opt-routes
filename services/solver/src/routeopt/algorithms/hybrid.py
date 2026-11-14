@@ -20,6 +20,12 @@ from routeopt.algorithms.base import (
 from routeopt.algorithms.ga import GaParams, GeneticEngine
 from routeopt.algorithms.init import initial_routesets
 from routeopt.algorithms.local_search import improve
+from routeopt.algorithms.progress import (
+    STAGE_COOPERATING,
+    STAGE_FINISHED,
+    STAGE_SEEDING,
+    ProgressGate,
+)
 from routeopt.core.evaluate import evaluate
 from routeopt.core.types import Evaluation, Instance, Penalties, RouteSet
 
@@ -36,7 +42,7 @@ class HybridParams(SolverParams):
     ants_per_cycle: int = Field(default=10, ge=1, le=500)
     elite_deposit: int = Field(default=3, ge=1, le=50)
     inject_k: int = Field(default=3, ge=1, le=50)
-    seed_ants: int = Field(default=80, ge=0, le=5000)
+    seed_ants: int | None = Field(default=None, ge=0, le=5000)
     ls_ants: int = Field(default=3, ge=0, le=500)
     adaptive: bool = True
     ga_crossover: Literal["ox", "pmx"] = "ox"
@@ -132,9 +138,38 @@ class HybridSolver(Solver):
         history: list[tuple[int, float, float]] = [(0, watch.elapsed, best_eval.fitness)]
         cycle = 0
         stopped = False
-        while cycle < params.max_iterations and time.perf_counter() < deadline:
+        gate = ProgressGate(watch, params.progress_every, params.progress_interval_s)
+        current = (best, best_eval)
+
+        def emit(stage: str) -> bool:
+            assert callback is not None
+            return callback(
+                self._event(engine, colony, cycle, watch, current[0], current[1], tally, stage)
+            )
+
+        def tick() -> bool:
+            if callback is None or not gate.due_time():
+                return True
+            gate.mark_time()
+            pair = engine.best()
+            if current[1].fitness <= pair[1].fitness:
+                pair = current
+            return callback(
+                self._event(
+                    engine, colony, cycle, watch, pair[0], pair[1], tally, STAGE_COOPERATING
+                )
+            )
+
+        if callback is not None:
+            stopped = not emit(STAGE_SEEDING)
+            gate.mark(0)
+        engine.hook = tick
+        while not stopped and cycle < params.max_iterations and time.perf_counter() < deadline:
             cycle += 1
             ga_best, ga_eval = self._ga_phase(engine, params, deadline)
+            if engine.aborted:
+                stopped = True
+                break
             ga_won = ga_eval.fitness < best_eval.fitness - IMPROVEMENT_EPS
             if ga_won:
                 best, best_eval = ga_best, ga_eval
@@ -152,19 +187,17 @@ class HybridSolver(Solver):
                     aco_won = True
                 order = np.argsort(fitness, kind="stable")
                 engine.inject([ants[int(i)] for i in order[: tally.inject]])
+            current = (best, best_eval)
             if ga_won or aco_won:
                 history.append((cycle, watch.elapsed, best_eval.fitness))
             if params.adaptive:
                 self._adapt(params, tally, ga_won, aco_won)
-            if (
-                callback is not None
-                and cycle % params.progress_every == 0
-                and not callback(self._event(engine, colony, cycle, watch, best, best_eval, tally))
-            ):
-                stopped = True
-                break
+            if callback is not None and gate.due(cycle):
+                gate.mark(cycle)
+                if not emit(STAGE_COOPERATING):
+                    stopped = True
         if callback is not None and not stopped:
-            callback(self._event(engine, colony, cycle, watch, best, best_eval, tally))
+            emit(STAGE_FINISHED)
         if history[-1][0] != cycle:
             history.append((cycle, watch.elapsed, best_eval.fitness))
         return SolveResult(
@@ -188,8 +221,9 @@ class HybridSolver(Solver):
         warm_start: list[RouteSet],
     ) -> list[RouteSet]:
         candidates = initial_routesets(inst, params.init, params.pop_size, rng, pen)
-        if params.seed_ants > 0:
-            candidates.extend(colony.construct(params.seed_ants))
+        seed_ants = 2 * params.pop_size if params.seed_ants is None else params.seed_ants
+        if seed_ants > 0:
+            candidates.extend(colony.construct(seed_ants))
         scored = sorted(candidates, key=lambda rs: evaluate(inst, rs, pen).fitness)
         pool: list[RouteSet] = []
         budget = SEED_LS_TIME_SHARE * params.time_limit_s
@@ -221,7 +255,7 @@ class HybridSolver(Solver):
         rng: np.random.Generator,
         deadline: float,
     ) -> tuple[list[RouteSet], list[Evaluation]]:
-        colony.update(engine.elite(params.elite_deposit))
+        colony.update(engine.elite(params.elite_deposit), deposit_top=params.elite_deposit)
         ants = colony.construct(tally.ants)
         evals = [evaluate(inst, rs, pen) for rs in ants]
         if params.local_search and params.ls_ants > 0:
@@ -257,6 +291,7 @@ class HybridSolver(Solver):
         best: RouteSet,
         best_eval: Evaluation,
         tally: Tally,
+        stage: str,
     ) -> ProgressEvent:
         stats = engine.stats()
         return ProgressEvent(
@@ -272,5 +307,6 @@ class HybridSolver(Solver):
                 "improvements_from_ga": tally.from_ga,
                 "improvements_from_aco": tally.from_aco,
                 "cycle": cycle,
+                "stage": stage,
             },
         )

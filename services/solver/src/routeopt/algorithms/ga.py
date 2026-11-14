@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, replace
 from typing import Any, ClassVar, Literal
 
@@ -19,6 +20,12 @@ from routeopt.algorithms.base import (
 )
 from routeopt.algorithms.init import initial_routesets
 from routeopt.algorithms.local_search import improve
+from routeopt.algorithms.progress import (
+    STAGE_EVOLVING,
+    STAGE_FINISHED,
+    STAGE_SEEDING,
+    ProgressGate,
+)
 from routeopt.core.evaluate import evaluate
 from routeopt.core.split import random_chromosome, routes_to_chromosome, split
 from routeopt.core.types import I64, Chromosome, Evaluation, Instance, Penalties, RouteSet
@@ -130,6 +137,8 @@ class GeneticEngine:
         self.population: list[Individual] = []
         self.generation = 0
         self.deadline: float | None = None
+        self.hook: Callable[[], bool] | None = None
+        self.aborted = False
         self._best: tuple[RouteSet, Evaluation] | None = None
         self._stagnation = 0
 
@@ -157,6 +166,9 @@ class GeneticEngine:
                 break
             attempts += 1
             child = self._offspring()
+            if self.hook is not None and not self.hook():
+                self.aborted = True
+                break
             if self._is_clone(child, elites, children):
                 continue
             children.append(child)
@@ -363,24 +375,36 @@ class GaSolver(Solver):
         history: list[tuple[int, float, float]] = []
         best_fitness = engine.best()[1].fitness
         history.append((0, watch.elapsed, best_fitness))
+        gate = ProgressGate(watch, params.progress_every, params.progress_interval_s)
         iterations = 0
         stopped = False
-        while iterations < params.max_iterations and not watch.expired():
+        if callback is not None:
+            stopped = not callback(self._event(engine, 0, watch, STAGE_SEEDING))
+            gate.mark(0)
+
+        def tick() -> bool:
+            if callback is None or not gate.due_time():
+                return True
+            gate.mark_time()
+            return callback(self._event(engine, iterations + 1, watch, STAGE_EVOLVING))
+
+        engine.hook = tick
+        while not stopped and iterations < params.max_iterations and not watch.expired():
             engine.step()
+            if engine.aborted:
+                stopped = True
+                break
             iterations += 1
             fitness = engine.best()[1].fitness
             if fitness < best_fitness - 1e-12:
                 best_fitness = fitness
                 history.append((iterations, watch.elapsed, fitness))
-            if (
-                callback is not None
-                and iterations % params.progress_every == 0
-                and not callback(self._event(engine, iterations, watch))
-            ):
-                stopped = True
-                break
+            if callback is not None and gate.due(iterations):
+                gate.mark(iterations)
+                if not callback(self._event(engine, iterations, watch, STAGE_EVOLVING)):
+                    stopped = True
         if callback is not None and not stopped:
-            callback(self._event(engine, iterations, watch))
+            callback(self._event(engine, iterations, watch, STAGE_FINISHED))
         best, evaluation = engine.best()
         if history[-1][0] != iterations:
             history.append((iterations, watch.elapsed, evaluation.fitness))
@@ -412,7 +436,9 @@ class GaSolver(Solver):
         return out
 
     @staticmethod
-    def _event(engine: GeneticEngine, iteration: int, watch: Stopwatch) -> ProgressEvent:
+    def _event(
+        engine: GeneticEngine, iteration: int, watch: Stopwatch, stage: str
+    ) -> ProgressEvent:
         best, evaluation = engine.best()
         return ProgressEvent(
             iteration=iteration,
@@ -420,5 +446,5 @@ class GaSolver(Solver):
             best_fitness=evaluation.fitness,
             best_eval=evaluation,
             best=best,
-            extra=engine.stats(),
+            extra={**engine.stats(), "stage": stage},
         )

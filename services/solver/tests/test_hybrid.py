@@ -21,6 +21,7 @@ EXTRA_KEYS = {
     "improvements_from_ga",
     "improvements_from_aco",
     "cycle",
+    "stage",
 }
 
 
@@ -93,13 +94,13 @@ def test_time_limit_and_cancel() -> None:
 
     def cancel(event: ProgressEvent) -> bool:
         events.append(event)
-        return False
+        return event.extra["stage"] == "seeding"
 
     cancelled = HybridSolver(quick(max_iterations=100, progress_every=2)).solve(
         inst, callback=cancel
     )
     assert cancelled.iterations == 2
-    assert len(events) == 1
+    assert len(events) == 2
 
 
 def test_callback_cadence_and_extra() -> None:
@@ -111,7 +112,13 @@ def test_callback_cadence_and_extra() -> None:
         return True
 
     result = HybridSolver(quick(max_iterations=7, progress_every=3)).solve(inst, callback=record)
-    assert [event.iteration for event in events] == [3, 6, 7]
+    assert [event.iteration for event in events] == [0, 3, 6, 7]
+    assert [event.extra["stage"] for event in events] == [
+        "seeding",
+        "cooperating",
+        "cooperating",
+        "finished",
+    ]
     for event in events:
         assert set(event.extra) == EXTRA_KEYS
         assert event.best is not None
